@@ -2,13 +2,24 @@
 
 ![Ui](docs/images/Ui.png)
 
-* This is **a sample project for Software Engineering (SE) students**.<br>
-  Example usages:
-  * as a starting point of a course project (as opposed to writing everything from scratch)
-  * as a case study
-* The project simulates an ongoing software project for a desktop application (called _AddressBook_) used for managing contact details.
-  * It is **written in an object-oriented programming (OOP) style** and provides a **reasonably well-written** codebase of about 6 KLoC. It is **larger** than what students typically write in beginner-level software-engineering modules, without being overwhelming.
-  * It comes with a **reasonable level of user and developer documentation**.
-* It is named `AddressBook Level 3` (`AB3` for short) because it was initially created as a part of a series of `AddressBook` projects (`Level 1`, `Level 2`, `Level 3` ...).
-* For the detailed documentation of this project, see the **[Address Book Product Website](https://se-education.org/addressbook-level3)**.
-* This project is a **part of the se-education.org** initiative. If you would like to contribute code to this project, see [se-education.org](https://se-education.org/#contributing-to-se-edu) for more info.
+# Ratatouille
+ 
+## Purpose
+ 
+Ratatouille is a CLI-based customer management tool built for hawker stall owners who serve a high volume of customers daily and can't reliably recognize repeat customers by face or memory alone.
+ 
+It lets stall owners quickly:
+- Sign up new customers into a loyalty program using their phone number
+- Log orders against a customer using fast, custom menu-item codes
+- Look up a customer's order history and membership status
+- Identify top regulars and lapsed customers to guide re-engagement
+The tool is optimized for speed and typed input, designed to fit into the fast pace of a hawker stall during service, rather than requiring the stall owner to stop and navigate a GUI.
+ 
+## Target User
+ 
+A hawker stall owner (e.g. Mrs. Tan) who wants to build and maintain a loyalty program for regulars, but cannot rely on memory to identify repeat customers, and prefers typing quickly over using a mouse or touch-based interface.
+ 
+## Status
+ 
+This project is under active development as part of a team software engineering project.
+ 
