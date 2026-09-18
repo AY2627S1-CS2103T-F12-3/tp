@@ -1,11 +1,11 @@
 package seedu.address.logic.commands;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+
 import seedu.address.commons.core.index.Index;
-
-import seedu.address.model.Model;
 import seedu.address.logic.commands.exceptions.CommandException;
-
+import seedu.address.model.Model;
 /**
  * Changes the remark of an existing person in the address book.
  */
