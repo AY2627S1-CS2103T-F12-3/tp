@@ -8,7 +8,7 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.RemarkCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
-public class RemarkCommandParser {
+public class RemarkCommandParser implements Parser<RemarkCommand>{
 
     public RemarkCommand parse(String args) throws ParseException {
         requireNonNull(args);
