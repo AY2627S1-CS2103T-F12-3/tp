@@ -23,4 +23,8 @@ A hawker stall owner (e.g. Mrs. Tan) who wants to build and maintain a loyalty p
 ## Status
  
 This project is under active development as part of a team software engineering project.
- 
+
+## Acknowledgements
+
+This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org).
+
