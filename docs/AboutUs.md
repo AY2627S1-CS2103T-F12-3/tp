@@ -65,3 +65,5 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](http://github.com/qqnoodle)]
 [[portfolio](team/qqnoodle.md)]
 
+* Role: Developer
+* Responsibilities: UI
