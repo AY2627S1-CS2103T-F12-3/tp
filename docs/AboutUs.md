@@ -48,6 +48,16 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Command Logic
 
+### Oh Qi Xiang
+
+<img src="images/qxxd666.png" width="200px">
+
+[[github](http://github.com/qxxd666)]
+[[portfolio](team/qxxd666.md)]
+
+* Role: Developer
+* Responsibilities: Testing/Code quality
+
 ### Qi Ming
 
 <img src="images/qqnoodle.png" width="200px">
