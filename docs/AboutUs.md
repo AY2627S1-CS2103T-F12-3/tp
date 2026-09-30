@@ -15,18 +15,18 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 [[homepage](http://www.comp.nus.edu.sg/~damithch)]
 [[github](https://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[portfolio](team/imnotannie.md)]
 
 * Role: Project Advisor
 
-### Jane Doe
+### Zhao Yumeng
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/imnotannie.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](http://github.com/imnotannie)]
+[[portfolio](team/imnotannie.md)]
 
-* Role: Team Lead
+* Role: Developer
 * Responsibilities: UI
 
 ### Ashin
