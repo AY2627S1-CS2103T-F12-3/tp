@@ -17,12 +17,19 @@ It lets stall owners quickly:
 The tool is optimized for speed and typed input, designed to fit into the fast pace of a hawker stall during service, rather than requiring the stall owner to stop and navigate a GUI.
  
 ## Target User
- 
-A hawker stall owner (e.g. Mrs. Tan) who wants to build and maintain a loyalty program for regulars, but cannot rely on memory to identify repeat customers, and prefers typing quickly over using a mouse or touch-based interface.
- 
+
+
+Ratatouille is intended for hawker stall owners (e.g. Mrs. Tan) who:
+
+- want to build and maintain a loyalty program for regular customers;
+- serve many customers each day and cannot rely on memory to identify repeat customers;
+- are comfortable using typed commands; and
+- value fast data entry and retrieval over navigating a mouse-driven interface.
+
 ## Status
- 
-This project is under active development as part of a team software engineering project.
+
+Ratatouille is under active development. The current version supports basic customer record management, including adding, editing, deleting, finding, and
+listing customers. Loyalty program and order-management features are planned for future versions.
  
 ## Acknowledgements
 This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org).
