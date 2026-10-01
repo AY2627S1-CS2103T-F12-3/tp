@@ -344,8 +344,22 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Customer**: Anyone who buys food from the stall. A customer is not tracked by Ratatouille unless they sign up as a *member*.
+* **Duplicate member**: A member record whose phone number matches an existing member's. Names are not compared, as two people may share a name.
+* **Hawker centre**: An open-air food complex in Singapore housing many small, independently run food stalls.
+* **Mainstream OS**: Windows, Linux, Unix, or macOS.
+* **Member**: A customer enrolled in the stall's *membership programme*, uniquely identified by their *Singapore phone number*.
+* **Membership points**: A non-negative whole number representing a member's standing in the membership programme, used to determine eligibility for *milestone rewards*.
+* **Membership programme**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
+* **Menu item**: A dish or drink sold by the stall, recorded with a name and price.
+* **Milestone reward**: A prize a member becomes eligible for upon reaching a set number of membership points. Each milestone reward can be claimed at most once per member.
+* **Order**: A record of a single item and its quantity bought by a member, logged against the member's phone number.
+* **Order history**: All orders recorded for a member. Also referred to as *purchase history*.
+* **Pre-order**: An order recorded in advance for later collection. It is *pending* until marked *completed*.
+* **Reversible command**: A command that changes stored data and can therefore be undone (e.g. `add-order`). Commands that only read or display data (e.g. `find`) or close the app (`exit`) are not reversible.
+* **Sample data**: Placeholder members loaded when Ratatouille is launched for the first time, so new users can try out commands.
+* **Singapore phone number**: An 8-digit number starting with 6, 8 or 9, with no spaces, dashes or country code (e.g. `91234567`).
+* **Stall owner**: The main user of Ratatouille, who runs a food stall at a hawker centre. Also covers staff operating the app on the owner's behalf.
 
 --------------------------------------------------------------------------------------------------------------------
 
