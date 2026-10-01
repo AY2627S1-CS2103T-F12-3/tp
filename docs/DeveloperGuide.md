@@ -307,32 +307,136 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is the `App` and the **Actor** is the `user`, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: Search for a member**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1.  User requests to search for a member by phone number or name.
+2.  App shows the matching member's details.
 
     Use case ends.
 
 **Extensions**
 
-* 2a. The list is empty.
+* 1a. No member matches the given search term.
 
-  Use case ends.
+    * 1a1. App shows an error message.
 
-* 3a. The given index is invalid.
+      Use case ends.
 
-    * 3a1. AddressBook shows an error message.
+* 2a. Multiple members match the given name.
 
-      Use case resumes at step 2.
+    * 2a1. App shows a numbered list of matching members.
+    * 2a2. User selects a member from the list.
+    * 2a3. App shows the selected member's details.
 
-*{More to be added}*
+      Use case ends.
+
+**Use case: Add a new member**
+
+**MSS**
+
+1.  User requests to add a new member, providing the member's phone number and name.
+2.  App adds the member and shows a confirmation.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The given phone number or name is invalid in format.
+
+    * 1a1. App shows an error message.
+
+      Use case ends.
+
+* 1b. The given phone number already exists as a member.
+
+    * 1b1. App shows an error message identifying the existing member.
+
+      Use case ends.
+
+**Use case: Log an order for a member**
+
+**MSS**
+
+1.  User requests to log an order for a member, specifying the member's phone number, order and quantity.
+2.  App records the order under the member and updates their order history.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. No member exists with the given phone number.
+
+    * 1a1. App reports that no member was found and suggests registering the member first.
+    * 1a2. User requests to add a new member providing the phone number and name.
+    * 1a3. App adds the member and shows a confirmation.
+
+      Use case resumes at step 1.
+
+* 1b. The given phone number is invalid in format.
+
+    * 1b1. App shows an error message.
+
+      Use case ends.
+
+* 1c. The given quantity is not a positive integer.
+
+    * 1c1. App shows an error message.
+
+      Use case resumes at step 1.
+
+**Use case: Update membership score for a member**
+
+**MSS**
+
+1.  User requests to search for a member by phone number.
+2.  App shows the member's details, including their current score.
+3.  User requests to update the member's score, specifying the score change.
+4.  App applies the change and shows the member's previous and new score.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. No member matches the given phone number.
+
+    * 1a1. App shows an error message.
+
+      Use case ends.
+
+* 3a. The given score change is invalid in format or exceeds the allowed range.
+
+    * 3a1. App shows an error message.
+
+      Use case resumes at step 3.
+
+* 3b. Applying the score change would bring the member's score below zero.
+
+    * 3b1. App shows an error message and does not apply the change.
+
+      Use case resumes at step 3.
+
+**Use case: Delete a member**
+
+**MSS**
+
+1.  User requests to search for a member by phone number.
+2.  App shows the member's details.
+3.  User requests to delete the member.
+4.  App deletes the member and shows a confirmation.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. No member matches the given phone number.
+
+    * 1a1. App shows an error message.
+
+      Use case ends.
 
 ### Non-Functional Requirements
 
