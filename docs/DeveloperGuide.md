@@ -440,11 +440,15 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
+1.  Should work on Windows, Linux, and macOS computers with Java `25` or above installed.
+2.  Should support up to 1000 members and their associated records without noticeable sluggishness during typical usage.
 3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-
-*{More to be added}*
+4.  Should be portable and work without requiring installation. It should be distributed as a single JAR file, or as a single ZIP file if additional files are required.
+5.  Should operate as a single-user application without depending on a remote server or a database management system.
+6.  Should store member, order, and membership data locally in a human-editable text file.
+7.  Should save changes made by successful data-modifying commands automatically. A failed command or save operation should not corrupt previously saved data.
+8.  Common commands, such as finding a member, recording an order, and updating a membership score, should complete without noticeable delay under typical usage.
+9.  Invalid commands should provide clear error messages that identify the problem without modifying existing data.
 
 ### Glossary
 
