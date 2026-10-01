@@ -261,9 +261,9 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* Small food stall owner in hawker centers
+* Small food stall owner in hawker centres
 * Prefers using CLI over GUI
-* Record membership programme for customers
+* Record rewards program for customers
 
 **Value proposition**:
 * Fast access to member's contact, order history and membership status
@@ -276,22 +276,22 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 | Priority | As a …​             | I want to …​                                            | So that I can…​                                                                                  |
 |----------|---------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| `* * *`  | Food stall owner    | Create a new member                                     | I can enroll a returning customer in the membership programme                                    |
+| `* * *`  | Food stall owner    | Create a new member                                     | I can enroll a returning customer in the rewards program                                          |
 | `* * *`  | Food stall owner    | Store member information persistently                   | I do not lose customer records when the application closes or crashes                            |
 | `* * *`  | Food stall owner    | View all members                                        | I can review and manage my membership records                                                    |
-| `* * *`  | Food stall owner    | Update a member’s points                                | I can keep the member’s progress in the rewards program accurate                                 |
-| `* * *`  | Food stall owner    | View a member’s details                                 | I can check the member’s points, purchase history, and reward eligibility                        |
+| `* * *`  | Food stall owner    | Update a member’s membership points                     | I can keep the member’s progress in the rewards program accurate                                 |
+| `* * *`  | Food stall owner    | View a member’s details                                 | I can check the member’s membership points, purchase history, and reward eligibility             |
 | `* * *`  | Food stall owner    | Delete a member                                         | I can remove duplicate, invalid, or obsolete members                                             |
 | `* * *`  | Food stall owner    | Search a member by name or phone number                 | I can quickly retrieve the correct member while serving the customer                             |
-| `* * *`  | Food stall owner    | Record an order for a member                            | I can update the member’s points and maintain an accurate purchase history                       |
+| `* * *`  | Food stall owner    | Record an order for a member                            | I can update the member’s membership points and maintain an accurate purchase history            |
 | `* *`    | Food stall owner    | Create a milestone reward                               | I can encourage customers to return and earn rewards                                             |
-| `* *`    | Food stall owner    | Edit a milestone reward                                 | I can change its points requirement or prize                                                     |
+| `* *`    | Food stall owner    | Edit a milestone reward                                 | I can change its membership points requirement or prize                                           |
 | `* *`    | Food stall owner    | Delete a milestone reward                               | Customers are not offered rewards that are no longer available                                   |
 | `* *`    | Food stall owner    | View all milestone rewards                              | I can review the rewards currently available to members                                          |
 | `* *`    | Food stall owner    | Mark a milestone reward as claimed by a member          | I can prevent the same reward from being issued to that member twice                             |
 | `* *`    | A new user          | Clear all sample data                                   | I can begin using the application with my actual business data                                   |
 | `* *`    | A new user          | View a list of available commands and their usage       | I can learn how to use the application quickly                                                   |
-| `* *`    | Food stall owner    | Configure the number of points awarded per dollar spent | I can adjust the membership programme to suit my business                                        |
+| `* *`    | Food stall owner    | Configure the number of membership points awarded per dollar spent | I can adjust the rewards program to suit my business                                    |
 | `* *`    | Food stall owner    | Update a menu item’s details and price                  | I can ensure orders and revenue calculations use accurate information                            |
 | `* *`    | Food stall owner    | Add a menu item                                         | I can record orders containing that item and its price                                           |
 | `* *`    | Food stall owner    | View all menu items                                     | I can check the items and prices currently recorded in the application                           |
@@ -388,14 +388,14 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 1.
 
-**Use case: Update membership score for a member**
+**Use case: Update membership points for a member**
 
 **MSS**
 
 1.  User requests to search for a member by phone number.
-2.  App shows the member's details, including their current score.
-3.  User requests to update the member's score, specifying the score change.
-4.  App applies the change and shows the member's previous and new score.
+2.  App shows the member's details, including their current membership points.
+3.  User requests to update the member's membership points, specifying the points change.
+4.  App applies the change and shows the member's previous and new membership points.
 
     Use case ends.
 
@@ -407,13 +407,13 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
-* 3a. The given score change is invalid in format or exceeds the allowed range.
+* 3a. The given membership points change is invalid in format or exceeds the allowed range.
 
     * 3a1. App shows an error message.
 
       Use case resumes at step 3.
 
-* 3b. Applying the score change would bring the member's score below zero.
+* 3b. Applying the membership points change would bring the member's membership points below zero.
 
     * 3b1. App shows an error message and does not apply the change.
 
@@ -447,18 +447,17 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 5.  Should operate as a single-user application without depending on a remote server or a database management system.
 6.  Should store member, order, and membership data locally in a human-editable text file.
 7.  Should save changes made by successful data-modifying commands automatically. A failed command or save operation should not corrupt previously saved data.
-8.  Common commands, such as finding a member, recording an order, and updating a membership score, should complete without noticeable delay under typical usage.
+8.  Common commands, such as finding a member, recording an order, and updating membership points, should complete without noticeable delay under typical usage.
 9.  Invalid commands should provide clear error messages that identify the problem without modifying existing data.
 
 ### Glossary
 
 * **Customer**: Anyone who buys food from the stall. A customer is not tracked by Ratatouille unless they sign up as a *member*.
 * **Duplicate member**: A member record whose phone number matches an existing member's. Names are not compared, as two people may share a name.
-* **Hawker centre**: An open-air food complex in Singapore housing many small, independently run food stalls.
-* **Mainstream OS**: Windows, Linux, Unix, or macOS.
-* **Member**: A customer enrolled in the stall's *membership programme*, uniquely identified by their *Singapore phone number*.
-* **Membership points**: A non-negative whole number representing a member's standing in the membership programme, used to determine eligibility for *milestone rewards*.
-* **Membership programme**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
+* **Hawker centres**: Open-air food complexes in Singapore housing many small, independently run food stalls.
+* **Member**: A customer enrolled in the stall's *rewards program*, uniquely identified by their *Singapore phone number*.
+* **Membership points**: A non-negative whole number representing a member's standing in the rewards program, used to determine eligibility for *milestone rewards*.
+* **Rewards program**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
 * **Menu item**: A dish or drink sold by the stall, recorded with a name and price.
 * **Milestone reward**: A prize a member becomes eligible for upon reaching a set number of membership points. Each milestone reward can be claimed at most once per member.
 * **Order**: A record of a single item and its quantity bought by a member, logged against the member's phone number.
