@@ -453,7 +453,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 ### Glossary
 
 * **Customer**: Anyone who buys food from the stall. A customer is not tracked by Ratatouille unless they sign up as a *member*.
-* **Duplicate member**: A member record whose phone number matches an existing member's. Names are not compared, as two people may share a name.
 * **Hawker centres**: Open-air food complexes in Singapore housing many small, independently run food stalls.
 * **Member**: A customer enrolled in the stall's *rewards program*, uniquely identified by their *Singapore phone number*.
 * **Membership points**: A non-negative whole number representing a member's standing in the rewards program, used to determine eligibility for *milestone rewards*.
