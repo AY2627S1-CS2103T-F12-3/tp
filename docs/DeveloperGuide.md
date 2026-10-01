@@ -274,16 +274,36 @@ _{Explain here how the data archiving feature will be implemented}_
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
-| -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
-
-*{More to be added}*
+| Priority | As a …​             | I want to …​                                            | So that I can…​                                                                                  |
+|----------|---------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `* * *`  | Food stall owner    | Create a new member                                     | I can enroll a returning customer in the membership programme                                    |
+| `* * *`  | Food stall owner    | Store member information persistently                   | I do not lose customer records when the application closes or crashes                            |
+| `* * *`  | Food stall owner    | View all members                                        | I can review and manage my membership records                                                    |
+| `* * *`  | Food stall owner    | Update a member’s points                                | I can keep the member’s progress in the rewards program accurate                                 |
+| `* * *`  | Food stall owner    | View a member’s details                                 | I can check the member’s points, purchase history, and reward eligibility                        |
+| `* * *`  | Food stall owner    | Delete a member                                         | I can remove duplicate, invalid, or obsolete members                                             |
+| `* * *`  | Food stall owner    | Search a member by name or phone number                 | I can quickly retrieve the correct member while serving the customer                             |
+| `* * *`  | Food stall owner    | Record an order for a member                            | I can update the member’s points and maintain an accurate purchase history                       |
+| `* *`    | Food stall owner    | Create a milestone reward                               | I can encourage customers to return and earn rewards                                             |
+| `* *`    | Food stall owner    | Edit a milestone reward                                 | I can change its points requirement or prize                                                     |
+| `* *`    | Food stall owner    | Delete a milestone reward                               | Customers are not offered rewards that are no longer available                                   |
+| `* *`    | Food stall owner    | View all milestone rewards                              | I can review the rewards currently available to members                                          |
+| `* *`    | Food stall owner    | Mark a milestone reward as claimed by a member          | I can prevent the same reward from being issued to that member twice                             |
+| `* *`    | A new user          | Clear all sample data                                   | I can begin using the application with my actual business data                                   |
+| `* *`    | A new user          | View a list of available commands and their usage       | I can learn how to use the application quickly                                                   |
+| `* *`    | Food stall owner    | Configure the number of points awarded per dollar spent | I can adjust the membership programme to suit my business                                        |
+| `* *`    | Food stall owner    | Update a menu item’s details and price                  | I can ensure orders and revenue calculations use accurate information                            |
+| `* *`    | Food stall owner    | Add a menu item                                         | I can record orders containing that item and its price                                           |
+| `* *`    | Food stall owner    | View all menu items                                     | I can check the items and prices currently recorded in the application                           |
+| `* *`    | Food stall owner    | Delete a menu item                                      | Unavailable or discontinued items cannot be added to new orders                                  |
+| `*`      | An experienced user | Create aliases for frequently used commands             | Allow for faster typing to handle more customers                                                 |
+| `*`      | An experienced user | Undo my most recent reversible command                  | I can recover quickly from an input mistake                                                      |
+| `*`      | Food stall owner    | Sort menu items by purchase frequency or total revenue  | I can identify popular and high-earning menu items to make informed business decisions           |
+| `*`      | Food stall owner    | Add a pre-order for a customer                          | I can record an order for later collection                                                       |
+| `*`      | Food stall owner    | View all pre-orders                                     | I can keep track of the orders that I need to prepare                                            |
+| `*`      | Food stall owner    | Edit the pre-order                                      | I can correct the mistakes or change the details of the pre-order                                |
+| `*`      | Food stall owner    | Delete the pre-order                                    | I can delete the pre-order if the customer no longer wants or I cannot provide what he/she wants |
+| `*`      | Food stall owner    | Mark the pre-order as completed                         | I can distinguish the completed orders from pending ones                                         |
 
 ### Use cases
 
