@@ -261,13 +261,13 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+* Small food stall owner in hawker centers
+* Prefers using CLI over GUI
+* Record membership programme for customers
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**:
+* Fast access to member's contact, order history and membership status
+* CLI optimised for faster retrieval and updates of customer information than GUI
 
 
 ### User stories
