@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.order.OrderHistory;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -24,17 +25,19 @@ public class Person {
     // Data fields
     private final Address address;
     private final Set<Tag> tags = new HashSet<>();
+    private final OrderHistory orderHistory;
 
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, tags);
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, OrderHistory orderHistory) {
+        requireAllNonNull(name, phone, email, address, tags, orderHistory);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
+        this.orderHistory = orderHistory;
     }
 
     public Name getName() {
@@ -59,6 +62,13 @@ public class Person {
      */
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags);
+    }
+
+    /**
+     *  Returns an immutable order history of Person.
+     */
+    public OrderHistory getOrderHistory() {
+        return orderHistory;
     }
 
     /**
@@ -99,7 +109,7 @@ public class Person {
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags);
+        return Objects.hash(name, phone, email, address, tags, orderHistory);
     }
 
     @Override
@@ -110,6 +120,7 @@ public class Person {
                 .add("email", email)
                 .add("address", address)
                 .add("tags", tags)
+                .add("order history", orderHistory)
                 .toString();
     }
 
