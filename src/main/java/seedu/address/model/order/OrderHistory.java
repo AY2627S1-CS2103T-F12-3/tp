@@ -51,6 +51,11 @@ public class OrderHistory {
         return new OrderHistory(updatedOrders);
     }
 
+    @Override
+    public int hashCode() {
+        return orders.toString().hashCode();
+    }
+
     /**
      * Returns a string representation of this history's orders.
      *
