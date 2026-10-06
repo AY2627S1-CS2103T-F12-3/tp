@@ -5,7 +5,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 
 /**
  * Represents a Person's name in the address book.
- * Guarantees: immutable; is valid as declared in {@link #isValidName(String)}
+ * Guarantees: immutable; has a valid format and contains at least one letter.
  */
 public class Name {
 
@@ -33,13 +33,6 @@ public class Name {
         checkArgument(hasValidFormat(name), MESSAGE_CONSTRAINTS);
         checkArgument(containsLetter(name), MESSAGE_CONSTRAINTS_MISSING_LETTER);
         fullName = name;
-    }
-
-    /**
-     * Returns true if a given string is a valid name.
-     */
-    public static boolean isValidName(String test) {
-        return hasValidFormat(test) && containsLetter(test);
     }
 
     /**
