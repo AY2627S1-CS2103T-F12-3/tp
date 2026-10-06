@@ -44,8 +44,11 @@ public class ParserUtil {
     public static Name parseName(String name) throws ParseException {
         requireNonNull(name);
         String trimmedName = name.trim();
-        if (!Name.isValidName(trimmedName)) {
+        if (!Name.hasValidFormat(trimmedName)) {
             throw new ParseException(Name.MESSAGE_CONSTRAINTS);
+        }
+        if (!Name.containsLetter(trimmedName)) {
+            throw new ParseException(Name.MESSAGE_CONSTRAINTS_MISSING_LETTER);
         }
         return new Name(trimmedName);
     }
