@@ -40,6 +40,13 @@ public class Person {
         this.orderHistory = orderHistory;
     }
 
+    /**
+     * Constructs a  {@code Person} with empty order history
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
+        this(name, phone, email, address, tags, new OrderHistory());
+    }
+
     public Name getName() {
         return name;
     }

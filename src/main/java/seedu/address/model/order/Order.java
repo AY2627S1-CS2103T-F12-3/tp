@@ -13,6 +13,7 @@ public class Order {
 
     public static final String ITEM_NAME_CONSTRAINTS = "Item name cannot be blank";
     public static final String QUANTITY_CONSTRAINTS = "Quantity must be a positive whole number";
+    public static final String RECORDED_AT_CONSTRAINTS = "timestamp must be non null";
 
     public final String itemName;
     public final int quantity;
@@ -54,6 +55,11 @@ public class Order {
     /** Returns true if the given quantity is positive. */
     public static boolean isValidQuantity(int test) {
         return test > 0;
+    }
+
+    /** Returns true if the given recordedAt is not null. */
+    public static boolean isValidRecordedAt(String test) {
+        return test != null;
     }
 
     /** Formats state as text for viewing. */
