@@ -10,7 +10,8 @@ import java.util.Objects;
 /**
  * Represents an order in the address book.
  * Guarantees: immutable; item name and quantity are valid as declared in
- * {@link #isValidItemName(String)} and {@link #isValidQuantity(int)}, and recorded time is present.
+ * {@link #isValidItemName(String)} and {@link #isValidQuantity(int)}; recorded time is present, and its string
+ * representation is valid as declared in {@link #isValidRecordedAt(String)}.
  */
 public class Order {
 
@@ -67,12 +68,12 @@ public class Order {
     /**
      * Returns true if a given recorded time is a valid ISO-8601 instant.
      */
-    public static boolean isValidRecordedAt(String recordedAt) {
-        if (recordedAt == null) {
+    public static boolean isValidRecordedAt(String test) {
+        if (test == null) {
             return false;
         }
         try {
-            Instant.parse(recordedAt);
+            Instant.parse(test);
             return true;
         } catch (DateTimeParseException e) {
             return false;
