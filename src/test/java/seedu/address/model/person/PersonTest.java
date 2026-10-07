@@ -12,8 +12,12 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
+import java.time.Instant;
+
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.order.Order;
+import seedu.address.model.order.OrderHistory;
 import seedu.address.testutil.PersonBuilder;
 
 public class PersonTest {
@@ -88,6 +92,34 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
+    }
+
+    @Test
+    public void equals_differentOrderHistory_returnsFalse() {
+        OrderHistory differentOrderHistory = ALICE.getOrderHistory()
+                .addOrder(new Order("Pancake", 1, Instant.parse("2026-02-01T00:00:00Z")));
+        Person editedAlice = new PersonBuilder(ALICE).withOrderHistory(differentOrderHistory).build();
+
+        assertFalse(ALICE.equals(editedAlice));
+    }
+
+    @Test
+    public void equals_emptyOrderHistories_returnsTrue() {
+        Person aliceWithEmptyHistory = new PersonBuilder(ALICE).withOrderHistory(new OrderHistory()).build();
+        Person aliceCopyWithEmptyHistory = new PersonBuilder(ALICE).withOrderHistory(new OrderHistory()).build();
+
+        assertEquals(aliceWithEmptyHistory, aliceCopyWithEmptyHistory);
+    }
+
+    @Test
+    public void equals_sameOrderHistory_returnsTrue() {
+        Instant recordedAt = Instant.parse("2026-02-01T00:00:00Z");
+        OrderHistory firstHistory = new OrderHistory().addOrder(new Order("Pancake", 1, recordedAt));
+        OrderHistory secondHistory = new OrderHistory().addOrder(new Order("Pancake", 1, recordedAt));
+        Person aliceWithHistory = new PersonBuilder(ALICE).withOrderHistory(firstHistory).build();
+        Person aliceCopyWithSameHistory = new PersonBuilder(ALICE).withOrderHistory(secondHistory).build();
+
+        assertEquals(aliceWithHistory, aliceCopyWithSameHistory);
     }
 
     @Test

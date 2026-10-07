@@ -11,6 +11,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,14 +26,21 @@ import seedu.address.model.person.Person;
  */
 public class TypicalPersons {
 
+    public static final Instant ALICE_CHICKEN_ORDER_TIME = Instant.parse("2026-01-01T00:00:00Z");
+    public static final Instant ALICE_POTATO_ORDER_TIME = Instant.parse("2026-01-02T00:00:00Z");
+    public static final Instant BENSON_POTATO_ORDER_TIME = Instant.parse("2026-01-03T00:00:00Z");
+    public static final Instant ELLE_CHICKEN_ORDER_TIME = Instant.parse("2026-01-04T00:00:00Z");
+    public static final Instant ELLE_PORK_ORDER_TIME = Instant.parse("2026-01-05T00:00:00Z");
+    public static final Instant FIONA_CHICKEN_ORDER_TIME = Instant.parse("2026-01-06T00:00:00Z");
+
     public static final Person ALICE = new PersonBuilder().withName("Alice Pauline")
             .withAddress("123, Jurong West Ave 6, #08-111").withEmail("alice@example.com")
             .withPhone("94351253")
             .withTags("friends")
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Chicken", 2))
-                            .addOrder(new Order("Potato", 1))
+                            .addOrder(new Order("Chicken", 2, ALICE_CHICKEN_ORDER_TIME))
+                            .addOrder(new Order("Potato", 1, ALICE_POTATO_ORDER_TIME))
             )
             .build();
     public static final Person BENSON = new PersonBuilder().withName("Benson Meier")
@@ -41,7 +49,7 @@ public class TypicalPersons {
             .withTags("owesMoney", "friends")
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Potato", 1))
+                            .addOrder(new Order("Potato", 1, BENSON_POTATO_ORDER_TIME))
             )
             .build();
     public static final Person CARL = new PersonBuilder().withName("Carl Kurz").withPhone("95352563")
@@ -56,15 +64,15 @@ public class TypicalPersons {
             .withEmail("werner@example.com").withAddress("michegan ave")
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Chicken", 2))
-                            .addOrder(new Order("Pork", 9))
+                            .addOrder(new Order("Chicken", 2, ELLE_CHICKEN_ORDER_TIME))
+                            .addOrder(new Order("Pork", 9, ELLE_PORK_ORDER_TIME))
             )
             .build();
     public static final Person FIONA = new PersonBuilder().withName("Fiona Kunz").withPhone("9482427")
             .withEmail("lydia@example.com").withAddress("little tokyo")
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Chicken", 9))
+                            .addOrder(new Order("Chicken", 9, FIONA_CHICKEN_ORDER_TIME))
             )
             .build();
     public static final Person GEORGE = new PersonBuilder().withName("George Best").withPhone("9482442")
