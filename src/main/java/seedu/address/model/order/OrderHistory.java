@@ -52,6 +52,19 @@ public class OrderHistory {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+
+        if (!(other instanceof OrderHistory otherOrderHistory)) {
+            return false;
+        }
+
+        return orders.equals(otherOrderHistory.orders);
+    }
+
+    @Override
     public int hashCode() {
         return orders.toString().hashCode();
     }
