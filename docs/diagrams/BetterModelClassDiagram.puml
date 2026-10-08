@@ -16,5 +16,5 @@ Person -up-> "*" Tag
 
 Person *--> Name
 Person *--> Phone
-Person *--> Address
+Person *--> Score
 @enduml

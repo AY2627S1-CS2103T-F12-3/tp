@@ -69,10 +69,9 @@ public class PersonMatchesKeywordsPredicateTest {
         predicate = new PersonMatchesKeywordsPredicate(List.of("Carol"));
         assertFalse(predicate.test(new PersonBuilder().withName("Alice Bob").build()));
 
-        // Keywords match phone and address, but do not match name
-        predicate = new PersonMatchesKeywordsPredicate(List.of("12345", "Main", "Street"));
-        assertFalse(predicate.test(new PersonBuilder().withName("Alice").withPhone("12345")
-                .withAddress("Main Street").build()));
+        // Keyword matches phone, but does not match name
+        predicate = new PersonMatchesKeywordsPredicate(List.of("12345"));
+        assertFalse(predicate.test(new PersonBuilder().withName("Alice").withPhone("12345").build()));
     }
 
     @Test

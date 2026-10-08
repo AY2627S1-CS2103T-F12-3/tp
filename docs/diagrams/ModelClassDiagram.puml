@@ -14,9 +14,9 @@ Class UserPrefs
 
 Class UniquePersonList
 Class Person
-Class Address
 Class Name
 Class Phone
+Class Score
 Class Tag
 
 Class I #FFFFFF
@@ -38,14 +38,13 @@ AddressBook *--> "1" UniquePersonList
 UniquePersonList --> "~* all" Person
 Person *--> Name
 Person *--> Phone
-Person *--> Address
+Person *--> Score
 Person *--> "*" Tag
 
 Person -[hidden]up--> I
 UniquePersonList -[hidden]right-> I
 
 Name -[hidden]right-> Phone
-Phone -[hidden]right-> Address
 
 ModelManager --> "~* filtered" Person
 @enduml

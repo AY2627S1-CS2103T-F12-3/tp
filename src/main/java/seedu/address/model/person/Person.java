@@ -21,25 +21,23 @@ public class Person {
     private final Phone phone;
 
     // Data fields
-    private final Address address;
     private final Set<Tag> tags = new HashSet<>();
     private final Score score;
 
     /**
-     * Every field must be present and not null. Score defaults to 0.
+     * Constructs a person with the given details and a default score.
      */
-    public Person(Name name, Phone phone, Address address, Set<Tag> tags) {
-        this(name, phone, address, tags, Score.DEFAULT);
+    public Person(Name name, Phone phone, Set<Tag> tags) {
+        this(name, phone, tags, Score.DEFAULT);
     }
 
     /**
-     * Every field must be present and not null.
+     * Constructs a person with the given details and score.
      */
-    public Person(Name name, Phone phone, Address address, Set<Tag> tags, Score score) {
-        requireAllNonNull(name, phone, address, tags, score);
+    public Person(Name name, Phone phone, Set<Tag> tags, Score score) {
+        requireAllNonNull(name, phone, tags, score);
         this.name = name;
         this.phone = phone;
-        this.address = address;
         this.tags.addAll(tags);
         this.score = score;
     }
@@ -50,10 +48,6 @@ public class Person {
 
     public Phone getPhone() {
         return phone;
-    }
-
-    public Address getAddress() {
-        return address;
     }
 
     /**
@@ -98,7 +92,6 @@ public class Person {
 
         return name.equals(otherPerson.name)
                 && phone.equals(otherPerson.phone)
-                && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags)
                 && score.equals(otherPerson.score);
 
@@ -107,7 +100,7 @@ public class Person {
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, address, tags, score);
+        return Objects.hash(name, phone, tags, score);
     }
 
     @Override
@@ -115,7 +108,6 @@ public class Person {
         return new ToStringBuilder(this)
                 .add("name", name)
                 .add("phone", phone)
-                .add("address", address)
                 .add("tags", tags)
                 .add("score", score)
                 .toString();

@@ -9,8 +9,7 @@ public class MessagesTest {
 
     @Test
     public void format_person_displaysRemainingFields() {
-        String expected = "Alice Pauline; Phone: 94351253; "
-                + "Address: 123, Jurong West Ave 6, #08-111; Tags: [friends]";
+        String expected = "Alice Pauline; Phone: 94351253; Tags: [friends]";
 
         assertEquals(expected, Messages.format(ALICE));
     }
