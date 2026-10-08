@@ -12,6 +12,7 @@ import seedu.address.model.order.Order;
  * Jackson-friendly version of {@link Order}
  */
 public class JsonAdaptedOrder {
+
     private final String itemName;
     private final Integer quantity;
     private final String recordedAt;
