@@ -50,7 +50,7 @@ public class JsonAdaptedPersonTest {
     @Test
     public void toModelType_nameWithoutLetter_throwsIllegalValueException() {
         JsonAdaptedPerson person =
-                new JsonAdaptedPerson(NAME_WITHOUT_LETTER, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS, VALID_TAGS);
+                new JsonAdaptedPerson(NAME_WITHOUT_LETTER, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS, VALID_TAGS, null);
         String expectedMessage = Name.MESSAGE_CONSTRAINTS_MISSING_LETTER;
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
     }
