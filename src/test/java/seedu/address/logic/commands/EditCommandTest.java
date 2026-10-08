@@ -25,6 +25,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Score;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
 
@@ -34,6 +35,21 @@ import seedu.address.testutil.PersonBuilder;
 public class EditCommandTest {
 
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+
+    @Test
+    public void execute_personWithScore_preservesScore() throws Exception {
+        Person original = model.getFilteredPersonList().get(0);
+        Person scoredPerson = new Person(original.getName(), original.getPhone(), original.getEmail(),
+                original.getTags(), new Score(42));
+        model.setPerson(original, scoredPerson);
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withPhone(VALID_PHONE_BOB).build();
+
+        new EditCommand(INDEX_FIRST_PERSON, descriptor).execute(model);
+
+        Person editedPerson = model.getFilteredPersonList().get(0);
+        assertEquals(new Score(42), editedPerson.getScore());
+        assertEquals(VALID_PHONE_BOB, editedPerson.getPhone().value);
+    }
 
     @Test
     public void execute_allFieldsSpecifiedUnfilteredList_success() {
