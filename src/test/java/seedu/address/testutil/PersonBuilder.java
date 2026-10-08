@@ -70,6 +70,14 @@ public class PersonBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@code Score} of the {@code Person} that we are building.
+     */
+    public PersonBuilder withScore(Score score) {
+        this.score = score;
+        return this;
+    }
+
 
     /**
      * Sets the {@code OrderHistory} of the {@code Person} that we are building

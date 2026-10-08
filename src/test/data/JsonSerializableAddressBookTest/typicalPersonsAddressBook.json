@@ -3,7 +3,6 @@
   "persons" : [ {
     "name" : "Alice Pauline",
     "phone" : "94351253",
-    "address" : "123, Jurong West Ave 6, #08-111",
     "tags" : [ "friends" ],
     "orderHistory" : [ {
       "itemName" : "Chicken",
@@ -17,7 +16,6 @@
   }, {
     "name" : "Benson Meier",
     "phone" : "98765432",
-    "address" : "311, Clementi Ave 2, #02-25",
     "tags" : [ "owesMoney", "friends" ],
     "orderHistory" : [ {
       "itemName" : "Potato",
@@ -27,19 +25,16 @@
   }, {
     "name" : "Carl Kurz",
     "phone" : "95352563",
-    "address" : "wall street",
     "tags" : [ ],
     "orderHistory" : [ ]
   }, {
     "name" : "Daniel Meier",
     "phone" : "87652533",
-    "address" : "10th street",
     "tags" : [ "friends" ],
     "orderHistory" : [ ]
   }, {
     "name" : "Elle Meyer",
     "phone" : "9482224",
-    "address" : "michegan ave",
     "tags" : [ ],
     "orderHistory" : [ {
       "itemName" : "Chicken",
@@ -53,7 +48,6 @@
   }, {
     "name" : "Fiona Kunz",
     "phone" : "9482427",
-    "address" : "little tokyo",
     "tags" : [ ],
     "orderHistory" : [ {
       "itemName" : "Chicken",
@@ -63,7 +57,6 @@
   }, {
     "name" : "George Best",
     "phone" : "9482442",
-    "address" : "4th street",
     "tags" : [ ],
     "orderHistory" : [ ]
   } ]
