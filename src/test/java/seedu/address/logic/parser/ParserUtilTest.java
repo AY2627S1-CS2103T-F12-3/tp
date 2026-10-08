@@ -20,6 +20,7 @@ import seedu.address.model.tag.Tag;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
+    private static final String NAME_WITHOUT_LETTER = "12345678";
     private static final String INVALID_PHONE = "+651234";
     private static final String INVALID_ADDRESS = " ";
     private static final String INVALID_EMAIL = "example.com";
@@ -62,6 +63,12 @@ public class ParserUtilTest {
     @Test
     public void parseName_invalidValue_throwsParseException() {
         assertThrows(ParseException.class, () -> ParserUtil.parseName(INVALID_NAME));
+    }
+
+    @Test
+    public void parseName_nameWithoutLetter_throwsParseException() {
+        assertThrows(ParseException.class, Name.MESSAGE_CONSTRAINTS_MISSING_LETTER, () ->
+                ParserUtil.parseName(NAME_WITHOUT_LETTER));
     }
 
     @Test
