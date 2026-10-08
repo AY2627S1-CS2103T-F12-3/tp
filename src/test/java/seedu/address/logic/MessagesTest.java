@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class MessagesTest {
 
     @Test
-    public void format_personWithEmail_emailNotDisplayed() {
+    public void format_person_displaysRemainingFields() {
         String expected = "Alice Pauline; Phone: 94351253; "
                 + "Address: 123, Jurong West Ave 6, #08-111; Tags: [friends]";
 
