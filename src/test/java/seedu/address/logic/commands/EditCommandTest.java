@@ -71,7 +71,7 @@ public class EditCommandTest {
     @Test
     public void execute_personWithScore_preservesScore() throws Exception {
         Person original = model.getFilteredPersonList().get(0);
-        Person scoredPerson = new Person(original.getName(), original.getPhone(), original.getEmail(),
+        Person scoredPerson = new Person(original.getName(), original.getPhone(),
                 original.getTags(), new Score(42), new OrderHistory());
         model.setPerson(original, scoredPerson);
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withPhone(VALID_PHONE_BOB).build();

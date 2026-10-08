@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.order.OrderHistory;
-import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
@@ -27,7 +26,6 @@ class JsonAdaptedPerson {
 
     private final String name;
     private final String phone;
-    private final String email;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final String score;
     private final List<JsonAdaptedOrder> orderHistory = new ArrayList<>();
@@ -38,13 +36,11 @@ class JsonAdaptedPerson {
     @JsonCreator
     public JsonAdaptedPerson(
             @JsonProperty("name") String name, @JsonProperty("phone") String phone,
-            @JsonProperty("email") String email,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
             @JsonProperty("score") String score,
             @JsonProperty("orderHistory") List<JsonAdaptedOrder> orderHistory) {
         this.name = name;
         this.phone = phone;
-        this.email = email;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -60,7 +56,6 @@ class JsonAdaptedPerson {
     public JsonAdaptedPerson(Person source) {
         name = source.getName().fullName;
         phone = source.getPhone().value;
-        email = source.getEmail().value;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -100,14 +95,6 @@ class JsonAdaptedPerson {
         }
         final Phone modelPhone = new Phone(phone);
 
-        if (email == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Email.class.getSimpleName()));
-        }
-        if (!Email.isValidEmail(email)) {
-            throw new IllegalValueException(Email.MESSAGE_CONSTRAINTS);
-        }
-        final Email modelEmail = new Email(email);
-
         final Set<Tag> modelTags = new HashSet<>(personTags);
 
         final Score modelScore;
@@ -118,13 +105,11 @@ class JsonAdaptedPerson {
         } else {
             modelScore = new Score(Integer.parseInt(score));
         }
-
         OrderHistory modelOrderHistory = new OrderHistory();
         for (JsonAdaptedOrder adaptedOrder : orderHistory) {
             modelOrderHistory = modelOrderHistory.addOrder(adaptedOrder.toModelType());
         }
 
-        return new Person(modelName, modelPhone, modelEmail, modelTags, modelScore, modelOrderHistory);
+        return new Person(modelName, modelPhone, modelTags, modelScore, modelOrderHistory);
     }
-
 }

@@ -20,7 +20,6 @@ public class Person {
     // Identity fields
     private final Name name;
     private final Phone phone;
-    private final Email email;
 
     // Data fields
     private final Set<Tag> tags = new HashSet<>();
@@ -30,19 +29,18 @@ public class Person {
     /**
      * Constructs a person with the given details and a default score and empty order history
      */
-    public Person(Name name, Phone phone, Email email, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, tags);
-        this(name, phone, email, tags, Score.DEFAULT, new OrderHistory());
+    public Person(Name name, Phone phone, Set<Tag> tags) {
+        requireAllNonNull(name, phone, tags);
+        this(name, phone, tags, Score.DEFAULT, new OrderHistory());
     }
 
     /**
      * Constructs a person with the given details
      */
-    public Person(Name name, Phone phone, Email email, Set<Tag> tags, Score score, OrderHistory orderHistory) {
-        requireAllNonNull(name, phone, email, tags, score);
+    public Person(Name name, Phone phone, Set<Tag> tags, Score score, OrderHistory orderHistory) {
+        requireAllNonNull(name, phone, tags, score);
         this.name = name;
         this.phone = phone;
-        this.email = email;
         this.tags.addAll(tags);
         this.score = score;
         this.orderHistory = orderHistory;
@@ -54,10 +52,6 @@ public class Person {
 
     public Phone getPhone() {
         return phone;
-    }
-
-    public Email getEmail() {
-        return email;
     }
 
     /**
@@ -109,7 +103,6 @@ public class Person {
 
         return name.equals(otherPerson.name)
                 && phone.equals(otherPerson.phone)
-                && email.equals(otherPerson.email)
                 && tags.equals(otherPerson.tags)
                 && score.equals(otherPerson.score)
                 && orderHistory.equals(otherPerson.orderHistory);
@@ -118,7 +111,7 @@ public class Person {
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, tags, score, orderHistory);
+        return Objects.hash(name, phone, tags, score, orderHistory);
     }
 
     @Override
@@ -126,7 +119,6 @@ public class Person {
         return new ToStringBuilder(this)
                 .add("name", name)
                 .add("phone", phone)
-                .add("email", email)
                 .add("tags", tags)
                 .add("score", score)
                 .add("order history", orderHistory)
