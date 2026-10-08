@@ -23,28 +23,29 @@ public class Person {
     private final Email email;
 
     // Data fields
-    private final Address address;
     private final Set<Tag> tags = new HashSet<>();
+    private final Score score;
     private final OrderHistory orderHistory;
 
     /**
-     * Every field must be present and not null.
+     * Constructs a person with the given details and a default score and empty order history
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, OrderHistory orderHistory) {
-        requireAllNonNull(name, phone, email, address, tags, orderHistory);
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
-        this.tags.addAll(tags);
-        this.orderHistory = orderHistory;
+    public Person(Name name, Phone phone, Email email, Set<Tag> tags) {
+        requireAllNonNull(name, phone, email, tags);
+        this(name, phone, email, tags, Score.DEFAULT, new OrderHistory());
     }
 
     /**
-     * Constructs a {@code Person} with empty order history
+     * Constructs a person with the given details
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        this(name, phone, email, address, tags, new OrderHistory());
+    public Person(Name name, Phone phone, Email email, Set<Tag> tags, Score score, OrderHistory orderHistory) {
+        requireAllNonNull(name, phone, email, tags, score);
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.tags.addAll(tags);
+        this.score = score;
+        this.orderHistory = orderHistory;
     }
 
     public Name getName() {
@@ -59,16 +60,16 @@ public class Person {
         return email;
     }
 
-    public Address getAddress() {
-        return address;
-    }
-
     /**
      * Returns an immutable tag set, which throws {@code UnsupportedOperationException}
      * if modification is attempted.
      */
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags);
+    }
+
+    public Score getScore() {
+        return score;
     }
 
     /**
@@ -109,15 +110,15 @@ public class Person {
         return name.equals(otherPerson.name)
                 && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
-                && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags)
+                && score.equals(otherPerson.score)
                 && orderHistory.equals(otherPerson.orderHistory);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, orderHistory);
+        return Objects.hash(name, phone, email, tags, score, orderHistory);
     }
 
     @Override
@@ -126,10 +127,9 @@ public class Person {
                 .add("name", name)
                 .add("phone", phone)
                 .add("email", email)
-                .add("address", address)
                 .add("tags", tags)
+                .add("score", score)
                 .add("order history", orderHistory)
                 .toString();
     }
-
 }

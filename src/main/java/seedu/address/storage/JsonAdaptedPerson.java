@@ -11,11 +11,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.order.OrderHistory;
-import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Score;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -28,8 +28,8 @@ class JsonAdaptedPerson {
     private final String name;
     private final String phone;
     private final String email;
-    private final String address;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
+    private final String score;
     private final List<JsonAdaptedOrder> orderHistory = new ArrayList<>();
 
     /**
@@ -38,16 +38,17 @@ class JsonAdaptedPerson {
     @JsonCreator
     public JsonAdaptedPerson(
             @JsonProperty("name") String name, @JsonProperty("phone") String phone,
-            @JsonProperty("email") String email, @JsonProperty("address") String address,
+            @JsonProperty("email") String email,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
+            @JsonProperty("score") String score,
             @JsonProperty("orderHistory") List<JsonAdaptedOrder> orderHistory) {
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.address = address;
         if (tags != null) {
             this.tags.addAll(tags);
         }
+        this.score = score;
         if (orderHistory != null) {
             this.orderHistory.addAll(orderHistory);
         }
@@ -60,10 +61,10 @@ class JsonAdaptedPerson {
         name = source.getName().fullName;
         phone = source.getPhone().value;
         email = source.getEmail().value;
-        address = source.getAddress().value;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
+        score = source.getScore().toString();
         orderHistory.addAll(source.getOrderHistory().getOrders().stream()
                 .map(JsonAdaptedOrder::new)
                 .collect(Collectors.toList()));
@@ -83,8 +84,11 @@ class JsonAdaptedPerson {
         if (name == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Name.class.getSimpleName()));
         }
-        if (!Name.isValidName(name)) {
+        if (!Name.hasValidFormat(name)) {
             throw new IllegalValueException(Name.MESSAGE_CONSTRAINTS);
+        }
+        if (!Name.containsLetter(name)) {
+            throw new IllegalValueException(Name.MESSAGE_CONSTRAINTS_MISSING_LETTER);
         }
         final Name modelName = new Name(name);
 
@@ -104,23 +108,23 @@ class JsonAdaptedPerson {
         }
         final Email modelEmail = new Email(email);
 
-        if (address == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName()));
-        }
-        if (!Address.isValidAddress(address)) {
-            throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
-        }
-        final Address modelAddress = new Address(address);
-
         final Set<Tag> modelTags = new HashSet<>(personTags);
 
-        OrderHistory modelOrderHistory = new OrderHistory();
+        final Score modelScore;
+        if (score == null) {
+            modelScore = Score.DEFAULT;
+        } else if (!Score.isValidScore(score)) {
+            throw new IllegalValueException(Score.MESSAGE_CONSTRAINTS);
+        } else {
+            modelScore = new Score(Integer.parseInt(score));
+        }
 
+        OrderHistory modelOrderHistory = new OrderHistory();
         for (JsonAdaptedOrder adaptedOrder : orderHistory) {
             modelOrderHistory = modelOrderHistory.addOrder(adaptedOrder.toModelType());
         }
 
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelOrderHistory);
+        return new Person(modelName, modelPhone, modelEmail, modelTags, modelScore, modelOrderHistory);
     }
 
 }

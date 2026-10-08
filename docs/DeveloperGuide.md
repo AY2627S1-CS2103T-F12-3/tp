@@ -123,6 +123,8 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
+* stores each person's name, phone, email, tags, and score. A `Person` has no address field; editing its details preserves
+  its existing score.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
@@ -143,6 +145,9 @@ The `Model` component,
 The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
+
+`JsonAdaptedPerson` stores name, phone, email, tags, and score. The JSON mapper ignores unknown properties, so legacy
+`address` properties are ignored when loading older files and omitted when saving. A missing score defaults to zero.
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
 ### Common classes
@@ -313,8 +318,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User requests to search for a member by phone number or name.
-2.  App shows the matching member's details.
+1.  User requests to search for members using name keywords or an exact eight-digit phone number.
+2.  App shows a numbered list of matching members.
 
     Use case ends.
 
@@ -322,14 +327,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 1a. No member matches the given search term.
 
-    * 1a1. App shows an error message.
+    * 1a1. App shows an empty list and informs the user that no members were found.
 
       Use case ends.
-
-* 2a. Multiple members match the given name.
-
-    * 2a1. App shows a numbered list of matching members.
-    * 2a2. User selects a member from the list.
     * 2a3. App shows the selected member's details.
 
       Use case ends.
