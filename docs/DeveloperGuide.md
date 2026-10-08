@@ -123,7 +123,7 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores each person's name, phone, email, tags, and score. A `Person` has no address field; editing its details preserves
+* stores each person's name, phone, tags, and score. A `Person` has no email or address field; editing its details preserves
   its existing score.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
@@ -146,8 +146,9 @@ The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
 
-`JsonAdaptedPerson` stores name, phone, email, tags, and score. The JSON mapper ignores unknown properties, so legacy
-`address` properties are ignored when loading older files and omitted when saving. A missing score defaults to zero.
+`JsonAdaptedPerson` stores name, phone, tags, and score. The JSON mapper ignores unknown properties, so legacy
+`email` and `address` properties are ignored when loading older files and omitted when saving. A missing score defaults
+to zero.
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
 ### Common classes
