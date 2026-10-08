@@ -22,26 +22,24 @@ public class Person {
     private final Email email;
 
     // Data fields
-    private final Address address;
     private final Set<Tag> tags = new HashSet<>();
     private final Score score;
 
     /**
-     * Every field must be present and not null. Score defaults to 0.
+     * Constructs a person with the given details and a default score.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        this(name, phone, email, address, tags, Score.DEFAULT);
+    public Person(Name name, Phone phone, Email email, Set<Tag> tags) {
+        this(name, phone, email, tags, Score.DEFAULT);
     }
 
     /**
-     * Every field must be present and not null.
+     * Constructs a person with the given details and score.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Score score) {
-        requireAllNonNull(name, phone, email, address, tags, score);
+    public Person(Name name, Phone phone, Email email, Set<Tag> tags, Score score) {
+        requireAllNonNull(name, phone, email, tags, score);
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.address = address;
         this.tags.addAll(tags);
         this.score = score;
     }
@@ -56,10 +54,6 @@ public class Person {
 
     public Email getEmail() {
         return email;
-    }
-
-    public Address getAddress() {
-        return address;
     }
 
     /**
@@ -105,7 +99,6 @@ public class Person {
         return name.equals(otherPerson.name)
                 && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
-                && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags)
                 && score.equals(otherPerson.score);
 
@@ -114,7 +107,7 @@ public class Person {
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, score);
+        return Objects.hash(name, phone, email, tags, score);
     }
 
     @Override
@@ -123,7 +116,6 @@ public class Person {
                 .add("name", name)
                 .add("phone", phone)
                 .add("email", email)
-                .add("address", address)
                 .add("tags", tags)
                 .add("score", score)
                 .toString();
