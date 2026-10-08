@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
@@ -27,19 +28,26 @@ class JsonAdaptedPerson {
     private final String phone;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final String score;
+    private final List<JsonAdaptedOrder> orderHistory = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     @JsonCreator
-    public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
-            @JsonProperty("tags") List<JsonAdaptedTag> tags, @JsonProperty("score") String score) {
+    public JsonAdaptedPerson(
+            @JsonProperty("name") String name, @JsonProperty("phone") String phone,
+            @JsonProperty("tags") List<JsonAdaptedTag> tags,
+            @JsonProperty("score") String score,
+            @JsonProperty("orderHistory") List<JsonAdaptedOrder> orderHistory) {
         this.name = name;
         this.phone = phone;
         if (tags != null) {
             this.tags.addAll(tags);
         }
         this.score = score;
+        if (orderHistory != null) {
+            this.orderHistory.addAll(orderHistory);
+        }
     }
 
     /**
@@ -52,6 +60,9 @@ class JsonAdaptedPerson {
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
         score = source.getScore().toString();
+        orderHistory.addAll(source.getOrderHistory().getOrders().stream()
+                .map(JsonAdaptedOrder::new)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -94,7 +105,11 @@ class JsonAdaptedPerson {
         } else {
             modelScore = new Score(Integer.parseInt(score));
         }
-        return new Person(modelName, modelPhone, modelTags, modelScore);
-    }
+        OrderHistory modelOrderHistory = new OrderHistory();
+        for (JsonAdaptedOrder adaptedOrder : orderHistory) {
+            modelOrderHistory = modelOrderHistory.addOrder(adaptedOrder.toModelType());
+        }
 
+        return new Person(modelName, modelPhone, modelTags, modelScore, modelOrderHistory);
+    }
 }

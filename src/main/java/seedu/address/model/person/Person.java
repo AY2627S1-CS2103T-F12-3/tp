@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.order.OrderHistory;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -23,23 +24,26 @@ public class Person {
     // Data fields
     private final Set<Tag> tags = new HashSet<>();
     private final Score score;
+    private final OrderHistory orderHistory;
 
     /**
-     * Constructs a person with the given details and a default score.
+     * Constructs a person with the given details and a default score and empty order history
      */
     public Person(Name name, Phone phone, Set<Tag> tags) {
-        this(name, phone, tags, Score.DEFAULT);
+        requireAllNonNull(name, phone, tags);
+        this(name, phone, tags, Score.DEFAULT, new OrderHistory());
     }
 
     /**
-     * Constructs a person with the given details and score.
+     * Constructs a person with the given details
      */
-    public Person(Name name, Phone phone, Set<Tag> tags, Score score) {
-        requireAllNonNull(name, phone, tags, score);
+    public Person(Name name, Phone phone, Set<Tag> tags, Score score, OrderHistory orderHistory) {
+        requireAllNonNull(name, phone, tags, score, orderHistory);
         this.name = name;
         this.phone = phone;
         this.tags.addAll(tags);
         this.score = score;
+        this.orderHistory = orderHistory;
     }
 
     public Name getName() {
@@ -60,6 +64,13 @@ public class Person {
 
     public Score getScore() {
         return score;
+    }
+
+    /**
+     *  Returns an immutable order history of Person.
+     */
+    public OrderHistory getOrderHistory() {
+        return orderHistory;
     }
 
     /**
@@ -93,14 +104,14 @@ public class Person {
         return name.equals(otherPerson.name)
                 && phone.equals(otherPerson.phone)
                 && tags.equals(otherPerson.tags)
-                && score.equals(otherPerson.score);
-
+                && score.equals(otherPerson.score)
+                && orderHistory.equals(otherPerson.orderHistory);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, tags, score);
+        return Objects.hash(name, phone, tags, score, orderHistory);
     }
 
     @Override
@@ -110,7 +121,7 @@ public class Person {
                 .add("phone", phone)
                 .add("tags", tags)
                 .add("score", score)
+                .add("order history", orderHistory)
                 .toString();
     }
-
 }

@@ -3,9 +3,11 @@ package seedu.address.testutil;
 import java.util.HashSet;
 import java.util.Set;
 
+import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Score;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.util.SampleDataUtil;
 
@@ -20,6 +22,8 @@ public class PersonBuilder {
     private Name name;
     private Phone phone;
     private Set<Tag> tags;
+    private Score score;
+    private OrderHistory orderHistory;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -28,6 +32,8 @@ public class PersonBuilder {
         name = new Name(DEFAULT_NAME);
         phone = new Phone(DEFAULT_PHONE);
         tags = new HashSet<>();
+        score = Score.DEFAULT;
+        orderHistory = new OrderHistory();
     }
 
     /**
@@ -37,6 +43,8 @@ public class PersonBuilder {
         name = personToCopy.getName();
         phone = personToCopy.getPhone();
         tags = new HashSet<>(personToCopy.getTags());
+        score = personToCopy.getScore();
+        orderHistory = personToCopy.getOrderHistory();
     }
 
     /**
@@ -63,8 +71,25 @@ public class PersonBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@code Score} of the {@code Person} that we are building.
+     */
+    public PersonBuilder withScore(Score score) {
+        this.score = score;
+        return this;
+    }
+
+
+    /**
+     * Sets the {@code OrderHistory} of the {@code Person} that we are building
+     */
+    public PersonBuilder withOrderHistory(OrderHistory orderHistory) {
+        this.orderHistory = orderHistory;
+        return this;
+    }
+
     public Person build() {
-        return new Person(name, phone, tags);
+        return new Person(name, phone, tags, score, orderHistory);
     }
 
 }
