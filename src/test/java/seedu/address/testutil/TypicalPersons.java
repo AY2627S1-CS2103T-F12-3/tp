@@ -60,6 +60,7 @@ public class TypicalPersons {
     public static final Person DANIEL = new PersonBuilder()
             .withName("Daniel Meier")
             .withPhone("87652533")
+            .withTags("friends")
             .withScore(Score.DEFAULT)
             .withOrderHistory(new OrderHistory())
             .build();

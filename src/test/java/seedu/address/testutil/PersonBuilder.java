@@ -43,6 +43,7 @@ public class PersonBuilder {
         name = personToCopy.getName();
         phone = personToCopy.getPhone();
         tags = new HashSet<>(personToCopy.getTags());
+        score = personToCopy.getScore();
         orderHistory = personToCopy.getOrderHistory();
     }
 

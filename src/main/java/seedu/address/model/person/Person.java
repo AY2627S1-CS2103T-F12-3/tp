@@ -38,7 +38,7 @@ public class Person {
      * Constructs a person with the given details
      */
     public Person(Name name, Phone phone, Set<Tag> tags, Score score, OrderHistory orderHistory) {
-        requireAllNonNull(name, phone, tags, score);
+        requireAllNonNull(name, phone, tags, score, orderHistory);
         this.name = name;
         this.phone = phone;
         this.tags.addAll(tags);
