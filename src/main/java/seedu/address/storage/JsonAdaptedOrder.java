@@ -17,7 +17,6 @@ public class JsonAdaptedOrder {
     private final Integer quantity;
     private final String recordedAt;
 
-
     /**
      * Constructs a {@code JsonAdaptedOrder} with the given {@code itemName}, {@code quantity}, {@code recordedAt}.
      */
@@ -30,6 +29,7 @@ public class JsonAdaptedOrder {
         this.quantity = quantity;
         this.recordedAt = recordedAt;
     }
+
     /**
      *  Converts a given {@code Order} into this class for Jackson use
      */
@@ -38,19 +38,6 @@ public class JsonAdaptedOrder {
         quantity = source.quantity;
         recordedAt = source.recordedAt.toString();
     }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public String getRecordedAt() {
-        return recordedAt;
-    }
-
 
     /**
      * Converts this Jackson-friendly adapted order object into the model's {@code Order} object.
