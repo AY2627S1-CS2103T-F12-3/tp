@@ -3,6 +3,8 @@ package seedu.address.model;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -21,6 +23,7 @@ public class ModelManager implements Model {
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
+    private Person selectedPerson;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -93,6 +96,25 @@ public class ModelManager implements Model {
         addressBook.setPerson(target, editedPerson);
     }
 
+    @Override
+    public void selectPerson(Person person) {
+        requireNonNull(person);
+        if (addressBook.getPersonList().stream().noneMatch(person::equals)) {
+            throw new IllegalArgumentException("Selected person must be in the address book");
+        }
+        selectedPerson = person;
+    }
+
+    @Override
+    public void deselectPerson() {
+        selectedPerson = null;
+    }
+
+    @Override
+    public Optional<Person> getSelectedPerson() {
+        return Optional.ofNullable(selectedPerson);
+    }
+
     //=========== Filtered Person List Accessors =============================================================
 
     /**
@@ -123,7 +145,8 @@ public class ModelManager implements Model {
 
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
-                && filteredPersons.equals(otherModelManager.filteredPersons);
+                && filteredPersons.equals(otherModelManager.filteredPersons)
+                && Objects.equals(selectedPerson, otherModelManager.selectedPerson);
     }
 
 }

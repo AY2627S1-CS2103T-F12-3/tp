@@ -9,6 +9,7 @@ import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +70,46 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void selectPerson_personInAddressBook_updatesSelection() {
+        modelManager.addPerson(ALICE);
+        modelManager.addPerson(BENSON);
+
+        assertEquals(Optional.empty(), modelManager.getSelectedPerson());
+        modelManager.selectPerson(ALICE);
+        assertEquals(Optional.of(ALICE), modelManager.getSelectedPerson());
+
+        modelManager.selectPerson(BENSON);
+        assertEquals(Optional.of(BENSON), modelManager.getSelectedPerson());
+    }
+
+    @Test
+    public void selectPerson_personNotInAddressBook_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> modelManager.selectPerson(ALICE));
+    }
+
+    @Test
+    public void selectPerson_nullPerson_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> modelManager.selectPerson(null));
+    }
+
+    @Test
+    public void deselectPerson_selectedPerson_clearsSelection() {
+        modelManager.addPerson(ALICE);
+        modelManager.selectPerson(ALICE);
+
+        modelManager.deselectPerson();
+
+        assertEquals(Optional.empty(), modelManager.getSelectedPerson());
+    }
+
+    @Test
+    public void deselectPerson_noSelectedPerson_keepsSelectionEmpty() {
+        modelManager.deselectPerson();
+
+        assertEquals(Optional.empty(), modelManager.getSelectedPerson());
+    }
+
+    @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getFilteredPersonList().remove(0));
     }
@@ -103,6 +144,11 @@ public class ModelManagerTest {
 
         // resets modelManager to initial state for upcoming tests
         modelManager.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+
+        // different selected person -> returns false
+        modelManager.selectPerson(ALICE);
+        assertFalse(modelManager.equals(new ModelManager(addressBook, userPrefs)));
+        modelManager = new ModelManager(addressBook, userPrefs);
 
         // different userPrefs -> returns false
         UserPrefs differentUserPrefs = new UserPrefs();

@@ -1,5 +1,6 @@
 package seedu.address.model;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -59,6 +60,25 @@ public interface Model {
      * The person identity of {@code editedPerson} must not be the same as another existing person in the address book.
      */
     void setPerson(Person target, Person editedPerson);
+
+    /**
+     * Selects {@code person} for display. The person must be equal to a person in the address book.
+     *
+     * @param person The person to select.
+     * @throws NullPointerException If {@code person} is null.
+     * @throws IllegalArgumentException If no equal person is in the address book.
+     */
+    void selectPerson(Person person);
+
+    /**
+     * Clears the selected person. Does nothing if no person is selected.
+     */
+    void deselectPerson();
+
+    /**
+     * Returns the selected person, or an empty optional if no person is selected.
+     */
+    Optional<Person> getSelectedPerson();
 
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();
