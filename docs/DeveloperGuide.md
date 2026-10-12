@@ -123,8 +123,8 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores each person's name, phone, tags, and score. A `Person` has no email or address field; editing its details preserves
-  its existing score.
+* stores each person's name, phone, tags, score, and order history. A `Person` has no email or address field; editing
+  its details preserves its existing score and order history.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
@@ -146,7 +146,8 @@ The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
 
-`JsonAdaptedPerson` stores name, phone, tags, and score. The JSON mapper ignores unknown properties, so legacy
+`JsonAdaptedPerson` stores name, phone, tags, score, and order history. Each stored order includes its item name,
+quantity, and recorded time. The JSON mapper ignores unknown properties, so legacy
 `email` and `address` properties are ignored when loading older files and omitted when saving. A missing score defaults
 to zero.
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
@@ -362,24 +363,28 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User requests to log an order for a member, specifying the member's phone number, order and quantity.
-2.  App records the order under the member and updates their order history.
+1.  User requests to log an order for a member, specifying the member's index in the displayed list, item name, and quantity.
+2.  App adds the order to that member's order history and shows a confirmation.
 
     Use case ends.
 
 **Extensions**
 
-* 1a. No member exists with the given phone number.
+* 1a. The index is invalid or does not refer to a member in the displayed list.
 
-    * 1a1. App reports that no member was found and suggests registering the member first.
-    * 1a2. User requests to add a new member providing the phone number and name.
-    * 1a3. App adds the member and shows a confirmation.
+    * 1a1. App shows an error message and does not add an order.
 
-      Use case resumes at step 1.
+      Use case ends.
 
-* 1b. The given phone number is invalid in format.
+* 1b. The item name is blank or contains characters other than letters, digits, and spaces.
 
-    * 1b1. App shows an error message.
+    * 1b1. App shows an error message and does not add an order.
+
+      Use case ends.
+
+* 1c. The quantity is not a positive whole number.
+
+    * 1c1. App shows an error message and does not add an order.
 
       Use case ends.
 
@@ -460,7 +465,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Rewards program**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
 * **Menu item**: A dish or drink sold by the stall, recorded with a name and price.
 * **Milestone reward**: A prize a member becomes eligible for upon reaching a set number of membership points. Each milestone reward can be claimed at most once per member.
-* **Order**: A record of a single item and its quantity bought by a member, logged against the member's phone number.
+* **Order**: A record of a single item, its quantity, and the time it was recorded, stored in a member's order history.
 * **Order history**: All orders recorded for a member. Also referred to as *purchase history*.
 * **Pre-order**: An order recorded in advance for later collection. It is *pending* until marked *completed*.
 * **Reversible command**: A command that changes stored data and can therefore be undone (e.g. `add-order`). Commands that only read or display data (e.g. `find`) or close the app (`exit`) are not reversible.
@@ -513,6 +518,24 @@ testers are expected to do more *exploratory* testing.
       Expected: Similar to previous.
 
 1. _{ more test cases …​ }_
+
+### Recording an order
+
+1. Recording an order for a person in the displayed list
+
+   1. Prerequisites: Use `list` to show at least one person.
+
+   1. Test case: `add-order 1 o/Chicken Rice q/2`<br>
+      Expected: The status message confirms the order was added to the first person's order history. The full person list is shown.
+
+   1. Close and reopen the app, then enter `add-order 1 o/Coffee q/1`.<br>
+      Expected: The status message shows both the earlier Chicken Rice order and the new Coffee order in the first person's order history.
+
+   1. Test case: `add-order 1 o/Chicken-Rice q/2`<br>
+      Expected: The item-name constraint is shown, and no order is added.
+
+   1. Test case: `add-order 1 o/Chicken Rice q/0`<br>
+      Expected: The quantity constraint is shown, and no order is added.
 
 ### Saving data
 
