@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <GridPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
@@ -15,6 +16,9 @@
     <ColumnConstraints percentWidth="54" />
     <ColumnConstraints percentWidth="46" />
   </columnConstraints>
+  <rowConstraints>
+    <RowConstraints vgrow="ALWAYS" />
+  </rowConstraints>
   <VBox styleClass="profile-summary" minWidth="0" spacing="4" GridPane.columnIndex="0">
     <padding>
       <Insets top="18" right="14" bottom="18" left="18" />
@@ -31,7 +35,8 @@
       <Label fx:id="score" styleClass="profile-score" wrapText="true" />
     </HBox>
   </VBox>
-  <VBox styleClass="profile-orders" minWidth="0" GridPane.columnIndex="1">
+  <VBox styleClass="profile-orders" minWidth="0" maxHeight="Infinity"
+        GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
     <GridPane.margin>
       <Insets top="12" right="12" bottom="12" left="8" />
     </GridPane.margin>

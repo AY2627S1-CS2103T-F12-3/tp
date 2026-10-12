@@ -63,7 +63,7 @@
 .profile-orders {
     -fx-background-color: #2c2c2c;
     -fx-border-color: #777777;
-    -fx-border-width: 0 0 0 1px;
+    -fx-border-width: 1px;
 }
 
 .profile-orders-title, .profile-order-header {
