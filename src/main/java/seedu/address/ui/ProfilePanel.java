@@ -22,16 +22,20 @@ public class ProfilePanel extends UiPart<Region> {
     private Label phone;
 
     @FXML
+    private Label index;
+
+    @FXML
     private Label score;
 
     @FXML
     private VBox orders;
 
-    /** Creates a profile panel for {@code person}. */
-    public ProfilePanel(Person person) {
+    /** Creates a profile panel for {@code person}, using zero when it is not in the displayed list. */
+    public ProfilePanel(Person person, int displayedIndex) {
         super(FXML);
         name.setText(person.getName().fullName);
         phone.setText(person.getPhone().value);
+        index.setText(displayedIndex == 0 ? "Not in current list" : "List index: " + displayedIndex);
         score.setText("Current score: " + person.getScore());
 
         List<Order> recentOrders = person.getOrderHistory().getOrders();

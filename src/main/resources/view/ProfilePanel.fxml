@@ -15,12 +15,13 @@
     <ColumnConstraints percentWidth="54" />
     <ColumnConstraints percentWidth="46" />
   </columnConstraints>
-  <VBox styleClass="profile-summary" minWidth="0" GridPane.columnIndex="0">
+  <VBox styleClass="profile-summary" minWidth="0" spacing="4" GridPane.columnIndex="0">
     <padding>
       <Insets top="18" right="14" bottom="18" left="18" />
     </padding>
     <Label fx:id="name" styleClass="profile-name" wrapText="true" />
     <Label fx:id="phone" styleClass="profile-phone" />
+    <Label fx:id="index" styleClass="profile-index" wrapText="true" />
     <HBox styleClass="profile-timeline" alignment="CENTER_LEFT" spacing="12" VBox.vgrow="ALWAYS">
       <VBox alignment="CENTER" prefWidth="12">
         <Region styleClass="profile-timeline-line" VBox.vgrow="ALWAYS" />
@@ -31,6 +32,9 @@
     </HBox>
   </VBox>
   <VBox styleClass="profile-orders" minWidth="0" GridPane.columnIndex="1">
+    <GridPane.margin>
+      <Insets top="12" right="12" bottom="12" left="8" />
+    </GridPane.margin>
     <Label text="Recent Orders" styleClass="profile-orders-title" maxWidth="Infinity" />
     <HBox styleClass="profile-order-header">
       <Label text="Order" maxWidth="Infinity" HBox.hgrow="ALWAYS" />

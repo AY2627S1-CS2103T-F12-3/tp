@@ -143,7 +143,8 @@ public class MainWindow extends UiPart<Stage> {
             profilePanelPlaceholder.getChildren().setAll(noMemberSelectedLabel);
         } else {
             Person person = logic.getSelectedPerson().get();
-            profilePanelPlaceholder.getChildren().setAll(new ProfilePanel(person).getRoot());
+            int displayedIndex = logic.getFilteredPersonList().indexOf(person) + 1;
+            profilePanelPlaceholder.getChildren().setAll(new ProfilePanel(person, displayedIndex).getRoot());
         }
     }
 

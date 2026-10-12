@@ -35,6 +35,12 @@
     -fx-text-fill: white;
 }
 
+.profile-index {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+    -fx-text-fill: #bcbcbc;
+}
+
 .profile-timeline {
     -fx-padding: 20px 0 0 0;
 }
@@ -64,7 +70,7 @@
     -fx-background-color: #484848;
     -fx-border-color: #777777;
     -fx-border-width: 0 0 1px 0;
-    -fx-padding: 5px 8px;
+    -fx-padding: 8px 10px;
 }
 
 .profile-orders-title {
@@ -85,7 +91,7 @@
 }
 
 .profile-order-row {
-    -fx-padding: 7px 8px;
+    -fx-padding: 10px 10px;
     -fx-border-color: #666666;
     -fx-border-width: 0 0 1px 0;
 }
@@ -101,6 +107,6 @@
 }
 
 .profile-empty-orders {
-    -fx-padding: 12px 8px;
+    -fx-padding: 14px 10px;
     -fx-text-fill: #c0c0c0;
 }
