@@ -59,7 +59,7 @@ public class ProfilePanel extends UiPart<Region> {
             emptyOrders.getStyleClass().add("profile-empty-orders");
             orders.getChildren().add(emptyOrders);
         } else {
-            recentOrders.stream()
+            recentOrders.reversed().stream()
                     .map(this::createOrderRow)
                     .forEach(orders.getChildren()::add);
         }
