@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -26,14 +26,11 @@
     <Label fx:id="name" styleClass="profile-name" wrapText="true" />
     <Label fx:id="phone" styleClass="profile-phone" />
     <Label fx:id="index" styleClass="profile-index" wrapText="true" />
-    <HBox styleClass="profile-timeline" alignment="CENTER_LEFT" spacing="12" VBox.vgrow="ALWAYS">
-      <VBox alignment="CENTER" prefWidth="12">
-        <Region styleClass="profile-timeline-line" VBox.vgrow="ALWAYS" />
-        <Region styleClass="profile-timeline-marker" />
-        <Region styleClass="profile-timeline-line" VBox.vgrow="ALWAYS" />
-      </VBox>
-      <Label fx:id="score" styleClass="profile-score" wrapText="true" />
-    </HBox>
+    <Pane fx:id="scoreScale" minHeight="160" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+      <VBox.margin>
+        <Insets top="20" />
+      </VBox.margin>
+    </Pane>
   </VBox>
   <VBox styleClass="profile-orders" minWidth="0" maxHeight="Infinity"
         GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
