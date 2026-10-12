@@ -8,7 +8,10 @@ import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.CommandTestUtil.showPersonAtIndex;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
+import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +31,9 @@ public class DeleteCommandTest {
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
-    public void execute_validIndexUnfilteredList_success() {
+    public void execute_selectedPersonDeleted_clearsSelection() {
         Person personToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        model.selectPerson(personToDelete);
         DeleteCommand deleteCommand = new DeleteCommand(INDEX_FIRST_PERSON);
 
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
@@ -39,6 +43,7 @@ public class DeleteCommandTest {
         expectedModel.deletePerson(personToDelete);
 
         assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+        assertEquals(Optional.empty(), model.getSelectedPerson());
     }
 
     @Test
@@ -50,8 +55,9 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void execute_validIndexFilteredList_success() {
+    public void execute_otherPersonDeleted_preservesSelection() {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        model.selectPerson(BENSON);
 
         Person personToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         DeleteCommand deleteCommand = new DeleteCommand(INDEX_FIRST_PERSON);
@@ -60,10 +66,12 @@ public class DeleteCommandTest {
                 Messages.format(personToDelete));
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.selectPerson(BENSON);
         expectedModel.deletePerson(personToDelete);
         showNoPerson(expectedModel);
 
         assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+        assertEquals(Optional.of(BENSON), model.getSelectedPerson());
     }
 
     @Test

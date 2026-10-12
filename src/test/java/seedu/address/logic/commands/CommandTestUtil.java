@@ -10,6 +10,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -98,10 +99,12 @@ public class CommandTestUtil {
         // only do so by copying its components.
         AddressBook expectedAddressBook = new AddressBook(actualModel.getAddressBook());
         List<Person> expectedFilteredList = new ArrayList<>(actualModel.getFilteredPersonList());
+        Optional<Person> expectedSelectedPerson = actualModel.getSelectedPerson();
 
         assertThrows(CommandException.class, expectedMessage, () -> command.execute(actualModel));
         assertEquals(expectedAddressBook, actualModel.getAddressBook());
         assertEquals(expectedFilteredList, actualModel.getFilteredPersonList());
+        assertEquals(expectedSelectedPerson, actualModel.getSelectedPerson());
     }
     /**
      * Updates {@code model}'s filtered list to show only the person at the given {@code targetIndex} in the

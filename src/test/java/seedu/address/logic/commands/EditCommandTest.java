@@ -51,6 +51,7 @@ public class EditCommandTest {
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setPerson(personToEdit, editedPerson);
+        expectedModel.selectPerson(editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
@@ -67,6 +68,7 @@ public class EditCommandTest {
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setPerson(personToEdit, editedPerson);
+        expectedModel.selectPerson(editedPerson);
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
 
@@ -102,6 +104,7 @@ public class EditCommandTest {
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setPerson(lastPerson, editedPerson);
+        expectedModel.selectPerson(editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
@@ -114,6 +117,7 @@ public class EditCommandTest {
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.selectPerson(editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
@@ -131,6 +135,7 @@ public class EditCommandTest {
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setPerson(model.getFilteredPersonList().get(0), editedPerson);
+        expectedModel.selectPerson(editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
@@ -158,6 +163,7 @@ public class EditCommandTest {
 
     @Test
     public void execute_invalidPersonIndexUnfilteredList_failure() {
+        model.selectPerson(model.getFilteredPersonList().get(0));
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build();
         EditCommand editCommand = new EditCommand(outOfBoundIndex, descriptor);

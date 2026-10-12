@@ -12,6 +12,7 @@ import static seedu.address.testutil.TypicalPersons.FIONA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -55,23 +56,29 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_zeroKeywords_noPersonFound() {
+    public void execute_noMatches_preservesSelection() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0);
         PersonMatchesKeywordsPredicate predicate = preparePredicate(" ");
         FindCommand command = new FindCommand(predicate);
+        model.selectPerson(BENSON);
+        expectedModel.selectPerson(BENSON);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(List.of(), model.getFilteredPersonList());
+        assertEquals(Optional.of(BENSON), model.getSelectedPerson());
     }
 
     @Test
-    public void execute_multipleKeywords_multiplePersonsFound() {
+    public void execute_multipleMatches_preservesSelection() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
         PersonMatchesKeywordsPredicate predicate = preparePredicate("Kurz Elle Kunz");
         FindCommand command = new FindCommand(predicate);
+        model.selectPerson(BENSON);
+        expectedModel.selectPerson(BENSON);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(List.of(CARL, ELLE, FIONA), model.getFilteredPersonList());
+        assertEquals(Optional.of(BENSON), model.getSelectedPerson());
     }
 
     @Test
@@ -79,9 +86,12 @@ public class FindCommandTest {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
         PersonMatchesKeywordsPredicate predicate = preparePredicate("98765432");
         FindCommand command = new FindCommand(predicate);
+        model.selectPerson(CARL);
+        expectedModel.selectPerson(BENSON);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(List.of(BENSON), model.getFilteredPersonList());
+        assertEquals(Optional.of(BENSON), model.getSelectedPerson());
     }
 
     @Test

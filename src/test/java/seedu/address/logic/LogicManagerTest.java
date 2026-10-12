@@ -69,6 +69,18 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_addCommand_selectsAddedPerson() throws Exception {
+        String addCommand = AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY;
+        Person expectedPerson = new PersonBuilder(AMY).withTags().build();
+        Model expectedModel = new ModelManager();
+        expectedModel.addPerson(expectedPerson);
+        expectedModel.selectPerson(expectedPerson);
+
+        assertCommandSuccess(addCommand,
+                String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(expectedPerson)), expectedModel);
+    }
+
+    @Test
     public void execute_storageThrowsIoException_throwsCommandException() {
         assertCommandFailureForExceptionFromStorage(DUMMY_IO_EXCEPTION, String.format(
                 LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()));
@@ -166,6 +178,7 @@ public class LogicManagerTest {
         Person expectedPerson = new PersonBuilder(AMY).withTags().build();
         ModelManager expectedModel = new ModelManager();
         expectedModel.addPerson(expectedPerson);
+        expectedModel.selectPerson(expectedPerson);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
     }
 }
