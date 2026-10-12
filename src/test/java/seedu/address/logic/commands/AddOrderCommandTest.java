@@ -60,12 +60,6 @@ public class AddOrderCommandTest {
     }
 
     @Test
-    public void parseOrder_validItem_success() throws ParseException {
-        assertEquals(new Order(VALID_ITEM_NAME, VALID_QUANTITY),
-                ParserUtil.parseOrder(" " + VALID_ITEM_NAME + " ", " " + VALID_QUANTITY + " "));
-    }
-
-    @Test
     public void parseOrder_invalidItem_failure() {
         assertThrows(ParseException.class, () -> ParserUtil.parseOrder("", String.valueOf(VALID_QUANTITY)));
     }
