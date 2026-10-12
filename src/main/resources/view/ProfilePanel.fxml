@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+          styleClass="profile-panel" minWidth="0">
+  <columnConstraints>
+    <ColumnConstraints percentWidth="54" />
+    <ColumnConstraints percentWidth="46" />
+  </columnConstraints>
+  <VBox styleClass="profile-summary" minWidth="0" GridPane.columnIndex="0">
+    <padding>
+      <Insets top="18" right="14" bottom="18" left="18" />
+    </padding>
+    <Label fx:id="name" styleClass="profile-name" wrapText="true" />
+    <Label fx:id="phone" styleClass="profile-phone" />
+    <HBox styleClass="profile-timeline" alignment="CENTER_LEFT" spacing="12" VBox.vgrow="ALWAYS">
+      <VBox alignment="CENTER" prefWidth="12">
+        <Region styleClass="profile-timeline-line" VBox.vgrow="ALWAYS" />
+        <Region styleClass="profile-timeline-marker" />
+        <Region styleClass="profile-timeline-line" VBox.vgrow="ALWAYS" />
+      </VBox>
+      <Label fx:id="score" styleClass="profile-score" wrapText="true" />
+    </HBox>
+  </VBox>
+  <VBox styleClass="profile-orders" minWidth="0" GridPane.columnIndex="1">
+    <Label text="Recent Orders" styleClass="profile-orders-title" maxWidth="Infinity" />
+    <HBox styleClass="profile-order-header">
+      <Label text="Order" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+      <Label text="Qty" styleClass="profile-order-quantity" />
+    </HBox>
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
+                styleClass="profile-order-scroll">
+      <VBox fx:id="orders" />
+    </ScrollPane>
+  </VBox>
+</GridPane>

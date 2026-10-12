@@ -11,6 +11,7 @@ import static seedu.address.testutil.TypicalPersons.AMY;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,6 +79,7 @@ public class LogicManagerTest {
 
         assertCommandSuccess(addCommand,
                 String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(expectedPerson)), expectedModel);
+        assertEquals(Optional.of(expectedPerson), logic.getSelectedPerson());
     }
 
     @Test

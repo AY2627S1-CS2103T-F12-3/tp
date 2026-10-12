@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCombination;
@@ -17,6 +18,7 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.person.Person;
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -45,6 +47,12 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane personListPanelPlaceholder;
+
+    @FXML
+    private StackPane profilePanelPlaceholder;
+
+    @FXML
+    private Label noMemberSelectedLabel;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -125,6 +133,18 @@ public class MainWindow extends UiPart<Stage> {
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+
+        showSelectedPerson();
+    }
+
+    /** Shows the selected person's profile, or the empty state when no person is selected. */
+    private void showSelectedPerson() {
+        if (logic.getSelectedPerson().isEmpty()) {
+            profilePanelPlaceholder.getChildren().setAll(noMemberSelectedLabel);
+        } else {
+            Person person = logic.getSelectedPerson().get();
+            profilePanelPlaceholder.getChildren().setAll(new ProfilePanel(person).getRoot());
+        }
     }
 
     /**
@@ -179,6 +199,7 @@ public class MainWindow extends UiPart<Stage> {
     private CommandResult executeCommand(String commandText) throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
+            showSelectedPerson();
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
 
@@ -192,6 +213,7 @@ public class MainWindow extends UiPart<Stage> {
 
             return commandResult;
         } catch (CommandException | ParseException e) {
+            showSelectedPerson();
             logger.info("An error occurred while executing command: " + commandText);
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
