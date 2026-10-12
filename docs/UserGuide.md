@@ -30,6 +30,8 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `add n/John Doe p/98765432` : Adds a contact named `John Doe` to the Address Book.
 
+   * `add-order 1 o/Chicken Rice q/2` : Records an order of two Chicken Rice for the 1st contact shown.
+
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
    * `clear` : Deletes all contacts.
@@ -108,6 +110,22 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
 Examples:
 *  `edit 1 p/91234567` Edits the phone number of the 1st person to be `91234567`.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+
+### Recording an order: `add-order`
+
+Records an order for a person and adds it to that person's order history.
+
+Format: `add-order INDEX o/ORDER_ITEM q/QUANTITY`
+
+* `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
+* `ORDER_ITEM` must contain letters, digits, or spaces, and cannot be blank. Special characters such as `/` and `-` are not accepted.
+* `QUANTITY` must be a positive whole number.
+* Provide `o/` and `q/` once each. They can appear in either order.
+* After a successful order, the full person list is shown.
+
+Examples:
+* `add-order 1 o/Chicken Rice q/2` records two Chicken Rice for the 1st person shown.
+* `add-order 2 q/1 o/Coffee` records one Coffee for the 2nd person shown.
 
 ### Locating persons by name or phone number: `find`
 

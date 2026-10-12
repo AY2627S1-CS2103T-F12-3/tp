@@ -15,9 +15,11 @@ import java.util.Objects;
  */
 public class Order {
 
-    public static final String ITEM_NAME_CONSTRAINTS = "Item name cannot be blank";
+    public static final String ITEM_NAME_CONSTRAINTS =
+            "Item name must contain only alphanumeric characters and spaces, and cannot be blank";
     public static final String QUANTITY_CONSTRAINTS = "Quantity must be a positive whole number";
     public static final String RECORDED_AT_CONSTRAINTS = "Timestamp must be a valid ISO-8601 instant";
+    private static final String ITEM_NAME_VALIDATION_REGEX = "[\\p{Alnum}]+(?: +[\\p{Alnum}]+)*";
 
     public final String itemName;
     public final int quantity;
@@ -52,10 +54,10 @@ public class Order {
     }
 
     /**
-     * Returns true if a given string is a valid item name.
+     * Returns true if a given item name contains only alphanumeric words separated by spaces.
      */
     public static boolean isValidItemName(String test) {
-        return test != null && !test.isBlank();
+        return test != null && test.matches(ITEM_NAME_VALIDATION_REGEX);
     }
 
     /**
