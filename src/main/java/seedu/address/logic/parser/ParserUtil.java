@@ -1,6 +1,7 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.order.Order;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
 import seedu.address.model.tag.Tag;
@@ -91,5 +93,31 @@ public class ParserUtil {
             tagSet.add(parseTag(tagName));
         }
         return tagSet;
+    }
+
+    /**
+     * Parses {@code itemName} , {@code quantity} into a {@code Order}
+     * @throws ParseException if quantity is invalid
+     */
+    public static Order parseOrder(String itemName, String quantity) throws ParseException {
+        requireAllNonNull(itemName, quantity);
+
+        String trimmedItemName = itemName.trim();
+        if (!Order.isValidItemName(trimmedItemName)) {
+            throw new ParseException(Order.ITEM_NAME_CONSTRAINTS);
+        }
+
+        int numericQuantity;
+        try {
+            numericQuantity = Integer.parseInt(quantity.trim());
+        } catch (NumberFormatException e) {
+            throw new ParseException(Order.QUANTITY_CONSTRAINTS, e);
+        }
+
+        if (!Order.isValidQuantity(numericQuantity)) {
+            throw new ParseException(Order.QUANTITY_CONSTRAINTS);
+        }
+
+        return new Order(trimmedItemName, numericQuantity);
     }
 }
