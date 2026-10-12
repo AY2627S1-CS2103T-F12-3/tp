@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ORDER;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_QUANTITY;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AddOrderCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
@@ -22,6 +25,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
@@ -85,6 +89,34 @@ public class AddressBookParserTest {
     public void parseCommand_list() throws Exception {
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD) instanceof ListCommand);
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + " 3") instanceof ListCommand);
+    }
+
+    @Test
+    public void parseCommand_addOrder() throws Exception {
+        AddOrderCommand command = (AddOrderCommand) parser.parseCommand(AddOrderCommand.COMMAND_WORD + " "
+                + INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ORDER + "Chicken Rice " + PREFIX_QUANTITY + "2");
+
+        assertEquals(INDEX_FIRST_PERSON, command.index);
+        assertEquals("Chicken Rice", command.order.itemName);
+        assertEquals(2, command.order.quantity);
+    }
+
+    @Test
+    public void parseCommand_addOrderMissingArguments_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddOrderCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(AddOrderCommand.COMMAND_WORD));
+    }
+
+    @Test
+    public void parseCommand_addOrderInvalidItem_throwsParseException() {
+        String input = AddOrderCommand.COMMAND_WORD + " 1 " + PREFIX_ORDER + "Chicken-Rice " + PREFIX_QUANTITY + "2";
+        assertThrows(ParseException.class, Order.ITEM_NAME_CONSTRAINTS, () -> parser.parseCommand(input));
+    }
+
+    @Test
+    public void parseCommand_addOrderInvalidQuantity_throwsParseException() {
+        String input = AddOrderCommand.COMMAND_WORD + " 1 " + PREFIX_ORDER + "Chicken Rice " + PREFIX_QUANTITY + "abc";
+        assertThrows(ParseException.class, Order.QUANTITY_CONSTRAINTS, () -> parser.parseCommand(input));
     }
 
     @Test

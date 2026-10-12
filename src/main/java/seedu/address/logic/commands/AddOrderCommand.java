@@ -33,11 +33,8 @@ public class AddOrderCommand extends Command {
 
     public static final String MESSAGE_SUCCESS = "New order added successfully!";
 
-    public static final String MESSAGE_ORDER_NOT_ADDED = "Failed to add order";
-
     public final Index index;
     public final Order order;
-
 
     /**
      * @param index of the person in the filtered person list to add an order
@@ -94,7 +91,6 @@ public class AddOrderCommand extends Command {
 
         return index.equals(otherAddOrderCommand.index) && order.equals(otherAddOrderCommand.order);
     }
-
 
     private String generateSuccessMessage(Person personToEdit) {
         return MESSAGE_SUCCESS + " " + personToEdit;

@@ -96,8 +96,9 @@ public class ParserUtil {
     }
 
     /**
-     * Parses {@code itemName} , {@code quantity} into a {@code Order}
-     * @throws ParseException if quantity is invalid
+     * Parses {@code itemName} and {@code quantity} into an {@code Order}.
+     *
+     * @throws ParseException if the item name or quantity is invalid.
      */
     public static Order parseOrder(String itemName, String quantity) throws ParseException {
         requireAllNonNull(itemName, quantity);
@@ -120,4 +121,5 @@ public class ParserUtil {
 
         return new Order(trimmedItemName, numericQuantity);
     }
+
 }
