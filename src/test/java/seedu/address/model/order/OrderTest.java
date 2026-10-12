@@ -15,6 +15,8 @@ public class OrderTest {
     @Test
     public void isValidItemName_validName_returnsTrue() {
         assertTrue(Order.isValidItemName("pancake"));
+        assertTrue(Order.isValidItemName("Chicken Rice"));
+        assertTrue(Order.isValidItemName("Chicken  Rice 2"));
     }
 
     @Test
@@ -22,6 +24,12 @@ public class OrderTest {
         assertFalse(Order.isValidItemName(""));
         assertFalse(Order.isValidItemName("  "));
         assertFalse(Order.isValidItemName(null));
+        assertFalse(Order.isValidItemName("chicken p/asdad"));
+        assertFalse(Order.isValidItemName("chicken a/asdad"));
+        assertFalse(Order.isValidItemName("chicken-rice"));
+        assertFalse(Order.isValidItemName("chicken\trice"));
+        assertFalse(Order.isValidItemName(" chicken"));
+        assertFalse(Order.isValidItemName("chicken "));
     }
 
     @Test

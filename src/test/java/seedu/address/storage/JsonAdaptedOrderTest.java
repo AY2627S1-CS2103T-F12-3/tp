@@ -43,6 +43,11 @@ public class JsonAdaptedOrderTest {
     }
 
     @Test
+    public void toModelType_itemNameWithSpecialCharacter_throwsIllegalValueException() {
+        assertInvalidOrder("chicken a/asdad", VALID_QUANTITY, VALID_RECORDED_AT, Order.ITEM_NAME_CONSTRAINTS);
+    }
+
+    @Test
     public void toModelType_nullQuantity_throwsIllegalValueException() {
         assertInvalidOrder(VALID_ITEM_NAME, null, VALID_RECORDED_AT, Order.QUANTITY_CONSTRAINTS);
     }
