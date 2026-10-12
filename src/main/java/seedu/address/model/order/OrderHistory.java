@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Represents the history of orders made by a member.
- * Guarantees: The history is immutable; adding an order returns a new {@code OrderHistory}.
+ * Guarantees: The history is immutable; adding or deleting an order returns a new {@code OrderHistory}.
  */
 public class OrderHistory {
     private final ArrayList<Order> orders;
@@ -48,6 +48,20 @@ public class OrderHistory {
     public OrderHistory addOrder(Order order) {
         ArrayList<Order> updatedOrders = new ArrayList<>(orders);
         updatedOrders.add(requireNonNull(order));
+        return new OrderHistory(updatedOrders);
+    }
+
+    /**
+     * Returns a new history without the order at the given zero-based index.
+     * This history is not modified.
+     *
+     * @param zeroBasedIndex the zero-based index of the order to delete
+     * @return a new {@code OrderHistory} without the specified order
+     * @throws IndexOutOfBoundsException if {@code zeroBasedIndex} is outside this history
+     */
+    public OrderHistory deleteOrder(int zeroBasedIndex) {
+        ArrayList<Order> updatedOrders = new ArrayList<>(orders);
+        updatedOrders.remove(zeroBasedIndex);
         return new OrderHistory(updatedOrders);
     }
 

@@ -291,6 +291,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* * *`  | Food stall owner    | Delete a member                                         | I can remove duplicate, invalid, or obsolete members                                             |
 | `* * *`  | Food stall owner    | Search a member by name or phone number                 | I can quickly retrieve the correct member while serving the customer                             |
 | `* * *`  | Food stall owner    | Record an order for a member                            | I can update the member’s membership points and maintain an accurate purchase history            |
+| `* * *`  | Food stall owner    | Delete an order from a member's order history           | I can correct an order that was recorded by mistake                                               |
 | `* *`    | Food stall owner    | Create a milestone reward                               | I can encourage customers to return and earn rewards                                             |
 | `* *`    | Food stall owner    | Edit a milestone reward                                 | I can change its membership points requirement or prize                                           |
 | `* *`    | Food stall owner    | Delete a milestone reward                               | Customers are not offered rewards that are no longer available                                   |
@@ -393,6 +394,30 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1c1. App shows an error message.
 
       Use case resumes at step 1.
+
+**Use case: Delete an order from a member's order history**
+
+**MSS**
+
+1.  User requests to delete an order, specifying the member's index in the displayed list and the order's index in
+    that member's order history.
+2.  App deletes the order and shows a confirmation.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The member index is invalid or does not refer to a member in the displayed list.
+
+    * 1a1. App shows an error message and does not delete an order.
+
+      Use case ends.
+
+* 1b. The order index is invalid or does not refer to an order in that member's order history.
+
+    * 1b1. App shows an error message and does not delete an order.
+
+      Use case ends.
 
 **Use case: Update membership points for a member**
 
@@ -536,6 +561,30 @@ testers are expected to do more *exploratory* testing.
 
    1. Test case: `add-order 1 o/Chicken Rice q/0`<br>
       Expected: The quantity constraint is shown, and no order is added.
+
+### Deleting an order
+
+1. Deleting an order from a person in the displayed list
+
+   1. Prerequisites: Use `list` to show at least one person with an order history. If needed, enter
+      `add-order 1 o/Chicken Rice q/2` and `add-order 1 o/Coffee q/1` first.
+
+   1. Test case: `delete-order 1 o/2`<br>
+      Expected: The status message confirms that the second order was deleted. The first order remains, and the full
+      person list is shown.
+
+   1. Close and reopen the app after the successful deletion.<br>
+      Expected: The deleted order remains absent from the person's order history.
+
+   1. Test case: `delete-order 1 o/999`<br>
+      Expected: The order-index error is shown, and no order is deleted.
+
+   1. Test case: `delete-order 999 o/1`<br>
+      Expected: The person-index error is shown, and no order is deleted.
+
+   1. Other incorrect delete-order commands to try: `delete-order`, `delete-order 1`,
+      `delete-order 1 o/0`, `delete-order 1 o/x`.<br>
+      Expected: The command-format error is shown, and no order is deleted.
 
 ### Saving data
 

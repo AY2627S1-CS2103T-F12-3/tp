@@ -59,6 +59,47 @@ public class OrderHistoryTest {
     }
 
     @Test
+    public void deleteOrder_validIndex_returnsNewHistoryAndPreservesOriginal() {
+        OrderHistory original = new OrderHistory().addOrder(FIRST_ORDER).addOrder(SECOND_ORDER);
+
+        OrderHistory updated = original.deleteOrder(0);
+
+        assertEquals(List.of(FIRST_ORDER, SECOND_ORDER), original.getOrders());
+        assertEquals(List.of(SECOND_ORDER), updated.getOrders());
+        assertNotSame(original, updated);
+    }
+
+    @Test
+    public void deleteOrder_lastOrder_returnsEmptyHistory() {
+        OrderHistory original = new OrderHistory().addOrder(FIRST_ORDER);
+
+        OrderHistory updated = original.deleteOrder(0);
+
+        assertTrue(updated.getOrders().isEmpty());
+    }
+
+    @Test
+    public void deleteOrder_specificIndex_deletesOnlySpecifiedOrder() {
+        OrderHistory original = new OrderHistory()
+                .addOrder(FIRST_ORDER)
+                .addOrder(SECOND_ORDER)
+                .addOrder(FIRST_ORDER);
+
+        OrderHistory updated = original.deleteOrder(2);
+
+        assertEquals(List.of(FIRST_ORDER, SECOND_ORDER), updated.getOrders());
+    }
+
+    @Test
+    public void deleteOrder_invalidIndex_throwsIndexOutOfBoundsExceptionAndPreservesHistory() {
+        OrderHistory history = new OrderHistory().addOrder(FIRST_ORDER);
+
+        assertThrows(IndexOutOfBoundsException.class, () -> history.deleteOrder(-1));
+        assertThrows(IndexOutOfBoundsException.class, () -> history.deleteOrder(1));
+        assertEquals(List.of(FIRST_ORDER), history.getOrders());
+    }
+
+    @Test
     public void getOrders_mutateReturnedList_preservesHistory() {
         OrderHistory history = new OrderHistory().addOrder(FIRST_ORDER);
         List<Order> returnedOrders = history.getOrders();
