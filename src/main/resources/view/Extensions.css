@@ -92,6 +92,12 @@
     -fx-border-width: 0 0 1px 0;
 }
 
+.profile-order-index {
+    -fx-alignment: center;
+    -fx-min-width: 28px;
+    -fx-pref-width: 28px;
+}
+
 .profile-order-quantity {
     -fx-alignment: center;
     -fx-min-width: 32px;
