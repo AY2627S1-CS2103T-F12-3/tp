@@ -6,6 +6,7 @@ import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ORDER;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_QUANTITY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SCORE_CHANGE;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
@@ -24,6 +25,7 @@ import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
@@ -117,6 +119,15 @@ public class AddressBookParserTest {
     public void parseCommand_addOrderInvalidQuantity_throwsParseException() {
         String input = AddOrderCommand.COMMAND_WORD + " 1 " + PREFIX_ORDER + "Chicken Rice " + PREFIX_QUANTITY + "abc";
         assertThrows(ParseException.class, Order.QUANTITY_CONSTRAINTS, () -> parser.parseCommand(input));
+    }
+
+    @Test
+    public void parseCommand_updateScore() throws Exception {
+        UpdateScoreCommand command = (UpdateScoreCommand) parser.parseCommand(UpdateScoreCommand.COMMAND_WORD + " "
+                + INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_SCORE_CHANGE + "5");
+
+        assertEquals(INDEX_FIRST_PERSON, command.index);
+        assertEquals(5, command.scoreChange);
     }
 
     @Test

@@ -27,8 +27,8 @@ public class UpdateScoreCommand extends Command {
     public static final String MESSAGE_SCORE_BELOW_ZERO = "Score cannot be less than zero.";
     public static final String MESSAGE_SCORE_TOO_LARGE = "Score cannot exceed 999999999.";
 
-    private final Index index;
-    private final int scoreChange;
+    public final Index index;
+    public final int scoreChange;
 
     /**
      * Creates an {@code UpdateScoreCommand} for the specified person and score change.
