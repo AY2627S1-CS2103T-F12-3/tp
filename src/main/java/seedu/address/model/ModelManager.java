@@ -96,6 +96,8 @@ public class ModelManager implements Model {
         addressBook.setPerson(target, editedPerson);
     }
 
+    //=========== SelectedPerson =============================================================================
+
     @Override
     public void selectPerson(Person person) {
         requireNonNull(person);

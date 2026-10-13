@@ -63,6 +63,7 @@ public interface Model {
 
     /**
      * Selects {@code person} for display. The person must be equal to a person in the address book.
+     * The selected person acts as a snapshot of the person's state and is not updated when the person's data changes.
      *
      * @param person The person to select.
      * @throws NullPointerException If {@code person} is null.
