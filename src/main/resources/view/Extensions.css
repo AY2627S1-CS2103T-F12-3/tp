@@ -20,7 +20,7 @@
 }
 
 .profile-panel, .profile-summary {
-    -fx-background-color: #383838;
+    -fx-background-color: #2c2c2c;
 }
 
 .profile-name {
@@ -57,7 +57,7 @@
 }
 
 .profile-orders {
-    -fx-background-color: #2c2c2c;
+    -fx-background-color: #383838;
     -fx-border-color: #777777;
     -fx-border-width: 1px;
 }
@@ -105,7 +105,7 @@
 }
 
 .profile-order-scroll, .profile-order-scroll > .viewport {
-    -fx-background-color: #2c2c2c;
+    -fx-background-color: #383838;
 }
 
 .profile-empty-orders {
