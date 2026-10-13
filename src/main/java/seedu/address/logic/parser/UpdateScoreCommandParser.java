@@ -38,10 +38,6 @@ public class UpdateScoreCommandParser implements Parser<UpdateScoreCommand> {
             throw new ParseException(SCORE_CHANGE_CONSTRAINTS);
         }
 
-        try {
-            return new UpdateScoreCommand(index, Integer.parseInt(scoreChange));
-        } catch (NumberFormatException e) {
-            throw new ParseException(SCORE_CHANGE_CONSTRAINTS, e);
-        }
+        return new UpdateScoreCommand(index, Integer.parseInt(scoreChange));
     }
 }

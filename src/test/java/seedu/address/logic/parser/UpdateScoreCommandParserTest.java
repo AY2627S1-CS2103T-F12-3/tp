@@ -42,6 +42,20 @@ public class UpdateScoreCommandParserTest {
     }
 
     @Test
+    public void parse_missingIndex_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, UpdateScoreCommand.MESSAGE_USAGE);
+
+        assertParseFailure(parser, PREFIX_SCORE_CHANGE + VALID_SCORE_CHANGE, expectedMessage);
+    }
+
+    @Test
+    public void parse_emptyArguments_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, UpdateScoreCommand.MESSAGE_USAGE);
+
+        assertParseFailure(parser, "", expectedMessage);
+    }
+
+    @Test
     public void parse_invalidIndex_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, UpdateScoreCommand.MESSAGE_USAGE);
 
