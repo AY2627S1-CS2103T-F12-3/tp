@@ -1,22 +1,17 @@
 package seedu.address.ui;
 
-import java.util.List;
-
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
 
-/** Displays the selected person's details and recent orders. */
+/** Displays the selected person's details and score beside their recent orders. */
 public class ProfilePanel extends UiPart<Region> {
     private static final String FXML = "ProfilePanel.fxml";
     private static final int MAX_SCALE_SCORE = 1000;
@@ -38,7 +33,7 @@ public class ProfilePanel extends UiPart<Region> {
     private Pane scoreScale;
 
     @FXML
-    private VBox orders;
+    private StackPane recentOrdersPlaceholder;
 
     /**
      * Creates a profile panel for {@code person}.
@@ -52,17 +47,7 @@ public class ProfilePanel extends UiPart<Region> {
         phone.setText(person.getPhone().value);
         index.setText(displayedIndex == 0 ? "Not in current list" : "List index: " + displayedIndex);
         fillScoreScale(person.getScore().value);
-
-        List<Order> recentOrders = person.getOrderHistory().getOrders();
-        if (recentOrders.isEmpty()) {
-            Label emptyOrders = new Label("No orders yet");
-            emptyOrders.getStyleClass().add("profile-empty-orders");
-            orders.getChildren().add(emptyOrders);
-        } else {
-            recentOrders.reversed().stream()
-                    .map(this::createOrderRow)
-                    .forEach(orders.getChildren()::add);
-        }
+        recentOrdersPlaceholder.getChildren().add(new RecentOrdersPanel(person.getOrderHistory()).getRoot());
     }
 
     /** Adds the scale line, its labeled ticks, and the current score indicator. */
@@ -137,20 +122,5 @@ public class ProfilePanel extends UiPart<Region> {
         double fractionFromTop = 1 - SCALE_TOP_FRACTION
                 - (double) scoreValue / MAX_SCALE_SCORE * SCALE_RANGE_FRACTION;
         return scoreScale.heightProperty().multiply(fractionFromTop);
-    }
-
-    /** Creates a row showing an order's item name and quantity. */
-    private HBox createOrderRow(Order order) {
-        Label itemName = new Label(order.itemName);
-        itemName.setWrapText(true);
-        itemName.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(itemName, Priority.ALWAYS);
-
-        Label quantity = new Label(Integer.toString(order.quantity));
-        quantity.getStyleClass().add("profile-order-quantity");
-
-        HBox row = new HBox(itemName, quantity);
-        row.getStyleClass().add("profile-order-row");
-        return row;
     }
 }

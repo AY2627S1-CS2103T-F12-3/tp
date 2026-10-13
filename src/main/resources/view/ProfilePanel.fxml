@@ -2,12 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <GridPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
@@ -32,19 +31,10 @@
       </VBox.margin>
     </Pane>
   </VBox>
-  <VBox styleClass="profile-orders" minWidth="0" maxHeight="Infinity"
-        GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
+  <StackPane fx:id="recentOrdersPlaceholder" minWidth="0" maxHeight="Infinity"
+             GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
     <GridPane.margin>
       <Insets top="12" right="12" bottom="12" left="8" />
     </GridPane.margin>
-    <Label text="Recent Orders" styleClass="profile-orders-title" maxWidth="Infinity" />
-    <HBox styleClass="profile-order-header">
-      <Label text="Order" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
-      <Label text="Qty" styleClass="profile-order-quantity" />
-    </HBox>
-    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
-                styleClass="profile-order-scroll">
-      <VBox fx:id="orders" />
-    </ScrollPane>
-  </VBox>
+  </StackPane>
 </GridPane>
