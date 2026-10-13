@@ -18,6 +18,7 @@ import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddOrderCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeleteOrderCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.commands.ExitCommand;
@@ -117,6 +118,20 @@ public class AddressBookParserTest {
     public void parseCommand_addOrderInvalidQuantity_throwsParseException() {
         String input = AddOrderCommand.COMMAND_WORD + " 1 " + PREFIX_ORDER + "Chicken Rice " + PREFIX_QUANTITY + "abc";
         assertThrows(ParseException.class, Order.QUANTITY_CONSTRAINTS, () -> parser.parseCommand(input));
+    }
+
+    @Test
+    public void parseCommand_deleteOrder() throws Exception {
+        DeleteOrderCommand command = (DeleteOrderCommand) parser.parseCommand(DeleteOrderCommand.COMMAND_WORD + " "
+                + INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ORDER + "1");
+
+        assertEquals(new DeleteOrderCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON), command);
+    }
+
+    @Test
+    public void parseCommand_deleteOrderMissingArguments_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteOrderCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(DeleteOrderCommand.COMMAND_WORD));
     }
 
     @Test
