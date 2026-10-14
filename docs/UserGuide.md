@@ -32,7 +32,11 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `add-order 1 o/Chicken Rice q/2` : Records an order of two Chicken Rice for the 1st contact shown.
 
+   * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
+
    * `delete 3` : Deletes the 3rd contact shown in the current list.
+
+   * `update-score 1 s/10` increases the score of the 1st person shown by 10.
 
    * `clear` : Deletes all contacts.
 
@@ -126,6 +130,21 @@ Format: `add-order INDEX o/ORDER_ITEM q/QUANTITY`
 Examples:
 * `add-order 1 o/Chicken Rice q/2` records two Chicken Rice for the 1st person shown.
 * `add-order 2 q/1 o/Coffee` records one Coffee for the 2nd person shown.
+
+### Deleting an order: `delete-order`
+
+Deletes an order from a person's order history.
+
+Format: `delete-order INDEX o/ORDER_INDEX`
+
+* `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
+* `ORDER_INDEX` is the positive index number of the order in that person's order history, counted from the oldest order.
+* Provide `o/` exactly once.
+* After a successful deletion, the full person list is shown.
+
+Examples:
+* `delete-order 1 o/2` deletes the 2nd-oldest order from the 1st person shown.
+* `find Betsy` followed by `delete-order 1 o/1` deletes Betsy's oldest order.
 
 ### Updating a person's score: `update-score`
 
