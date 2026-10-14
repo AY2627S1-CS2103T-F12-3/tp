@@ -12,5 +12,6 @@ public class CliSyntax {
     public static final Prefix PREFIX_TAG = new Prefix("t/");
     public static final Prefix PREFIX_ORDER = new Prefix("o/");
     public static final Prefix PREFIX_QUANTITY = new Prefix("q/");
+    public static final Prefix PREFIX_SCORE_CHANGE = new Prefix("s/");
 
 }
