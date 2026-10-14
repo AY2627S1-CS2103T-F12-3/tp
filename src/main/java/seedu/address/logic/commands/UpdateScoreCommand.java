@@ -67,6 +67,7 @@ public class UpdateScoreCommand extends Command {
                 personToUpdate.getOrderHistory());
 
         model.setPerson(personToUpdate, updatedPerson);
+        model.selectPerson(updatedPerson);
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, oldScore, updatedScore));
     }
