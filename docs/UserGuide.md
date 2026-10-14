@@ -36,6 +36,8 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
+   * `update-score 1 s/10` increases the score of the 1st person shown by 10.
+
    * `clear` : Deletes all contacts.
 
    * `exit` : Exits the app.
@@ -144,6 +146,21 @@ Examples:
 * `delete-order 1 o/2` deletes the 2nd-oldest order from the 1st person shown.
 * `find Betsy` followed by `delete-order 1 o/1` deletes Betsy's oldest order.
 
+### Updating a person's score: `update-score`
+
+Updates a person's membership score by the specified amount.
+
+Format: `update-score INDEX s/SCORE_CHANGE`
+
+* `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
+* `SCORE_CHANGE` must be a signed whole number. Positive values increase the score, while negative values decrease it.
+* The resulting score must be between 0 and 999999999, inclusive.
+* After a successful update, the previous and new scores are shown.
+
+Examples:
+* `update-score 1 s/10` increases the score of the 1st person shown by 10.
+* `update-score 1 s/-5` decreases the score of the 1st person shown by 5.
+
 ### Locating persons by name or phone number: `find`
 
 Finds persons whose names contain any of the given keywords, or whose phone number exactly matches an eight-digit
@@ -235,4 +252,5 @@ Action | Format, Examples
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
+**Update score** | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
 **Help** | `help`
