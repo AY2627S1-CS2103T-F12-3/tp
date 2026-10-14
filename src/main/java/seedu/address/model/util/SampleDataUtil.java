@@ -19,6 +19,9 @@ import seedu.address.model.tag.Tag;
  * Contains utility methods for populating {@code AddressBook} with sample data.
  */
 public class SampleDataUtil {
+    /**
+     * Returns sample hawker stall members with dietary tags, scores, and order histories.
+     */
     public static Person[] getSamplePersons() {
         return new Person[] {
             sampleMember("Alex Yeoh", "87438807", getTagSet("dairyFree"), 118,
@@ -45,6 +48,9 @@ public class SampleDataUtil {
         };
     }
 
+    /**
+     * Creates a sample member with the supplied score and orders.
+     */
     private static Person sampleMember(String name, String phone, Set<Tag> tags, int score, Order... orders) {
         OrderHistory orderHistory = new OrderHistory();
         for (Order order : orders) {
@@ -53,10 +59,16 @@ public class SampleDataUtil {
         return new Person(new Name(name), new Phone(phone), tags, new Score(score), orderHistory);
     }
 
+    /**
+     * Creates a sample order from an ISO-8601 timestamp.
+     */
     private static Order sampleOrder(String itemName, int quantity, String recordedAt) {
         return new Order(itemName, quantity, Instant.parse(recordedAt));
     }
 
+    /**
+     * Returns an address book populated with the sample members.
+     */
     public static ReadOnlyAddressBook getSampleAddressBook() {
         AddressBook sampleAb = new AddressBook();
         for (Person samplePerson : getSamplePersons()) {
