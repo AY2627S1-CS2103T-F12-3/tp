@@ -33,6 +33,12 @@ public class FindCommand extends Command {
     public CommandResult execute(Model model) {
         requireNonNull(model);
         model.updateFilteredPersonList(predicate);
+
+        // If there is only one person found, display that person's details.
+        if (model.getFilteredPersonList().size() == 1) {
+            model.selectPerson(model.getFilteredPersonList().getFirst());
+        }
+
         return new CommandResult(
                 String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, model.getFilteredPersonList().size()));
     }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+          styleClass="profile-panel" minWidth="0">
+  <columnConstraints>
+    <ColumnConstraints percentWidth="54" />
+    <ColumnConstraints percentWidth="46" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints vgrow="ALWAYS" />
+  </rowConstraints>
+  <VBox styleClass="profile-summary" minWidth="0" spacing="4" GridPane.columnIndex="0">
+    <padding>
+      <Insets top="18" right="14" bottom="18" left="18" />
+    </padding>
+    <Label fx:id="name" styleClass="profile-name" wrapText="true" />
+    <Label fx:id="phone" styleClass="profile-phone" />
+    <Label fx:id="index" styleClass="profile-index" wrapText="true" />
+    <Pane fx:id="scoreScale" minHeight="160" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+      <VBox.margin>
+        <Insets top="20" />
+      </VBox.margin>
+    </Pane>
+  </VBox>
+  <StackPane fx:id="recentOrdersPlaceholder" minWidth="0" maxHeight="Infinity"
+             GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
+    <GridPane.margin>
+      <Insets top="12" right="12" bottom="12" left="8" />
+    </GridPane.margin>
+  </StackPane>
+</GridPane>

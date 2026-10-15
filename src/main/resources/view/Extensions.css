@@ -18,3 +18,97 @@
 .tooltip-text {
     -fx-text-fill: white;
 }
+
+.profile-panel, .profile-summary {
+    -fx-background-color: #2c2c2c;
+}
+
+.profile-name {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 22px;
+    -fx-text-fill: white;
+}
+
+.profile-phone, .profile-score {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+}
+
+.profile-index {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+    -fx-text-fill: #bcbcbc;
+}
+
+.profile-scale-line, .profile-scale-tick {
+    -fx-stroke: #aeb9be;
+    -fx-stroke-width: 2px;
+}
+
+.profile-scale-label {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 11px;
+    -fx-text-fill: #bcbcbc;
+}
+
+.profile-score-marker {
+    -fx-fill: #aeb9be;
+}
+
+.profile-orders {
+    -fx-background-color: #383838;
+    -fx-border-color: #777777;
+    -fx-border-width: 1px;
+}
+
+.profile-orders-title, .profile-order-header {
+    -fx-background-color: #484848;
+    -fx-border-color: #777777;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 8px 10px;
+}
+
+.profile-orders-title {
+    -fx-alignment: center;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+}
+
+.profile-order-header .label, .profile-order-row .label {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+}
+
+.profile-order-header .label {
+    -fx-font-family: "Segoe UI Semibold";
+}
+
+.profile-order-row {
+    -fx-padding: 10px 10px;
+    -fx-border-color: #666666;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.profile-order-index {
+    -fx-alignment: center;
+    -fx-min-width: 28px;
+    -fx-pref-width: 28px;
+}
+
+.profile-order-quantity {
+    -fx-alignment: center;
+    -fx-min-width: 32px;
+    -fx-pref-width: 32px;
+}
+
+.profile-order-scroll, .profile-order-scroll > .viewport {
+    -fx-background-color: #383838;
+}
+
+.profile-empty-orders {
+    -fx-padding: 14px 10px;
+    -fx-text-fill: #c0c0c0;
+}
