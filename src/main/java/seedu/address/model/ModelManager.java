@@ -24,7 +24,7 @@ public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
     private final AddressBook addressBook;
-    private final Menu menu = new Menu();
+    private final Menu menu;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private Person selectedPerson;
@@ -33,11 +33,19 @@ public class ModelManager implements Model {
      * Initializes a ModelManager with the given addressBook and userPrefs.
      */
     public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs) {
-        requireAllNonNull(addressBook, userPrefs);
+        this(addressBook, userPrefs, new Menu());
+    }
+
+    /**
+     * Initializes a ModelManager with the given address book, user preferences, and menu.
+     */
+    public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs, ReadOnlyMenu menu) {
+        requireAllNonNull(addressBook, userPrefs, menu);
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
         this.addressBook = new AddressBook(addressBook);
+        this.menu = new Menu(menu);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
     }

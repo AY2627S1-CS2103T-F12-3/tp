@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.menu.FoodItem;
+import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.testutil.AddressBookBuilder;
@@ -41,6 +42,25 @@ public class ModelManagerTest {
         UserPrefs oldUserPrefs = new UserPrefs(userPrefs);
         userPrefs.setGuiSettings(new GuiSettings(5, 6, 7, 8));
         assertEquals(oldUserPrefs, modelManager.getUserPrefs());
+    }
+
+    @Test
+    public void constructor_loadedMenu_copiesContentsIndependently() {
+        Menu source = new Menu();
+        FoodItem item = new FoodItem("CR01", "Chicken Rice", 450);
+        source.addFoodItem(item);
+        ModelManager loaded = new ModelManager(new AddressBook(), new UserPrefs(), source);
+
+        source.removeFoodItem(item);
+
+        assertEquals(List.of(item), loaded.getMenu().getFoodItemList());
+        loaded.addFoodItem(new FoodItem("CF01", "Coffee", 150));
+        assertTrue(source.getFoodItemList().isEmpty());
+    }
+
+    @Test
+    public void constructor_nullMenu_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new ModelManager(new AddressBook(), new UserPrefs(), null));
     }
 
     @Test
