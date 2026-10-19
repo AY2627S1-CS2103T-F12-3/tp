@@ -214,8 +214,8 @@ AddressBook automatically saves data after every command. You do not need to sav
 
 AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
-Persons no longer have email or address fields. Older data files containing `email` or `address` can still be loaded;
-those fields are ignored and omitted the next time the data is saved.
+Customer records contain a name, phone number, tags, score, and order history.
+Unknown properties in older data files are ignored and omitted the next time the data is saved.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
