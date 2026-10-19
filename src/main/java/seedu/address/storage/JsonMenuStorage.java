@@ -8,6 +8,9 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.commons.exceptions.IllegalValueException;
@@ -54,8 +57,9 @@ public class JsonMenuStorage {
         }
 
         try {
-            JsonSerializableMenu savedMenu = JsonUtil.fromJsonString(
-                    FileUtil.readFromFile(filePath), JsonSerializableMenu.class);
+            String json = FileUtil.readFromFile(filePath);
+            verifySingleJsonValue(json);
+            JsonSerializableMenu savedMenu = JsonUtil.fromJsonString(json, JsonSerializableMenu.class);
             if (savedMenu == null) {
                 throw new IllegalValueException("Menu data must not be null.");
             }
@@ -63,6 +67,16 @@ public class JsonMenuStorage {
         } catch (IOException | IllegalValueException e) {
             logger.info("Could not load menu from " + filePath + ": " + e.getMessage());
             throw new DataLoadingException(e);
+        }
+    }
+
+    private static void verifySingleJsonValue(String json) throws IOException {
+        try (JsonParser parser = new JsonFactory().createParser(json)) {
+            parser.nextToken();
+            parser.skipChildren();
+            if (parser.nextToken() != null) {
+                throw new IOException("Menu file must contain exactly one JSON value.");
+            }
         }
     }
 

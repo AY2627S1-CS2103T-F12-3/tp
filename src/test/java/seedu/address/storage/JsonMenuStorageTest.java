@@ -55,6 +55,21 @@ public class JsonMenuStorageTest {
     }
 
     @Test
+    public void readMenu_trailingContent_throwsDataLoadingException() throws IOException {
+        for (String json : List.of("{\"foodItems\":[]} garbage", "{\"foodItems\":[]} {\"foodItems\":[]}",
+                "{\"foodItems\":[]} 42", "{\"foodItems\":[]} null")) {
+            assertInvalidFile(json);
+        }
+    }
+
+    @Test
+    public void readMenu_trailingWhitespace_loadsMenu() throws Exception {
+        Path path = testFolder.resolve("menu.json");
+        Files.writeString(path, "{\"foodItems\":[]} \t\r\n");
+        assertEquals(new Menu(), new Menu(new JsonMenuStorage(path).readMenu().orElseThrow()));
+    }
+
+    @Test
     public void readMenu_invalidMenuData_throwsDataLoadingException() throws IOException {
         for (String json : List.of("{}", "{\"foodItems\":null}", "{\"foodItems\":[null]}",
                 "{\"foodItems\":[{}]}", "{\"foodItems\":{}}")) {
