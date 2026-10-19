@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.menu.FoodItem;
+import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.testutil.AddressBookBuilder;
 
@@ -113,6 +114,19 @@ public class ModelManagerTest {
     @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getFilteredPersonList().remove(0));
+    }
+
+    @Test
+    public void getMenu_readOnlyView_reflectsAdditionsAndRejectsMutation() {
+        ReadOnlyMenu view = modelManager.getMenu();
+        FoodItem item = new FoodItem("CR01", "Chicken Rice", 450);
+        assertTrue(view.getFoodItemList().isEmpty());
+
+        modelManager.addFoodItem(item);
+
+        assertEquals(List.of(item), view.getFoodItemList());
+        assertThrows(UnsupportedOperationException.class, () -> view.getFoodItemList().clear());
+        assertEquals(List.of(item), modelManager.getMenu().getFoodItemList());
     }
 
     @Test

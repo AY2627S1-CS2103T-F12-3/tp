@@ -14,6 +14,7 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
+import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.person.Person;
 
 /**
@@ -153,6 +154,11 @@ public class ModelManager implements Model {
                 && filteredPersons.equals(otherModelManager.filteredPersons)
                 && Objects.equals(selectedPerson, otherModelManager.selectedPerson)
                 && menu.equals(otherModelManager.menu);
+    }
+
+    @Override
+    public ReadOnlyMenu getMenu() {
+        return menu::getFoodItemList;
     }
 
     @Override

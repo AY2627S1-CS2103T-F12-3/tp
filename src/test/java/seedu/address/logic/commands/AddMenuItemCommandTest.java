@@ -20,6 +20,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.menu.FoodItem;
+import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.person.Person;
 
 public class AddMenuItemCommandTest {
@@ -80,6 +81,11 @@ public class AddMenuItemCommandTest {
      * A default model stub that fails on unexpected method calls.
      */
     private class ModelStub implements Model {
+        @Override
+        public ReadOnlyMenu getMenu() {
+            throw new AssertionError("This method should not be called.");
+        }
+
         @Override
         public boolean hasFoodItem(FoodItem foodItem) {
             throw new AssertionError("This method should not be called.");
