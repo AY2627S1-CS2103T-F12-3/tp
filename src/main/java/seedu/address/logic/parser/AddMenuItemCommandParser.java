@@ -22,6 +22,7 @@ import seedu.address.model.menu.FoodItem;
 public class AddMenuItemCommandParser implements Parser<AddMenuItemCommand> {
     public static final String MESSAGE_PRICE_CONSTRAINTS =
             "Price must be between 0.01 and 21474836.47 dollars, with at most two decimal places.";
+    private static final String PRICE_VALIDATION_REGEX = "[0-9]+(\\.[0-9]{1,2})?";
     private static final Pattern ARGUMENT_PREFIX = Pattern.compile("(?<= )[A-Za-z]/");
     private static final Set<String> SUPPORTED_PREFIXES = Set.of(
             PREFIX_CODE.getPrefix(), PREFIX_NAME.getPrefix(), PREFIX_PRICE.getPrefix());
@@ -77,7 +78,7 @@ public class AddMenuItemCommandParser implements Parser<AddMenuItemCommand> {
     }
 
     private static int parsePrice(String price) throws ParseException {
-        if (!price.matches("[0-9]+(\\.[0-9]{1,2})?")) {
+        if (!price.matches(PRICE_VALIDATION_REGEX)) {
             throw new ParseException(MESSAGE_PRICE_CONSTRAINTS);
         }
         try {
