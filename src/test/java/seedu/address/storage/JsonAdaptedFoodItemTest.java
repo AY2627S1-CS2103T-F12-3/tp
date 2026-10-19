@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import seedu.address.commons.exceptions.IllegalValueException;
@@ -89,5 +90,22 @@ public class JsonAdaptedFoodItemTest {
     private static void assertInvalidFoodItem(String code, String name, Integer price, String expectedMessage) {
         JsonAdaptedFoodItem adapted = new JsonAdaptedFoodItem(code, name, price);
         assertThrows(IllegalValueException.class, expectedMessage, adapted::toModelType);
+    }
+
+    @Test
+    public void fromJsonString_wrongFieldTypes_rejectsWithoutCoercion() {
+        for (String price : List.of("450.9", "450.0", "1e2", "\"450\"", "true", "[]", "{}",
+                "2147483648", "-2147483649")) {
+            String json = "{\"code\":\"CR01\",\"name\":\"Chicken Rice\",\"priceInCents\":" + price + "}";
+            assertThrows(JsonProcessingException.class, () -> JsonUtil.fromJsonString(json, JsonAdaptedFoodItem.class));
+        }
+        for (String value : List.of("123", "true", "[]", "{}")) {
+            String invalidCode = "{\"code\":" + value + ",\"name\":\"Chicken Rice\",\"priceInCents\":450}";
+            String invalidName = "{\"code\":\"CR01\",\"name\":" + value + ",\"priceInCents\":450}";
+            assertThrows(JsonProcessingException.class, () ->
+                    JsonUtil.fromJsonString(invalidCode, JsonAdaptedFoodItem.class));
+            assertThrows(JsonProcessingException.class, () ->
+                    JsonUtil.fromJsonString(invalidName, JsonAdaptedFoodItem.class));
+        }
     }
 }
