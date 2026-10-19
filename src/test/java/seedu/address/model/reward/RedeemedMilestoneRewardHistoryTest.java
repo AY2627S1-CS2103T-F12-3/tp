@@ -1,0 +1,92 @@
+package seedu.address.model.reward;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.testutil.Assert.assertThrows;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+public class RedeemedMilestoneRewardHistoryTest {
+    private static final String FIRST_REWARD = "Free drink";
+    private static final String SECOND_REWARD = "Free dessert";
+
+    @Test
+    public void constructor_emptyHistory_hasNoMilestoneRewards() {
+        assertTrue(new RedeemedMilestoneRewardHistory().getRedeemedMilestoneRewards().isEmpty());
+    }
+
+    @Test
+    public void addRedeemedMilestoneReward_validReward_returnsNewHistoryAndPreservesOriginal() {
+        RedeemedMilestoneRewardHistory original = new RedeemedMilestoneRewardHistory();
+        RedeemedMilestoneRewardHistory updated = original.addRedeemedMilestoneReward(FIRST_REWARD);
+
+        assertTrue(original.getRedeemedMilestoneRewards().isEmpty());
+        assertEquals(List.of(FIRST_REWARD), updated.getRedeemedMilestoneRewards());
+        assertNotSame(original, updated);
+    }
+
+    @Test
+    public void addRedeemedMilestoneReward_multipleRewards_preservesInsertionOrder() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD)
+                .addRedeemedMilestoneReward(SECOND_REWARD);
+
+        assertEquals(List.of(FIRST_REWARD, SECOND_REWARD), history.getRedeemedMilestoneRewards());
+    }
+
+    @Test
+    public void getRedeemedMilestoneRewards_mutateReturnedList_preservesHistory() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD);
+        List<String> returnedRewards = history.getRedeemedMilestoneRewards();
+
+        returnedRewards.clear();
+
+        assertEquals(List.of(FIRST_REWARD), history.getRedeemedMilestoneRewards());
+        assertNotSame(returnedRewards, history.getRedeemedMilestoneRewards());
+    }
+
+    @Test
+    public void addRedeemedMilestoneReward_nullReward_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () ->
+                new RedeemedMilestoneRewardHistory()
+                        .addRedeemedMilestoneReward(null));
+    }
+
+    @Test
+    public void deleteRedeemedMilestoneReward_validIndex_returnsNewHistoryAndPreservesOriginal() {
+        RedeemedMilestoneRewardHistory original = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD)
+                .addRedeemedMilestoneReward(SECOND_REWARD);
+        RedeemedMilestoneRewardHistory updated = original.deleteRedeemedMilestoneReward(0);
+
+        assertEquals(List.of(FIRST_REWARD, SECOND_REWARD), original.getRedeemedMilestoneRewards());
+        assertEquals(List.of(SECOND_REWARD), updated.getRedeemedMilestoneRewards());
+        assertNotSame(original, updated);
+    }
+
+    @Test
+    public void deleteRedeemedMilestoneReward_invalidIndex_throwsAndPreservesHistory() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD);
+
+        assertThrows(IndexOutOfBoundsException.class, () -> history.deleteRedeemedMilestoneReward(1));
+        assertEquals(List.of(FIRST_REWARD), history.getRedeemedMilestoneRewards());
+    }
+
+    @Test
+    public void equals_sameRewards_returnsTrue() {
+        RedeemedMilestoneRewardHistory first = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD);
+        RedeemedMilestoneRewardHistory second = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD);
+
+        assertTrue(first.equals(second));
+        assertEquals(first.hashCode(), second.hashCode());
+        assertFalse(first.equals(null));
+    }
+}
