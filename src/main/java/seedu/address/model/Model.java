@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.menu.FoodItem;
 import seedu.address.model.person.Person;
 
 /**
@@ -80,6 +81,16 @@ public interface Model {
      * Returns the selected person, or an empty optional if no person is selected.
      */
     Optional<Person> getSelectedPerson();
+
+    /**
+     * Returns true if a menu item with the same code exists.
+     */
+    boolean hasFoodItem(FoodItem foodItem);
+
+    /**
+     * Adds a food item whose code is not already in the menu.
+     */
+    void addFoodItem(FoodItem foodItem);
 
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();
