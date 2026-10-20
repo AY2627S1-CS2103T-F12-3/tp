@@ -16,6 +16,7 @@ import seedu.address.model.Model;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Score;
 
 /**
  * Add a new order to order history of an existing person in the address book.
@@ -35,6 +36,7 @@ public class AddOrderCommand extends Command {
 
     public static final String MESSAGE_SUCCESS = "New order added successfully!";
     public static final String MESSAGE_ITEM_NOT_IN_MENU = "The item code is not in the menu.";
+    public static final String MESSAGE_SCORE_TOO_LARGE = "Score cannot exceed 999999999.";
 
     public final Index index;
     public final String itemCode;
@@ -71,14 +73,19 @@ public class AddOrderCommand extends Command {
         if (foodItem == null) {
             throw new CommandException(MESSAGE_ITEM_NOT_IN_MENU);
         }
-        Order order = new Order(itemCode, foodItem.getName(), quantity);
-
         Person personWithNewOrder = lastShownList.get(index.getZeroBased());
+        long scoreGained = Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
+        long updatedScore = personWithNewOrder.getScore().value + scoreGained;
+        if (!Score.isValidScore(String.valueOf(updatedScore))) {
+            throw new CommandException(MESSAGE_SCORE_TOO_LARGE);
+        }
+        Order order = new Order(itemCode, foodItem.getName(), quantity, (int) scoreGained);
+
         Person personWithOrderAdded = new Person(
                 personWithNewOrder.getName(),
                 personWithNewOrder.getPhone(),
                 personWithNewOrder.getTags(),
-                personWithNewOrder.getScore(),
+                new Score((int) updatedScore),
                 personWithNewOrder.getOrderHistory().addOrder(order)
         );
 

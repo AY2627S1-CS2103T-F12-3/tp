@@ -48,6 +48,8 @@ public class AddOrderCommandTest {
         assertEquals(VALID_ITEM_CODE, addedOrder.itemCode);
         assertEquals("Nasi Lemak", addedOrder.itemName);
         assertEquals(VALID_QUANTITY, addedOrder.quantity);
+        assertEquals(96, addedOrder.scoreGained);
+        assertEquals(originalPerson.getScore().value + 96, updatedPerson.getScore().value);
     }
 
     @Test

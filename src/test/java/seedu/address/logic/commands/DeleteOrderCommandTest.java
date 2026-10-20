@@ -20,6 +20,7 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Score;
 
 public class DeleteOrderCommandTest {
 
@@ -99,6 +100,38 @@ public class DeleteOrderCommandTest {
         CommandException exception = assertThrows(CommandException.class, () -> command.execute(model));
 
         assertEquals(DeleteOrderCommand.MESSAGE_INVALID_ORDER_INDEX, exception.getMessage());
+    }
+
+    @Test
+    public void execute_orderWithScoreGained_reversesPoints() throws Exception {
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Order scoredOrder = new Order("3A", "Nasi Lemak", 2, 96);
+        Person withOrder = new Person(original.getName(), original.getPhone(), original.getTags(),
+                new Score(96), original.getOrderHistory().addOrder(scoredOrder));
+        model.setPerson(original, withOrder);
+
+        Index newOrderIndex = Index.fromOneBased(withOrder.getOrderHistory().getOrders().size());
+        new DeleteOrderCommand(INDEX_FIRST_PERSON, newOrderIndex).execute(model);
+
+        Person updated = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        assertEquals(0, updated.getScore().value);
+        assertEquals(original.getOrderHistory(), updated.getOrderHistory());
+    }
+
+    @Test
+    public void execute_orderWouldMakeScoreNegative_throwsCommandException() {
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Order scoredOrder = new Order("3A", "Nasi Lemak", 1, 48);
+        Person withOrder = new Person(original.getName(), original.getPhone(), original.getTags(),
+                new Score(0), original.getOrderHistory().addOrder(scoredOrder));
+        model.setPerson(original, withOrder);
+
+        Index newOrderIndex = Index.fromOneBased(withOrder.getOrderHistory().getOrders().size());
+        CommandException exception = assertThrows(CommandException.class, () ->
+                new DeleteOrderCommand(INDEX_FIRST_PERSON, newOrderIndex).execute(model));
+
+        assertEquals(DeleteOrderCommand.MESSAGE_SCORE_BELOW_ZERO, exception.getMessage());
+        assertEquals(withOrder, model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()));
     }
 
     @Test

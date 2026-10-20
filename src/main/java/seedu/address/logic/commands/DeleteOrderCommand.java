@@ -15,6 +15,7 @@ import seedu.address.model.Model;
 import seedu.address.model.order.Order;
 import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Score;
 
 /**
  * Deletes an order from the order history of an existing person in the address book.
@@ -30,6 +31,7 @@ public class DeleteOrderCommand extends Command {
 
     public static final String MESSAGE_DELETE_ORDER_SUCCESS = "Deleted order: %1$s";
     public static final String MESSAGE_INVALID_ORDER_INDEX = "The order index provided is invalid.";
+    public static final String MESSAGE_SCORE_BELOW_ZERO = "Deleting this order would make the score negative.";
 
     private final Index targetIndex;
     private final Index orderIndex;
@@ -62,12 +64,16 @@ public class DeleteOrderCommand extends Command {
         }
 
         Order orderToDelete = orders.get(orderIndex.getZeroBased());
+        long updatedScore = (long) personToEdit.getScore().value - orderToDelete.scoreGained;
+        if (updatedScore < 0) {
+            throw new CommandException(MESSAGE_SCORE_BELOW_ZERO);
+        }
         OrderHistory updatedOrderHistory = personToEdit.getOrderHistory().deleteOrder(orderIndex.getZeroBased());
         Person editedPerson = new Person(
                 personToEdit.getName(),
                 personToEdit.getPhone(),
                 personToEdit.getTags(),
-                personToEdit.getScore(),
+                new Score((int) updatedScore),
                 updatedOrderHistory
         );
 
