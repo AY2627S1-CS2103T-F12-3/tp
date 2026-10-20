@@ -15,18 +15,21 @@ import seedu.address.model.order.Order;
 public class JsonAdaptedOrder {
 
     private final String itemCode;
+    private final String itemName;
     private final Integer quantity;
     private final String recordedAt;
 
     /**
-     * Constructs a {@code JsonAdaptedOrder} with the given {@code itemCode}, {@code quantity}, {@code recordedAt}.
+     * Constructs a {@code JsonAdaptedOrder} with the given order details.
      */
     @JsonCreator
     public JsonAdaptedOrder(
             @JsonProperty("itemCode") String itemCode,
+            @JsonProperty("itemName") String itemName,
             @JsonProperty("quantity") Integer quantity,
             @JsonProperty("recordedAt") String recordedAt) {
         this.itemCode = itemCode;
+        this.itemName = itemName;
         this.quantity = quantity;
         this.recordedAt = recordedAt;
     }
@@ -36,6 +39,7 @@ public class JsonAdaptedOrder {
      */
     public JsonAdaptedOrder(Order source) {
         itemCode = source.itemCode;
+        itemName = source.itemName;
         quantity = source.quantity;
         recordedAt = source.recordedAt.toString();
     }
@@ -49,12 +53,15 @@ public class JsonAdaptedOrder {
         if (!FoodItem.isValidCode(itemCode)) {
             throw new IllegalValueException(Order.ITEM_CODE_CONSTRAINTS);
         }
+        if (!FoodItem.isValidName(itemName)) {
+            throw new IllegalValueException(Order.ITEM_NAME_CONSTRAINTS);
+        }
         if (quantity == null || !Order.isValidQuantity(quantity)) {
             throw new IllegalValueException(Order.QUANTITY_CONSTRAINTS);
         }
         if (!Order.isValidRecordedAt(recordedAt)) {
             throw new IllegalValueException(Order.RECORDED_AT_CONSTRAINTS);
         }
-        return new Order(itemCode, quantity, Instant.parse(recordedAt));
+        return new Order(itemCode, itemName, quantity, Instant.parse(recordedAt));
     }
 }

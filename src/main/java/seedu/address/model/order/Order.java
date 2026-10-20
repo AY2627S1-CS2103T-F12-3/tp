@@ -11,16 +11,19 @@ import seedu.address.model.menu.FoodItem;
 
 /**
  * Represents an order in the address book.
- * Guarantees: immutable; item code and quantity are valid as declared in
- * {@link FoodItem#isValidCode(String)} and {@link #isValidQuantity(int)}; recorded time is present, and its string
+ * Guarantees: immutable, item code, saved name, and quantity are valid as declared in
+ * {@link FoodItem#isValidCode(String)}, {@link FoodItem#isValidName(String)}, and
+ * {@link #isValidQuantity(int)}; recorded time is present, and its string
  * representation is valid as declared in {@link #isValidRecordedAt(String)}.
  */
 public class Order {
 
     public static final String ITEM_CODE_CONSTRAINTS = FoodItem.MESSAGE_CODE_CONSTRAINTS;
+    public static final String ITEM_NAME_CONSTRAINTS = FoodItem.MESSAGE_NAME_CONSTRAINTS;
     public static final String QUANTITY_CONSTRAINTS = "Quantity must be a positive whole number";
     public static final String RECORDED_AT_CONSTRAINTS = "Timestamp must be a valid ISO-8601 instant";
     public final String itemCode;
+    public final String itemName;
     public final int quantity;
     public final Instant recordedAt;
 
@@ -28,10 +31,11 @@ public class Order {
      * Constructs an {@code Order}.
      *
      * @param itemCode Code of the menu item bought.
+     * @param itemName Name of the menu item when the order was recorded.
      * @param quantity Number of units bought; must be positive.
      */
-    public Order(String itemCode, int quantity) {
-        this(itemCode, quantity, Instant.now());
+    public Order(String itemCode, String itemName, int quantity) {
+        this(itemCode, itemName, quantity, Instant.now());
     }
 
     /**
@@ -39,15 +43,19 @@ public class Order {
      * This constructor is also useful when restoring an order from storage.
      *
      * @param itemCode Code of the menu item bought.
+     * @param itemName Name of the menu item when the order was recorded.
      * @param quantity Number of units bought; must be positive.
      * @param recordedAt Time at which the order was recorded.
      */
-    public Order(String itemCode, int quantity, Instant recordedAt) {
+    public Order(String itemCode, String itemName, int quantity, Instant recordedAt) {
         requireNonNull(itemCode);
+        requireNonNull(itemName);
         requireNonNull(recordedAt, RECORDED_AT_CONSTRAINTS);
         checkArgument(FoodItem.isValidCode(itemCode), ITEM_CODE_CONSTRAINTS);
+        checkArgument(FoodItem.isValidName(itemName), ITEM_NAME_CONSTRAINTS);
         checkArgument(isValidQuantity(quantity), QUANTITY_CONSTRAINTS);
         this.itemCode = itemCode;
+        this.itemName = itemName;
         this.quantity = quantity;
         this.recordedAt = recordedAt;
     }
@@ -83,13 +91,14 @@ public class Order {
             return false;
         }
         return itemCode.equals(otherOrder.itemCode)
+                && itemName.equals(otherOrder.itemName)
                 && quantity == otherOrder.quantity
                 && recordedAt.equals(otherOrder.recordedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(itemCode, quantity, recordedAt);
+        return Objects.hash(itemCode, itemName, quantity, recordedAt);
     }
 
     /**
@@ -97,6 +106,6 @@ public class Order {
      */
     @Override
     public String toString() {
-        return '[' + itemCode + " x " + quantity + " at " + recordedAt + ']';
+        return '[' + itemName + " (" + itemCode + ") x " + quantity + " at " + recordedAt + ']';
     }
 }

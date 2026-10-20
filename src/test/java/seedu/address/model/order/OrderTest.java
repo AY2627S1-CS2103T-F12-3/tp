@@ -37,49 +37,69 @@ public class OrderTest {
 
     @Test
     public void constructor_validItemCodeAndQuantity_setsRecordedAt() {
-        Order order = new Order("PC01", 1);
+        Order order = new Order("PC01", "Pancake", 1);
 
         assertEquals("PC01", order.itemCode);
+        assertEquals("Pancake", order.itemName);
         assertEquals(1, order.quantity);
         assertTrue(Order.isValidRecordedAt(order.recordedAt.toString()));
     }
 
     @Test
     public void constructor_validFields_createsOrder() {
-        Order order = new Order("PC01", 1, VALID_RECORDED_AT);
+        Order order = new Order("PC01", "Pancake", 1, VALID_RECORDED_AT);
 
         assertEquals("PC01", order.itemCode);
+        assertEquals("Pancake", order.itemName);
         assertEquals(1, order.quantity);
         assertEquals(VALID_RECORDED_AT, order.recordedAt);
     }
 
     @Test
+    public void equals_sameCodeDifferentSavedName_returnsFalse() {
+        Order original = new Order("PC01", "Pancake", 1, VALID_RECORDED_AT);
+        Order renamed = new Order("PC01", "Blueberry Pancake", 1, VALID_RECORDED_AT);
+
+        assertFalse(original.equals(renamed));
+    }
+
+    @Test
     public void constructor_nullItemCode_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new Order(null, 1));
+        assertThrows(NullPointerException.class, () -> new Order(null, "Pancake", 1));
     }
 
     @Test
     public void constructor_nullItemCodeWithTimestamp_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new Order(null, 1, VALID_RECORDED_AT));
+        assertThrows(NullPointerException.class, () -> new Order(null, "Pancake", 1, VALID_RECORDED_AT));
+    }
+
+    @Test
+    public void constructor_nullItemName_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new Order("PC01", null, 1));
     }
 
     @Test
     public void constructor_negativeQuantity_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Order("PC01", -1));
+        assertThrows(IllegalArgumentException.class, () -> new Order("PC01", "Pancake", -1));
     }
 
     @Test
     public void constructor_blankItemCode_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Order("  ", 1, VALID_RECORDED_AT));
+        assertThrows(IllegalArgumentException.class, () -> new Order("  ", "Pancake", 1, VALID_RECORDED_AT));
+    }
+
+    @Test
+    public void constructor_blankItemName_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Order("PC01", "  ", 1));
     }
 
     @Test
     public void constructor_zeroQuantity_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Order("PC01", 0, VALID_RECORDED_AT));
+        assertThrows(IllegalArgumentException.class, () -> new Order("PC01", "Pancake", 0, VALID_RECORDED_AT));
     }
 
     @Test
     public void constructor_nullRecordedAt_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new Order("PC01", 1, null));
+        assertThrows(NullPointerException.class, () -> new Order("PC01", "Pancake", 1, null));
     }
 }

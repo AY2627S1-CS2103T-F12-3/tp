@@ -1,7 +1,6 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -97,18 +96,26 @@ public class ParserUtil {
     }
 
     /**
-     * Parses {@code itemCode} and {@code quantity} into an {@code Order}.
+     * Parses and validates an item code.
      *
-     * @throws ParseException if the item code or quantity is invalid.
+     * @throws ParseException if the item code is invalid.
      */
-    public static Order parseOrder(String itemCode, String quantity) throws ParseException {
-        requireAllNonNull(itemCode, quantity);
-
+    public static String parseOrderCode(String itemCode) throws ParseException {
+        requireNonNull(itemCode);
         String trimmedItemCode = itemCode.trim();
         if (!FoodItem.isValidCode(trimmedItemCode)) {
             throw new ParseException(Order.ITEM_CODE_CONSTRAINTS);
         }
+        return trimmedItemCode;
+    }
 
+    /**
+     * Parses and validates an order quantity.
+     *
+     * @throws ParseException if the quantity is invalid.
+     */
+    public static int parseOrderQuantity(String quantity) throws ParseException {
+        requireNonNull(quantity);
         int numericQuantity;
         try {
             numericQuantity = Integer.parseInt(quantity.trim());
@@ -120,7 +127,7 @@ public class ParserUtil {
             throw new ParseException(Order.QUANTITY_CONSTRAINTS);
         }
 
-        return new Order(trimmedItemCode, numericQuantity);
+        return numericQuantity;
     }
 
 }

@@ -114,8 +114,8 @@ public class AddressBookParserTest {
                 + INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ORDER + "CR01 " + PREFIX_QUANTITY + "2");
 
         assertEquals(INDEX_FIRST_PERSON, command.index);
-        assertEquals("CR01", command.order.itemCode);
-        assertEquals(2, command.order.quantity);
+        assertEquals("CR01", command.itemCode);
+        assertEquals(2, command.quantity);
     }
 
     @Test

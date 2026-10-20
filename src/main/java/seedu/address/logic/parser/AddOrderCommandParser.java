@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.AddOrderCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.order.Order;
 
 /**
  * Parses input arguments and creates a new {@link AddOrderCommand} object.
@@ -41,10 +40,10 @@ public class AddOrderCommandParser implements Parser<AddOrderCommand> {
         }
 
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_ORDER, PREFIX_QUANTITY);
-        Order order = ParserUtil.parseOrder(argMultimap.getValue(PREFIX_ORDER).get(),
-                argMultimap.getValue(PREFIX_QUANTITY).get());
+        String itemCode = ParserUtil.parseOrderCode(argMultimap.getValue(PREFIX_ORDER).get());
+        int quantity = ParserUtil.parseOrderQuantity(argMultimap.getValue(PREFIX_QUANTITY).get());
 
-        return new AddOrderCommand(index, order);
+        return new AddOrderCommand(index, itemCode, quantity);
     }
     /**
      * Returns true if none of the prefixes contains empty {@code Optional} values in the given

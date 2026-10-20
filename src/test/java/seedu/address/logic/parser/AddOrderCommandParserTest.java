@@ -34,8 +34,8 @@ public class AddOrderCommandParserTest {
                 + " " + PREFIX_QUANTITY + VALID_QUANTITY);
 
         assertEquals(INDEX_FIRST_PERSON, command.index);
-        assertEquals(VALID_ITEM_CODE, command.order.itemCode);
-        assertEquals(Integer.parseInt(VALID_QUANTITY), command.order.quantity);
+        assertEquals(VALID_ITEM_CODE, command.itemCode);
+        assertEquals(Integer.parseInt(VALID_QUANTITY), command.quantity);
     }
 
     @Test
@@ -43,8 +43,8 @@ public class AddOrderCommandParserTest {
         AddOrderCommand command = parser.parse(VALID_PERSON_INDEX + " " + PREFIX_QUANTITY + VALID_QUANTITY
                 + " " + PREFIX_ORDER + VALID_ITEM_CODE);
 
-        assertEquals(VALID_ITEM_CODE, command.order.itemCode);
-        assertEquals(Integer.parseInt(VALID_QUANTITY), command.order.quantity);
+        assertEquals(VALID_ITEM_CODE, command.itemCode);
+        assertEquals(Integer.parseInt(VALID_QUANTITY), command.quantity);
     }
 
     @Test
