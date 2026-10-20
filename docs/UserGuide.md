@@ -199,6 +199,50 @@ Examples:
 * `update-score 1 s/10` increases the score of the 1st person shown by 10.
 * `update-score 1 s/-5` decreases the score of the 1st person shown by 5.
 
+### Redeeming a milestone: `redeem`
+
+Redeems an available milestone reward for a person who has sufficient membership points.
+
+Format: `redeem INDEX m/MILESTONE_INDEX`
+
+* `INDEX` is the positive index number shown in the current person list.
+* `MILESTONE_INDEX` is the positive index number shown in the current milestone list.
+* The person must have enough membership points for the selected milestone.
+* A person cannot redeem the same milestone more than once.
+* Redemption uses the current milestone catalog. Therefore, the selected index refers to the milestone currently
+  displayed at that position. If milestones are added, deleted, or reordered, the same index may refer to a different
+  milestone. This is intentional because the command identifies milestones by their current displayed index.
+
+Example:
+* `redeem 1 m/2` redeems the 2nd milestone for the 1st person shown.
+
+### Cancelling a redeemed milestone: `cancel-redeem`
+
+Cancels a milestone reward that has already been redeemed by a person.
+
+Format: `cancel-redeem INDEX m/MILESTONE_INDEX`
+
+* `INDEX` is the positive index number shown in the current person list.
+* `MILESTONE_INDEX` is the positive index number shown in the current milestone list.
+* The selected milestone must already be present in that person's redeemed milestone history.
+* Cancellation uses the current milestone catalog. Therefore, the milestone's current catalog entry must still exist
+  and have the same code as the redeemed milestone. If the milestone was deleted or its code was changed, it cannot
+  be cancelled through this command. This is intentional because the command identifies milestones by their current
+  displayed index.
+
+Example:
+* `cancel-redeem 1 m/2` cancels the 2nd currently displayed milestone for the 1st person shown.
+
+Common errors:
+
+| Input | Result and recovery |
+|---|---|
+| `cancel-redeem 1 m/99` | The milestone index is invalid. Use the current milestone list to choose an index. |
+| `cancel-redeem 1 m/2` when milestone 2 was not redeemed by person 1 | `Unable to unredeem because it was not redeemed.` |
+
+Cancellation does not refund or change the person's membership points. It only removes the matching milestone from
+the person's redeemed milestone reward history.
+
 ### Locating persons by name or phone number: `find`
 
 Finds persons whose names contain any of the given keywords, or whose phone number exactly matches an eight-digit
@@ -310,4 +354,6 @@ Action | Format, Examples
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
 **Update score** | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
+**Redeem milestone** | `redeem INDEX m/MILESTONE_INDEX`<br> e.g., `redeem 1 m/2`
+**Cancel redeemed milestone** | `cancel-redeem INDEX m/MILESTONE_INDEX`<br> e.g., `cancel-redeem 1 m/2`
 **Help** | `help`
