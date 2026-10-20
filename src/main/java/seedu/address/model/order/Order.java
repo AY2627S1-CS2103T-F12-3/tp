@@ -11,20 +11,22 @@ import seedu.address.model.menu.FoodItem;
 
 /**
  * Represents an order in the address book.
- * Guarantees: immutable, item code, saved name, and quantity are valid as declared in
+ * Guarantees: immutable, item code, saved name, quantity, and score gained are valid as declared in
  * {@link FoodItem#isValidCode(String)}, {@link FoodItem#isValidName(String)}, and
- * {@link #isValidQuantity(int)}; recorded time is present, and its string
+ * {@link #isValidQuantity(int)} and {@link #isValidScoreGained(int)}; recorded time is present, and its string
  * representation is valid as declared in {@link #isValidRecordedAt(String)}.
  */
 public class Order {
-
     public static final String ITEM_CODE_CONSTRAINTS = FoodItem.MESSAGE_CODE_CONSTRAINTS;
     public static final String ITEM_NAME_CONSTRAINTS = FoodItem.MESSAGE_NAME_CONSTRAINTS;
     public static final String QUANTITY_CONSTRAINTS = "Quantity must be a positive whole number";
+    public static final String SCORE_GAINED_CONSTRAINTS = "Score gained must be a non-negative whole number";
     public static final String RECORDED_AT_CONSTRAINTS = "Timestamp must be a valid ISO-8601 instant";
+
     public final String itemCode;
     public final String itemName;
     public final int quantity;
+    public final int scoreGained;
     public final Instant recordedAt;
 
     /**
@@ -35,7 +37,14 @@ public class Order {
      * @param quantity Number of units bought; must be positive.
      */
     public Order(String itemCode, String itemName, int quantity) {
-        this(itemCode, itemName, quantity, Instant.now());
+        this(itemCode, itemName, quantity, 0, Instant.now());
+    }
+
+    /**
+     * Constructs an order with the score gained from this purchase.
+     */
+    public Order(String itemCode, String itemName, int quantity, int scoreGained) {
+        this(itemCode, itemName, quantity, scoreGained, Instant.now());
     }
 
     /**
@@ -48,15 +57,24 @@ public class Order {
      * @param recordedAt Time at which the order was recorded.
      */
     public Order(String itemCode, String itemName, int quantity, Instant recordedAt) {
+        this(itemCode, itemName, quantity, 0, recordedAt);
+    }
+
+    /**
+     * Constructs an order with its recorded time and score gained.
+     */
+    public Order(String itemCode, String itemName, int quantity, int scoreGained, Instant recordedAt) {
         requireNonNull(itemCode);
         requireNonNull(itemName);
         requireNonNull(recordedAt, RECORDED_AT_CONSTRAINTS);
         checkArgument(FoodItem.isValidCode(itemCode), ITEM_CODE_CONSTRAINTS);
         checkArgument(FoodItem.isValidName(itemName), ITEM_NAME_CONSTRAINTS);
         checkArgument(isValidQuantity(quantity), QUANTITY_CONSTRAINTS);
+        checkArgument(isValidScoreGained(scoreGained), SCORE_GAINED_CONSTRAINTS);
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.quantity = quantity;
+        this.scoreGained = scoreGained;
         this.recordedAt = recordedAt;
     }
 
@@ -65,6 +83,20 @@ public class Order {
      */
     public static boolean isValidQuantity(int test) {
         return test > 0;
+    }
+
+    /** Returns true if the score gained is non-negative. */
+    public static boolean isValidScoreGained(int test) {
+        return test >= 0;
+    }
+
+    /**
+     * Returns the whole points earned at ten points per dollar, rounding down fractional points.
+     */
+    public static long calculateScoreGained(int priceInCents, int quantity) {
+        checkArgument(FoodItem.isValidPrice(priceInCents), FoodItem.MESSAGE_PRICE_CONSTRAINTS);
+        checkArgument(isValidQuantity(quantity), QUANTITY_CONSTRAINTS);
+        return (long) priceInCents * quantity / 10;
     }
 
     /**
@@ -93,12 +125,13 @@ public class Order {
         return itemCode.equals(otherOrder.itemCode)
                 && itemName.equals(otherOrder.itemName)
                 && quantity == otherOrder.quantity
+                && scoreGained == otherOrder.scoreGained
                 && recordedAt.equals(otherOrder.recordedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(itemCode, itemName, quantity, recordedAt);
+        return Objects.hash(itemCode, itemName, quantity, scoreGained, recordedAt);
     }
 
     /**
@@ -106,6 +139,7 @@ public class Order {
      */
     @Override
     public String toString() {
-        return '[' + itemName + " (" + itemCode + ") x " + quantity + " at " + recordedAt + ']';
+        return '[' + itemName + " (" + itemCode + ") x " + quantity
+                + ", score gained " + scoreGained + " at " + recordedAt + ']';
     }
 }

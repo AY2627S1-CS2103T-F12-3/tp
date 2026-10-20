@@ -27,24 +27,24 @@ public class SampleDataUtil {
      */
     public static Person[] getSamplePersons() {
         return new Person[] {
-            sampleMember("Alex Yeoh", "87438807", getTagSet("dairyFree"), 118,
+            sampleMember("Alex Yeoh", "87438807", getTagSet("dairyFree"), 100,
                     sampleOrder("1", 1, "2026-10-10T04:10:00Z"),
                     sampleOrder("2", 1, "2026-10-12T04:15:00Z")),
-            sampleMember("Bernice Yu", "99272758", getTagSet(), 169,
+            sampleMember("Bernice Yu", "99272758", getTagSet(), 193,
                     sampleOrder("3A", 1, "2026-10-09T10:20:00Z"),
                     sampleOrder("4", 1, "2026-10-11T01:45:00Z"),
                     sampleOrder("3B", 2, "2026-10-12T10:30:00Z")),
-            sampleMember("Charlotte Oliveiro", "93210283", getTagSet("noBeef"), 106,
+            sampleMember("Charlotte Oliveiro", "93210283", getTagSet("noBeef"), 95,
                     sampleOrder("5", 1, "2026-10-11T05:30:00Z"),
                     sampleOrder("1", 1, "2026-10-14T00:22:00Z")),
-            sampleMember("David Li", "91031282", getTagSet("vegetarian"), 94,
+            sampleMember("David Li", "91031282", getTagSet("vegetarian"), 99,
                     sampleOrder("6", 1, "2026-10-08T04:50:00Z"),
                     sampleOrder("7", 1, "2026-10-10T02:15:00Z"),
                     sampleOrder("6", 1, "2026-10-13T05:20:00Z")),
-            sampleMember("Irfan Ibrahim", "92492021", getTagSet("noPork"), 137,
+            sampleMember("Irfan Ibrahim", "92492021", getTagSet("noPork"), 101,
                     sampleOrder("8", 1, "2026-10-09T09:40:00Z"),
                     sampleOrder("9", 2, "2026-10-13T01:10:00Z")),
-            sampleMember("Roy Balakrishnan", "92624417", getTagSet("dairyFree"), 153,
+            sampleMember("Roy Balakrishnan", "92624417", getTagSet("dairyFree"), 125,
                     sampleOrder("10", 1, "2026-10-07T11:15:00Z"),
                     sampleOrder("11", 1, "2026-10-11T05:05:00Z"),
                     sampleOrder("10", 1, "2026-10-13T11:45:00Z"))
@@ -66,12 +66,12 @@ public class SampleDataUtil {
      * Creates a sample order from an ISO-8601 timestamp.
      */
     private static Order sampleOrder(String itemCode, int quantity, String recordedAt) {
-        String itemName = getSampleMenu().getFoodItemList().stream()
+        FoodItem foodItem = getSampleMenu().getFoodItemList().stream()
                 .filter(item -> item.getCode().equals(itemCode))
                 .findFirst()
-                .orElseThrow()
-                .getName();
-        return new Order(itemCode, itemName, quantity, Instant.parse(recordedAt));
+                .orElseThrow();
+        int scoreGained = (int) Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
+        return new Order(itemCode, foodItem.getName(), quantity, scoreGained, Instant.parse(recordedAt));
     }
 
     /**

@@ -25,6 +25,19 @@ public class OrderTest {
     }
 
     @Test
+    public void calculateScoreGained_priceAndQuantity_roundsDownFractionalPoints() {
+        assertEquals(45, Order.calculateScoreGained(450, 1));
+        assertEquals(90, Order.calculateScoreGained(450, 2));
+        assertEquals(12, Order.calculateScoreGained(125, 1));
+        assertEquals(0, Order.calculateScoreGained(1, 1));
+    }
+
+    @Test
+    public void constructor_negativeScoreGained_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Order("PC01", "Pancake", 1, -1));
+    }
+
+    @Test
     public void isValidRecordedAt_validTimestamp_returnsTrue() {
         assertTrue(Order.isValidRecordedAt(VALID_RECORDED_AT.toString()));
     }

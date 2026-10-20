@@ -29,7 +29,7 @@ public class SampleDataUtilTest {
                         .toList());
         assertEquals(new Name("Alex Yeoh"), samplePersons[0].getName());
         assertEquals(new Phone("87438807"), samplePersons[0].getPhone());
-        assertEquals(List.of(118, 169, 106, 94, 137, 153), Arrays.stream(samplePersons)
+        assertEquals(List.of(100, 193, 95, 99, 101, 125), Arrays.stream(samplePersons)
                 .map(person -> person.getScore().value)
                 .toList());
         assertEquals(List.of(Set.of(new Tag("dairyFree")), Set.of(), Set.of(new Tag("noBeef")),
@@ -50,6 +50,10 @@ public class SampleDataUtilTest {
         for (Person person : SampleDataUtil.getSamplePersons()) {
             person.getOrderHistory().getOrders().forEach(order ->
                     assertEquals(menuNamesByCode.get(order.itemCode), order.itemName));
+            int totalScoreGained = person.getOrderHistory().getOrders().stream()
+                    .mapToInt(order -> order.scoreGained)
+                    .sum();
+            assertEquals(totalScoreGained, person.getScore().value);
         }
     }
 
