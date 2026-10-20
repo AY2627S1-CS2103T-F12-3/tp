@@ -3,19 +3,23 @@ package seedu.address.model;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.UniqueMilestoneList;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.UniquePersonList;
 
 /**
  * Wraps all data at the address-book level.
- * Duplicates are not allowed (by .isSamePerson comparison).
+ * Duplicate persons and milestone codes are not allowed.
  */
 public class AddressBook implements ReadOnlyAddressBook {
 
     private final UniquePersonList persons = new UniquePersonList();
+    private final UniqueMilestoneList milestones = new UniqueMilestoneList();
 
     public AddressBook() {}
 
@@ -38,12 +42,27 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
+     * Replaces the contents of the milestone list with {@code milestones}.
+     * {@code milestones} must not contain duplicate milestone codes.
+     */
+    public void setMilestones(List<Milestone> milestones) {
+        this.milestones.setMilestones(milestones);
+    }
+
+    /**
      * Resets the existing data of this {@code AddressBook} with {@code newData}.
+     * Invalid input leaves the existing data unchanged.
      */
     public void resetData(ReadOnlyAddressBook newData) {
         requireNonNull(newData);
 
-        setPersons(newData.getPersonList());
+        UniquePersonList replacementPersons = new UniquePersonList();
+        replacementPersons.setPersons(newData.getPersonList());
+        UniqueMilestoneList replacementMilestones = new UniqueMilestoneList();
+        replacementMilestones.setMilestones(newData.getMilestoneList());
+
+        persons.setPersons(replacementPersons);
+        milestones.setMilestones(replacementMilestones);
     }
 
     //// person-level operations
@@ -83,18 +102,57 @@ public class AddressBook implements ReadOnlyAddressBook {
         persons.remove(key);
     }
 
+    //// milestone-level operations
+
+    /**
+     * Returns true if a milestone with the same code as {@code milestone} exists in the address book.
+     */
+    public boolean hasMilestone(Milestone milestone) {
+        requireNonNull(milestone);
+        return milestones.contains(milestone);
+    }
+
+    /**
+     * Adds a milestone to the address book.
+     * Its code must not already exist in the address book.
+     */
+    public void addMilestone(Milestone milestone) {
+        milestones.add(milestone);
+    }
+
+    /**
+     * Replaces {@code target} with {@code editedMilestone}.
+     * The target must exist, and both milestones must have the same code.
+     */
+    public void setMilestone(Milestone target, Milestone editedMilestone) {
+        milestones.setMilestone(target, editedMilestone);
+    }
+
+    /**
+     * Removes {@code milestone}, which must exist in the address book.
+     */
+    public void removeMilestone(Milestone milestone) {
+        milestones.remove(milestone);
+    }
+
     //// util methods
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .add("persons", persons)
+                .add("milestones", milestones)
                 .toString();
     }
 
     @Override
     public ObservableList<Person> getPersonList() {
         return persons.asUnmodifiableObservableList();
+    }
+
+    @Override
+    public ObservableList<Milestone> getMilestoneList() {
+        return milestones.asUnmodifiableObservableList();
     }
 
     @Override
@@ -108,11 +166,12 @@ public class AddressBook implements ReadOnlyAddressBook {
             return false;
         }
 
-        return persons.equals(otherAddressBook.persons);
+        return persons.equals(otherAddressBook.persons)
+                && milestones.equals(otherAddressBook.milestones);
     }
 
     @Override
     public int hashCode() {
-        return persons.hashCode();
+        return Objects.hash(persons, milestones);
     }
 }
