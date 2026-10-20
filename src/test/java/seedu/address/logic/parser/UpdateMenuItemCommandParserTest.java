@@ -6,6 +6,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PRICE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.testutil.Assert.assertThrows;
 
 import java.util.List;
 
@@ -17,6 +18,11 @@ import seedu.address.model.menu.FoodItem;
 
 public class UpdateMenuItemCommandParserTest {
     private final UpdateMenuItemCommandParser parser = new UpdateMenuItemCommandParser();
+
+    @Test
+    public void parse_nullArgs_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> parser.parse(null));
+    }
 
     @Test
     public void parse_validArgs_returnsCommand() {
@@ -59,5 +65,23 @@ public class UpdateMenuItemCommandParserTest {
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_PRICE));
         assertParseFailure(parser, " CR01 c/CR02 c/CR03",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_CODE));
+    }
+
+    @Test
+    public void parse_unknownPrefix_throwsParseException() {
+        String message = String.format(MESSAGE_INVALID_COMMAND_FORMAT, UpdateMenuItemCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " CR01 x/extra", message);
+    }
+
+    @Test
+    public void parse_controlCharacter_throwsParseException() {
+        String message = String.format(MESSAGE_INVALID_COMMAND_FORMAT, UpdateMenuItemCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " CR01 n/Di\nsh", message);
+    }
+
+    @Test
+    public void parse_tabsBetweenArguments_returnsCommand() {
+        assertParseSuccess(parser, "\tCR01\tc/CR02\tn/Dish\tp/5.00",
+                new UpdateMenuItemCommand("CR01", "CR02", "Dish", 500));
     }
 }

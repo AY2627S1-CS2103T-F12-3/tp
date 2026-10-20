@@ -1,6 +1,8 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -47,6 +49,17 @@ public class UpdateMenuItemCommandTest {
     }
 
     @Test
+    public void execute_updatesOnlyCode() throws CommandException {
+        ModelManager model = new ModelManager();
+        model.addFoodItem(CHICKEN_RICE);
+
+        new UpdateMenuItemCommand("CR01", "CR02", null, null).execute(model);
+
+        assertEquals(new FoodItem("CR02", "Chicken Rice", 450),
+                model.getMenu().getFoodItemList().get(0));
+    }
+
+    @Test
     public void execute_missingCode_throwsCommandException() {
         ModelManager model = new ModelManager();
         UpdateMenuItemCommand command = new UpdateMenuItemCommand("CR01", null, "Roasted Chicken Rice", null);
@@ -61,6 +74,18 @@ public class UpdateMenuItemCommandTest {
     }
 
     @Test
+    public void constructor_nullTargetCode_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new UpdateMenuItemCommand(null, "CR02", null, null));
+    }
+
+    @Test
+    public void execute_nullModel_throwsNullPointerException() {
+        UpdateMenuItemCommand command = new UpdateMenuItemCommand("CR01", "CR02", null, null);
+
+        assertThrows(NullPointerException.class, () -> command.execute(null));
+    }
+
+    @Test
     public void execute_duplicateNewCode_throwsCommandException() {
         ModelManager model = new ModelManager();
         model.addFoodItem(CHICKEN_RICE);
@@ -70,5 +95,28 @@ public class UpdateMenuItemCommandTest {
 
         String expectedMessage = UpdateMenuItemCommand.MESSAGE_DUPLICATE_ITEM;
         assertThrows(CommandException.class, expectedMessage, () -> command.execute(model));
+    }
+
+    @Test
+    public void equals() {
+        UpdateMenuItemCommand command = new UpdateMenuItemCommand("CR01", "CR02", "Dish", 500);
+
+        assertTrue(command.equals(command));
+        assertTrue(command.equals(new UpdateMenuItemCommand("CR01", "CR02", "Dish", 500)));
+        assertFalse(command.equals(null));
+        assertFalse(command.equals(1));
+        assertFalse(command.equals(new UpdateMenuItemCommand("CR02", "CR02", "Dish", 500)));
+        assertFalse(command.equals(new UpdateMenuItemCommand("CR01", "CR03", "Dish", 500)));
+        assertFalse(command.equals(new UpdateMenuItemCommand("CR01", "CR02", "Other", 500)));
+        assertFalse(command.equals(new UpdateMenuItemCommand("CR01", "CR02", "Dish", 600)));
+    }
+
+    @Test
+    public void toStringMethod() {
+        UpdateMenuItemCommand command = new UpdateMenuItemCommand("CR01", "CR02", "Dish", 500);
+        String expected = UpdateMenuItemCommand.class.getCanonicalName()
+                + "{targetCode=CR01, updatedCode=CR02, updatedName=Dish, updatedPriceInCents=500}";
+
+        assertEquals(expected, command.toString());
     }
 }
