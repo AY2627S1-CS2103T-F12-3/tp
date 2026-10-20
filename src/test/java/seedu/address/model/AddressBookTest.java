@@ -41,14 +41,13 @@ public class AddressBookTest {
     }
 
     @Test
-    public void resetData_withDuplicatePersons_throwsDuplicatePersonException() {
-        // Two persons with the same identity fields
-        Person editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND)
-                .build();
-        List<Person> newPersons = List.of(ALICE, editedAlice);
-        AddressBookStub newData = new AddressBookStub(newPersons);
+    public void resetData_withDuplicatePersons_throwsAndPreservesData() {
+        Person editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
+        AddressBookStub newData = new AddressBookStub(List.of(ALICE, editedAlice));
+        addressBook.addPerson(ALICE);
 
         assertThrows(DuplicatePersonException.class, () -> addressBook.resetData(newData));
+        assertEquals(List.of(ALICE), addressBook.getPersonList());
     }
 
     @Test
@@ -70,14 +69,35 @@ public class AddressBookTest {
     @Test
     public void hasPerson_personWithSameIdentityFieldsInAddressBook_returnsTrue() {
         addressBook.addPerson(ALICE);
-        Person editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND)
-                .build();
+        Person editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
         assertTrue(addressBook.hasPerson(editedAlice));
     }
 
     @Test
     public void getPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> addressBook.getPersonList().remove(0));
+    }
+
+    @Test
+    public void copyConstructor_copiesPersonsWithoutAliasing() {
+        addressBook.addPerson(ALICE);
+        AddressBook copy = new AddressBook(addressBook);
+
+        addressBook.removePerson(ALICE);
+
+        assertEquals(List.of(ALICE), copy.getPersonList());
+    }
+
+    @Test
+    public void equalsAndHashCode_comparePersons() {
+        addressBook.addPerson(ALICE);
+        AddressBook copy = new AddressBook(addressBook);
+
+        assertEquals(addressBook, copy);
+        assertEquals(addressBook.hashCode(), copy.hashCode());
+
+        copy.removePerson(ALICE);
+        assertFalse(addressBook.equals(copy));
     }
 
     @Test
@@ -101,5 +121,4 @@ public class AddressBookTest {
             return persons;
         }
     }
-
 }

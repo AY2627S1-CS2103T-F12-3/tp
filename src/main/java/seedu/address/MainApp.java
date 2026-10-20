@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
@@ -21,9 +22,12 @@ import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
+import seedu.address.model.milestone.MilestoneCatalog;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.util.SampleDataUtil;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonMenuStorage;
+import seedu.address.storage.JsonMilestoneCatalogStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.Storage;
 import seedu.address.storage.StorageManager;
@@ -41,6 +45,7 @@ public class MainApp extends Application {
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
     private static final Path ADDRESS_BOOK_FILE_PATH = Paths.get("data", "memberlist.json");
     private static final Path MENU_FILE_PATH = Paths.get("data", "menu.json");
+    private static final Path MILESTONE_CATALOG_FILE_PATH = Paths.get("data", "milestones.json");
 
     protected Ui ui;
     protected Logic logic;
@@ -56,7 +61,9 @@ public class MainApp extends Application {
         UserPrefs userPrefs = initPrefs(userPrefsStorage);
         JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(ADDRESS_BOOK_FILE_PATH);
         JsonMenuStorage menuStorage = new JsonMenuStorage(MENU_FILE_PATH);
-        storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage);
+        JsonMilestoneCatalogStorage milestoneCatalogStorage =
+                new JsonMilestoneCatalogStorage(MILESTONE_CATALOG_FILE_PATH);
+        storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage, milestoneCatalogStorage);
 
         model = initModelManager(storage, userPrefs);
 
@@ -66,10 +73,10 @@ public class MainApp extends Application {
     }
 
     /**
-     * Initializes the model with member data, menu data, and user preferences.
+     * Initializes the model with member data, menu data, milestone data, and user preferences.
      */
     private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
-        return new ModelManager(initMembers(storage), userPrefs, initMenu(storage));
+        return new ModelManager(initMembers(storage), userPrefs, initMenu(storage), initMilestoneCatalog(storage));
     }
 
     /**
@@ -110,6 +117,20 @@ public class MainApp extends Application {
             logger.warning("Menu file at " + storage.getMenuFilePath() + " could not be loaded."
                     + " Will be starting with an empty menu.");
             return new Menu();
+        }
+    }
+
+    /**
+     * Loads the saved milestone catalog, or starts with an empty catalog if the file is missing or cannot be loaded.
+     */
+    protected ReadOnlyMilestoneCatalog initMilestoneCatalog(Storage storage) {
+        logger.info("Using milestone catalog file : " + storage.getMilestoneCatalogFilePath());
+        try {
+            return storage.readMilestoneCatalog().orElseGet(MilestoneCatalog::new);
+        } catch (DataLoadingException e) {
+            logger.log(Level.WARNING, "Milestone catalog file at " + storage.getMilestoneCatalogFilePath()
+                    + " could not be loaded. Will be starting with an empty milestone catalog.", e);
+            return new MilestoneCatalog();
         }
     }
 

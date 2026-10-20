@@ -11,7 +11,7 @@ import seedu.address.model.person.UniquePersonList;
 
 /**
  * Wraps all data at the address-book level.
- * Duplicates are not allowed (by .isSamePerson comparison).
+ * Duplicate persons are not allowed.
  */
 public class AddressBook implements ReadOnlyAddressBook {
 
@@ -39,11 +39,15 @@ public class AddressBook implements ReadOnlyAddressBook {
 
     /**
      * Resets the existing data of this {@code AddressBook} with {@code newData}.
+     * Invalid input leaves the existing data unchanged.
      */
     public void resetData(ReadOnlyAddressBook newData) {
         requireNonNull(newData);
 
-        setPersons(newData.getPersonList());
+        UniquePersonList replacementPersons = new UniquePersonList();
+        replacementPersons.setPersons(newData.getPersonList());
+
+        persons.setPersons(replacementPersons);
     }
 
     //// person-level operations

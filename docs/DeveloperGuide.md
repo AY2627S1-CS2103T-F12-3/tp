@@ -129,6 +129,9 @@ The `Model` component,
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * stores a separate `Menu` in `ModelManager`, alongside `AddressBook` and `UserPrefs`. `Model#getMenu()` exposes a
   `ReadOnlyMenu` with an unmodifiable observable item list; `hasFoodItem` and `addFoodItem` provide menu operations.
+* stores a separate `MilestoneCatalog` in `ModelManager`. `Model#getMilestoneCatalog()` exposes a
+  `ReadOnlyMilestoneCatalog`, while the existing milestone operations continue to act on the catalog owned by the
+  model.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
@@ -145,9 +148,10 @@ The `Model` component,
 <img src="images/StorageClassDiagram.png" width="550" />
 
 The `Storage` component,
-* saves customer records, menu items, and user preferences in separate JSON files and reads them back.
+* saves customer records, menu items, milestone rewards, and user preferences in separate JSON files and reads them
+  back.
 * is implemented by `StorageManager`, which delegates file access to `JsonAddressBookStorage`, `JsonMenuStorage`,
-  and `JsonUserPrefsStorage` (one class per data file).
+  `JsonMilestoneCatalogStorage`, and `JsonUserPrefsStorage` (one class per data file).
 
 `JsonAdaptedPerson` stores name, phone, tags, score, and order history. Each stored order includes its item code,
 the item name captured when the order was recorded, quantity, recorded time, and `scoreGained`. Unknown JSON
@@ -189,9 +193,9 @@ that would make the member's score negative. The saved value means a menu price 
 1. `AddMenuItemCommand#execute(Model)` checks `Model#hasFoodItem` before calling `Model#addFoodItem`.
    `FoodItem#isSameFoodItem` compares case-sensitive codes, while `equals` compares all three fields.
    Reusing a code throws `CommandException`, leaving the menu unchanged.
-1. After execution succeeds, `LogicManager` saves the address book and then the menu in its existing save block.
-   It returns the command's success feedback only after both saves succeed. `ParseException` and command execution
-   failures stop before saving; `IOException` during saving is reported as `CommandException`.
+1. After execution succeeds, `LogicManager` saves the address book, menu, and milestone catalog in its existing save
+   block. It returns the command's success feedback only after all three saves succeed. `ParseException` and command
+   execution failures stop before saving; `IOException` during saving is reported as `CommandException`.
 
 #### Data and persistence
 
@@ -212,10 +216,10 @@ fails. Sample menu codes match the sample members' order histories. Loading alon
 the next successfully executed command can overwrite it,
 matching the existing address-book fallback policy.
 
-Both data files are saved after every successfully executed command, including read-only commands. A save error
-does not roll back changes already made in memory. The address-book file is written first, so it may already be
-saved if the menu write fails; the two writes are not a transaction. A later successful command attempts both
-saves again through the same flow.
+All three domain data files are saved after every successfully executed command, including read-only commands. A
+save error does not roll back changes already made in memory. The address-book file is written first, followed by
+the menu and milestone catalog, so an earlier file may already be saved if a later write fails; the three writes
+are not a transaction. A later successful command attempts all three saves again through the same flow.
 
 #### Testing
 
@@ -225,6 +229,30 @@ inputs. `AddressBookParserTest` checks routing. `ModelManagerTest` checks menu c
 The JSON adapter, serializable menu, and menu storage test classes cover invalid data and round trips.
 `MainAppTest` checks startup fallback and saving/reloading across model initialization; `LogicManagerTest` covers
 automatic saving and menu-save errors.
+
+### Milestone catalog data source
+
+Milestone rewards are stored in a `MilestoneCatalog` rather than in `AddressBook`. This keeps global loyalty-program
+configuration separate from customer records: an address book owns people, while one milestone catalog defines the
+rewards available to every customer. `ModelManager` owns both data sources and keeps the existing milestone APIs
+stable by delegating them to its catalog.
+
+| Class | Responsibility |
+|---|---|
+| `MilestoneCatalog` and `ReadOnlyMilestoneCatalog` | Own the sorted, unique milestone list and expose a read-only view to clients. |
+| `JsonAdaptedMilestone` | Converts one milestone and validates its code, reward description, and required score. |
+| `JsonSerializableMilestoneCatalog` | Converts the `milestones` list, rejecting a missing list, null entries, invalid milestones, and duplicate case-insensitive codes. |
+| `JsonMilestoneCatalogStorage` | Reads and writes milestone JSON at a configured path. Missing files return `Optional.empty()`; read or validation errors become `DataLoadingException`. |
+| `StorageManager` | Delegates `getMilestoneCatalogFilePath`, `readMilestoneCatalog`, and `saveMilestoneCatalog` to `JsonMilestoneCatalogStorage`. |
+
+`MainApp` configures `data/milestones.json` relative to the launch directory. A valid file is loaded into
+`ModelManager`; a missing or invalid file produces an empty catalog, with invalid file contents left untouched until
+the next successfully executed command saves the model. Legacy `milestones` properties in `memberlist.json` are
+ignored, so the address-book file remains responsible only for customer data.
+
+The milestone model tests cover validation, sorting, uniqueness, mutation, and read-only views. The JSON adapter,
+serializable catalog, storage, `MainApp`, and `LogicManager` tests cover invalid data, round trips, startup fallback,
+and automatic saving.
 
 ### \[Proposed\] Undo/redo feature
 

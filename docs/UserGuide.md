@@ -259,17 +259,17 @@ Format: `exit`
 
 ### Saving the data
 
-The app automatically saves customer records and the menu after every command that executes successfully.
-You do not need to save manually. The menu is loaded again at startup.
+The app automatically saves customer records, the menu, and the milestone catalog after every command that executes
+successfully. You do not need to save manually. All three are loaded again at startup.
 
 If a save fails, an error is shown instead of the normal success feedback. Changes already made remain in memory;
 after fixing the file-access problem, run a command such as `list` to attempt saving again before closing the app.
 
 ### Editing the data file
 
-Customer records are saved in `data/memberlist.json`, and menu items in `data/menu.json`. These paths are relative
-to the directory from which you launch the app. With the quick-start instructions above, this is the JAR's folder.
-Advanced users can edit these files while the app is closed.
+Customer records are saved in `data/memberlist.json`, menu items in `data/menu.json`, and milestone rewards in
+`data/milestones.json`. These paths are relative to the directory from which you launch the app. With the quick-start
+instructions above, this is the JAR's folder. Advanced users can edit these files while the app is closed.
 
 Customer records contain a name, phone number, tags, score, and order history.
 Unknown properties in older data files are ignored and omitted the next time the data is saved.
@@ -282,12 +282,15 @@ Use the corresponding menu item's code or name where possible. Orders missing ei
 In `menu.json`, each entry in `foodItems` has a string `code`, a string `name`, and a positive integer
 `priceInCents`. For example, the command price `p/4.50` is saved as `"priceInCents": 450`.
 
+In `milestones.json`, each entry in `milestones` has an alphanumeric string `code`, a non-blank string
+`rewardDescription`, and a positive integer `requiredScore`. Milestone codes are case-insensitive, are saved in
+uppercase, and must be unique.
+
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If the customer file is invalid, the app starts with an empty address book. A missing customer file loads sample
-contacts, and a missing menu file loads the sample menu. An invalid menu file starts with an empty menu. Loading does not replace
-an invalid file, but the next successfully executed command attempts to save both files and can overwrite the
-invalid data. Back up both files before editing them, and restore a valid backup before running commands if you
-need to recover existing records.<br>
+contacts, and a missing menu or milestone file loads the sample menu. An invalid menu file starts with an empty menu or milestone catalog respectively. Loading does not replace
+an invalid file, but the next successfully executed command attempts to save all three files and can overwrite the invalid data. Back up all three files before editing them, and restore
+a valid backup before running commands if you need to recover existing records.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -300,8 +303,8 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer. With both apps closed, copy `data/memberlist.json` and `data/menu.json`
-from the old home folder into the new home folder's `data` directory.
+**A**: Install the app on the other computer. With both apps closed, copy `data/memberlist.json`, `data/menu.json`,
+and `data/milestones.json` from the old home folder into the new home folder's `data` directory.
 
 --------------------------------------------------------------------------------------------------------------------
 

@@ -17,10 +17,16 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
+import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.MilestoneCatalog;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.testutil.AddressBookBuilder;
 
 public class ModelManagerTest {
+    private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
+    private static final Milestone EDITED_FREE_DRINK = new Milestone("FREE500", "Free drink and snack", 600);
+    private static final Milestone FREE_DESSERT = new Milestone("DESSERT500", "Free dessert", 500);
 
     private ModelManager modelManager = new ModelManager();
 
@@ -59,8 +65,27 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void constructor_loadedMilestoneCatalog_copiesContentsIndependently() {
+        MilestoneCatalog source = new MilestoneCatalog();
+        source.addMilestone(FREE_DRINK);
+        ModelManager loaded = new ModelManager(new AddressBook(), new UserPrefs(), new Menu(), source);
+
+        source.removeMilestone(FREE_DRINK);
+
+        assertEquals(List.of(FREE_DRINK), loaded.getMilestoneList());
+        loaded.addMilestone(FREE_DESSERT);
+        assertTrue(source.getMilestoneList().isEmpty());
+    }
+
+    @Test
     public void constructor_nullMenu_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new ModelManager(new AddressBook(), new UserPrefs(), null));
+    }
+
+    @Test
+    public void constructor_nullMilestoneCatalog_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () ->
+                new ModelManager(new AddressBook(), new UserPrefs(), new Menu(), null));
     }
 
     @Test
@@ -89,6 +114,50 @@ public class ModelManagerTest {
     public void hasPerson_personInAddressBook_returnsTrue() {
         modelManager.addPerson(ALICE);
         assertTrue(modelManager.hasPerson(ALICE));
+    }
+
+    @Test
+    public void hasMilestone_nullMilestone_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> modelManager.hasMilestone(null));
+    }
+
+    @Test
+    public void hasMilestone_milestoneNotInCatalog_returnsFalse() {
+        assertFalse(modelManager.hasMilestone(FREE_DRINK));
+    }
+
+    @Test
+    public void hasMilestone_milestoneInCatalog_returnsTrue() {
+        modelManager.addMilestone(FREE_DRINK);
+        assertTrue(modelManager.hasMilestone(FREE_DRINK));
+    }
+
+    @Test
+    public void milestoneOperations_addSetDelete_updatesSortedList() {
+        modelManager.addMilestone(FREE_DRINK);
+        modelManager.addMilestone(FREE_DESSERT);
+        assertEquals(List.of(FREE_DESSERT, FREE_DRINK), modelManager.getMilestoneList());
+
+        modelManager.setMilestone(FREE_DRINK, EDITED_FREE_DRINK);
+        assertEquals(List.of(FREE_DESSERT, EDITED_FREE_DRINK), modelManager.getMilestoneList());
+
+        modelManager.deleteMilestone(FREE_DESSERT);
+        assertEquals(List.of(EDITED_FREE_DRINK), modelManager.getMilestoneList());
+    }
+
+    @Test
+    public void getMilestoneList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> modelManager.getMilestoneList().add(FREE_DRINK));
+    }
+
+    @Test
+    public void getMilestoneCatalog_readOnlyView_reflectsUpdatesAndRejectsMutation() {
+        ReadOnlyMilestoneCatalog view = modelManager.getMilestoneCatalog();
+
+        modelManager.addMilestone(FREE_DRINK);
+
+        assertEquals(List.of(FREE_DRINK), view.getMilestoneList());
+        assertThrows(UnsupportedOperationException.class, () -> view.getMilestoneList().clear());
     }
 
     @Test
@@ -158,6 +227,17 @@ public class ModelManagerTest {
         assertFalse(modelManager.equals(otherModel));
 
         otherModel.addFoodItem(item);
+        assertTrue(modelManager.equals(otherModel));
+    }
+
+    @Test
+    public void equals_differentMilestoneCatalogContents_returnsFalse() {
+        ModelManager otherModel = new ModelManager();
+        modelManager.addMilestone(FREE_DRINK);
+
+        assertFalse(modelManager.equals(otherModel));
+
+        otherModel.addMilestone(FREE_DRINK);
         assertTrue(modelManager.equals(otherModel));
     }
 
