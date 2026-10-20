@@ -21,6 +21,7 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.ReadOnlyMenu;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
 public class AddMenuItemCommandTest {
@@ -142,6 +143,26 @@ public class AddMenuItemCommandTest {
         }
 
         @Override
+        public boolean hasMilestone(Milestone milestone) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void deleteMilestone(Milestone target) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void addMilestone(Milestone milestone) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void setMilestone(Milestone target, Milestone editedMilestone) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public void selectPerson(Person person) {
             throw new AssertionError("This method should not be called.");
         }
@@ -158,6 +179,11 @@ public class AddMenuItemCommandTest {
 
         @Override
         public ObservableList<Person> getFilteredPersonList() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public ObservableList<Milestone> getMilestoneList() {
             throw new AssertionError("This method should not be called.");
         }
 

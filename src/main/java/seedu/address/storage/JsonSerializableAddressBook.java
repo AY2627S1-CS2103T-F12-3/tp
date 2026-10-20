@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
 /**
@@ -20,15 +21,21 @@ import seedu.address.model.person.Person;
 class JsonSerializableAddressBook {
 
     public static final String MESSAGE_DUPLICATE_PERSON = "Persons list contains duplicate person(s).";
+    public static final String MESSAGE_DUPLICATE_MILESTONE = "Milestones list contains duplicate milestone(s).";
 
     private final List<JsonAdaptedPerson> persons = new ArrayList<>();
+    private final List<JsonAdaptedMilestone> milestones = new ArrayList<>();
 
     /**
-     * Constructs a {@code JsonSerializableAddressBook} with the given persons.
+     * Constructs a {@code JsonSerializableAddressBook} with the given persons and milestones.
      */
     @JsonCreator
-    public JsonSerializableAddressBook(@JsonProperty("persons") List<JsonAdaptedPerson> persons) {
+    public JsonSerializableAddressBook(@JsonProperty("persons") List<JsonAdaptedPerson> persons,
+            @JsonProperty("milestones") List<JsonAdaptedMilestone> milestones) {
         this.persons.addAll(persons);
+        if (milestones != null) {
+            this.milestones.addAll(milestones);
+        }
     }
 
     /**
@@ -38,6 +45,9 @@ class JsonSerializableAddressBook {
      */
     public JsonSerializableAddressBook(ReadOnlyAddressBook source) {
         persons.addAll(source.getPersonList().stream().map(JsonAdaptedPerson::new).collect(Collectors.toList()));
+        milestones.addAll(source.getMilestoneList().stream()
+                .map(JsonAdaptedMilestone::new)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -53,6 +63,13 @@ class JsonSerializableAddressBook {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_PERSON);
             }
             addressBook.addPerson(person);
+        }
+        for (JsonAdaptedMilestone jsonAdaptedMilestone : milestones) {
+            Milestone milestone = jsonAdaptedMilestone.toModelType();
+            if (addressBook.hasMilestone(milestone)) {
+                throw new IllegalValueException(MESSAGE_DUPLICATE_MILESTONE);
+            }
+            addressBook.addMilestone(milestone);
         }
         return addressBook;
     }

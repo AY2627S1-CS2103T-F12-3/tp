@@ -15,6 +15,7 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
 /**
@@ -108,6 +109,30 @@ public class ModelManager implements Model {
         addressBook.setPerson(target, editedPerson);
     }
 
+    //=========== Milestone Operations ======================================================================
+
+    @Override
+    public boolean hasMilestone(Milestone milestone) {
+        requireNonNull(milestone);
+        return addressBook.hasMilestone(milestone);
+    }
+
+    @Override
+    public void deleteMilestone(Milestone target) {
+        addressBook.removeMilestone(target);
+    }
+
+    @Override
+    public void addMilestone(Milestone milestone) {
+        addressBook.addMilestone(milestone);
+    }
+
+    @Override
+    public void setMilestone(Milestone target, Milestone editedMilestone) {
+        requireAllNonNull(target, editedMilestone);
+        addressBook.setMilestone(target, editedMilestone);
+    }
+
     //=========== SelectedPerson =============================================================================
 
     @Override
@@ -144,6 +169,13 @@ public class ModelManager implements Model {
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
         filteredPersons.setPredicate(predicate);
+    }
+
+    //=========== Milestone List Accessor ===================================================================
+
+    @Override
+    public ObservableList<Milestone> getMilestoneList() {
+        return addressBook.getMilestoneList();
     }
 
     @Override
