@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_MILESTONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ORDER;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_QUANTITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SCORE_CHANGE;
@@ -27,6 +28,7 @@ import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.RedeemMilestoneCommand;
 import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.menu.FoodItem;
@@ -148,6 +150,34 @@ public class AddressBookParserTest {
     public void parseCommand_deleteOrderMissingArguments_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteOrderCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(DeleteOrderCommand.COMMAND_WORD));
+    }
+
+    @Test
+    public void parseCommand_redeemMilestone() throws Exception {
+        String command = RedeemMilestoneCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased()
+                + " " + PREFIX_MILESTONE + "2";
+        RedeemMilestoneCommand parsedCommand = (RedeemMilestoneCommand) parser.parseCommand(command);
+
+        assertEquals(INDEX_FIRST_PERSON, parsedCommand.personIndex);
+        assertEquals(2, parsedCommand.milestoneIndex.getOneBased());
+    }
+
+    @Test
+    public void parseCommand_redeemMilestoneMissingArguments_throwsParseException() {
+        String command = RedeemMilestoneCommand.COMMAND_WORD;
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                RedeemMilestoneCommand.MESSAGE_USAGE);
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
+    }
+
+    @Test
+    public void parseCommand_redeemMilestoneInvalidIndex_throwsParseException() {
+        String command = RedeemMilestoneCommand.COMMAND_WORD + " 1 " + PREFIX_MILESTONE + "abc";
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                RedeemMilestoneCommand.MESSAGE_USAGE);
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
     }
 
     @Test

@@ -28,10 +28,11 @@ public class RedeemMilestoneCommandParser implements Parser<RedeemMilestoneComma
                     RedeemMilestoneCommand.MESSAGE_USAGE));
         }
 
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_MILESTONE);
+
         try {
             Index personIndex = ParserUtil.parseIndex(argMultimap.getPreamble());
             Index milestoneIndex = ParserUtil.parseIndex(argMultimap.getValue(PREFIX_MILESTONE).get());
-            argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_MILESTONE);
             return new RedeemMilestoneCommand(personIndex, milestoneIndex);
         } catch (ParseException exception) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
