@@ -104,6 +104,12 @@
     -fx-pref-width: 32px;
 }
 
+.profile-order-points {
+    -fx-alignment: center-right;
+    -fx-min-width: 78px;
+    -fx-pref-width: 78px;
+}
+
 .profile-order-scroll, .profile-order-scroll > .viewport {
     -fx-background-color: #383838;
 }
