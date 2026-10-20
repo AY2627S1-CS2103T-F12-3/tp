@@ -2,6 +2,7 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.storage.JsonAdaptedPerson.MISSING_FIELD_MESSAGE_FORMAT;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.BENSON;
@@ -33,11 +34,35 @@ public class JsonAdaptedPersonTest {
     private static final List<JsonAdaptedOrder> VALID_ORDER_HISTORY = BENSON.getOrderHistory().getOrders().stream()
             .map(JsonAdaptedOrder::new)
             .collect(Collectors.toList());
+    private static final List<JsonAdaptedRedeemedMilestoneReward> VALID_REDEEMED_MILESTONE_REWARDS =
+            BENSON.getRedeemedMilestoneRewardHistory().getRedeemedMilestoneRewards().stream()
+                    .map(JsonAdaptedRedeemedMilestoneReward::new)
+                    .collect(Collectors.toList());
 
     @Test
     public void toModelType_validPersonDetails_returnsPerson() throws Exception {
         JsonAdaptedPerson person = new JsonAdaptedPerson(BENSON);
         assertEquals(BENSON, person.toModelType());
+    }
+
+    @Test
+    public void toModelType_redeemedMilestoneRewards_returnsPersonWithRewards() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME, VALID_PHONE, VALID_TAGS, VALID_SCORE,
+                VALID_ORDER_HISTORY,
+                List.of(new JsonAdaptedRedeemedMilestoneReward("Free drink")));
+
+        assertEquals(List.of("Free drink"),
+                person.toModelType().getRedeemedMilestoneRewardHistory().getRedeemedMilestoneRewards());
+    }
+
+    @Test
+    public void toJsonString_personWithRedeemedMilestoneRewards_includesRewards() throws Exception {
+        String json = JsonUtil.toJsonString(new JsonAdaptedPerson(BENSON));
+
+        assertEquals(BENSON.getRedeemedMilestoneRewardHistory().getRedeemedMilestoneRewards().size(),
+                VALID_REDEEMED_MILESTONE_REWARDS.size());
+        assertTrue(json.contains("redeemedMilestoneRewardHistory"));
     }
 
     @Test

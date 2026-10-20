@@ -61,7 +61,8 @@ public class AddOrderCommand extends Command {
                 personWithNewOrder.getPhone(),
                 personWithNewOrder.getTags(),
                 personWithNewOrder.getScore(),
-                personWithNewOrder.getOrderHistory().addOrder(order)
+                personWithNewOrder.getOrderHistory().addOrder(order),
+                personWithNewOrder.getRedeemedMilestoneRewardHistory()
         );
 
         model.setPerson(personWithNewOrder, personWithOrderAdded);

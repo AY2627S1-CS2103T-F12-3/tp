@@ -17,6 +17,7 @@ import seedu.address.model.order.Order;
 import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Score;
+import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 
 /**
  * A utility class containing a list of {@code Person} objects to be used in tests.
@@ -50,6 +51,9 @@ public class TypicalPersons {
                     new OrderHistory()
                             .addOrder(new Order("Potato", 1, BENSON_POTATO_ORDER_TIME))
             )
+            .withRedeemedMilestoneRewardHistory(
+                    new RedeemedMilestoneRewardHistory()
+                            .addRedeemedMilestoneReward("Free drink"))
             .build();
     public static final Person CARL = new PersonBuilder()
             .withName("Carl Kurz")

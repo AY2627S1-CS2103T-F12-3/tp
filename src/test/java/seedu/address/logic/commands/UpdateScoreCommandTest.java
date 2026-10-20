@@ -41,7 +41,8 @@ public class UpdateScoreCommandTest {
         Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         Person originalPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person scoredPerson = new Person(originalPerson.getName(), originalPerson.getPhone(), originalPerson.getTags(),
-                new Score(10), originalPerson.getOrderHistory());
+                new Score(10), originalPerson.getOrderHistory(),
+                originalPerson.getRedeemedMilestoneRewardHistory());
         model.setPerson(originalPerson, scoredPerson);
 
         new UpdateScoreCommand(INDEX_FIRST_PERSON, -3).execute(model);
@@ -73,7 +74,8 @@ public class UpdateScoreCommandTest {
         Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         Person originalPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person scoredPerson = new Person(originalPerson.getName(), originalPerson.getPhone(), originalPerson.getTags(),
-                new Score(999999999), originalPerson.getOrderHistory());
+                new Score(999999999), originalPerson.getOrderHistory(),
+                originalPerson.getRedeemedMilestoneRewardHistory());
         model.setPerson(originalPerson, scoredPerson);
 
         assertCommandFailure(new UpdateScoreCommand(INDEX_FIRST_PERSON, 1), model,

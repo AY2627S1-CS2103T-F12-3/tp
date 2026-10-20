@@ -21,7 +21,8 @@
       "itemName" : "Potato",
       "quantity" : 1,
       "recordedAt" : "2026-01-03T00:00:00Z"
-    } ]
+    } ],
+    "redeemedMilestoneRewardHistory" : [ "Free drink" ]
   }, {
     "name" : "Carl Kurz",
     "phone" : "95352563",

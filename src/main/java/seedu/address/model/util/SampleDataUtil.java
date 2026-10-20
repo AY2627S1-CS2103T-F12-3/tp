@@ -13,6 +13,7 @@ import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Score;
+import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -56,7 +57,8 @@ public class SampleDataUtil {
         for (Order order : orders) {
             orderHistory = orderHistory.addOrder(order);
         }
-        return new Person(new Name(name), new Phone(phone), tags, new Score(score), orderHistory);
+        return new Person(new Name(name), new Phone(phone), tags, new Score(score), orderHistory,
+                new RedeemedMilestoneRewardHistory());
     }
 
     /**

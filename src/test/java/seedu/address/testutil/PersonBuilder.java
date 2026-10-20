@@ -8,6 +8,7 @@ import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Score;
+import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.util.SampleDataUtil;
 
@@ -24,6 +25,7 @@ public class PersonBuilder {
     private Set<Tag> tags;
     private Score score;
     private OrderHistory orderHistory;
+    private RedeemedMilestoneRewardHistory redeemedMilestoneRewardHistory;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -34,6 +36,7 @@ public class PersonBuilder {
         tags = new HashSet<>();
         score = Score.DEFAULT;
         orderHistory = new OrderHistory();
+        redeemedMilestoneRewardHistory = new RedeemedMilestoneRewardHistory();
     }
 
     /**
@@ -45,6 +48,7 @@ public class PersonBuilder {
         tags = new HashSet<>(personToCopy.getTags());
         score = personToCopy.getScore();
         orderHistory = personToCopy.getOrderHistory();
+        redeemedMilestoneRewardHistory = personToCopy.getRedeemedMilestoneRewardHistory();
     }
 
     /**
@@ -88,8 +92,17 @@ public class PersonBuilder {
         return this;
     }
 
+    /**
+     * Sets the redeemed milestone reward history of the {@code Person} that we are building.
+     */
+    public PersonBuilder withRedeemedMilestoneRewardHistory(
+            RedeemedMilestoneRewardHistory redeemedMilestoneRewardHistory) {
+        this.redeemedMilestoneRewardHistory = redeemedMilestoneRewardHistory;
+        return this;
+    }
+
     public Person build() {
-        return new Person(name, phone, tags, score, orderHistory);
+        return new Person(name, phone, tags, score, orderHistory, redeemedMilestoneRewardHistory);
     }
 
 }

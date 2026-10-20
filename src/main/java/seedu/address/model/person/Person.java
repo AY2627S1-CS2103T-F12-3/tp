@@ -9,6 +9,7 @@ import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.order.OrderHistory;
+import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -25,25 +26,37 @@ public class Person {
     private final Set<Tag> tags = new HashSet<>();
     private final Score score;
     private final OrderHistory orderHistory;
+    private final RedeemedMilestoneRewardHistory redeemedMilestoneRewardHistory;
 
     /**
-     * Constructs a person with the given details and a default score and empty order history
+     * Constructs a person with the given details, a default score, and empty histories.
      */
     public Person(Name name, Phone phone, Set<Tag> tags) {
-        requireAllNonNull(name, phone, tags);
-        this(name, phone, tags, Score.DEFAULT, new OrderHistory());
+        this(name, phone, tags, Score.DEFAULT, new OrderHistory(), new RedeemedMilestoneRewardHistory());
     }
 
     /**
-     * Constructs a person with the given details
+     * Constructs a person with the given details, score, and histories.
+     *
+     * @param name the person's name
+     * @param phone the person's phone number
+     * @param tags the person's tags
+     * @param score the person's score
+     * @param orderHistory the person's order history
+     * @param redeemedMilestoneRewardHistory the person's redeemed milestone reward history
      */
-    public Person(Name name, Phone phone, Set<Tag> tags, Score score, OrderHistory orderHistory) {
-        requireAllNonNull(name, phone, tags, score, orderHistory);
+    public Person(Name name, Phone phone,
+                  Set<Tag> tags,
+                  Score score,
+                  OrderHistory orderHistory,
+                  RedeemedMilestoneRewardHistory redeemedMilestoneRewardHistory) {
+        requireAllNonNull(name, phone, tags, score, orderHistory, redeemedMilestoneRewardHistory);
         this.name = name;
         this.phone = phone;
         this.tags.addAll(tags);
         this.score = score;
         this.orderHistory = orderHistory;
+        this.redeemedMilestoneRewardHistory = redeemedMilestoneRewardHistory;
     }
 
     public Name getName() {
@@ -66,11 +79,14 @@ public class Person {
         return score;
     }
 
-    /**
-     *  Returns an immutable order history of Person.
-     */
+    /** Returns the person's immutable order history. */
     public OrderHistory getOrderHistory() {
         return orderHistory;
+    }
+
+    /** Returns the person's immutable redeemed milestone reward history. */
+    public RedeemedMilestoneRewardHistory getRedeemedMilestoneRewardHistory() {
+        return this.redeemedMilestoneRewardHistory;
     }
 
     /**
@@ -105,13 +121,19 @@ public class Person {
                 && phone.equals(otherPerson.phone)
                 && tags.equals(otherPerson.tags)
                 && score.equals(otherPerson.score)
-                && orderHistory.equals(otherPerson.orderHistory);
+                && orderHistory.equals(otherPerson.orderHistory)
+                && redeemedMilestoneRewardHistory.equals(otherPerson.redeemedMilestoneRewardHistory);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, tags, score, orderHistory);
+        return Objects.hash(name,
+                phone,
+                tags,
+                score,
+                orderHistory,
+                redeemedMilestoneRewardHistory);
     }
 
     @Override
@@ -122,6 +144,7 @@ public class Person {
                 .add("tags", tags)
                 .add("score", score)
                 .add("order history", orderHistory)
+                .add("redeemed milestone rewards", redeemedMilestoneRewardHistory)
                 .toString();
     }
 }
