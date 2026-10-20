@@ -14,7 +14,7 @@ import seedu.address.model.person.UniquePersonList;
 
 /**
  * Wraps all data at the address-book level.
- * Duplicate persons and milestone codes are not allowed.
+ * Duplicate persons and case-insensitive milestone codes are not allowed.
  */
 public class AddressBook implements ReadOnlyAddressBook {
 
@@ -43,7 +43,7 @@ public class AddressBook implements ReadOnlyAddressBook {
 
     /**
      * Replaces the contents of the milestone list with {@code milestones}.
-     * {@code milestones} must not contain duplicate milestone codes.
+     * {@code milestones} must not contain duplicate case-insensitive milestone codes.
      */
     public void setMilestones(List<Milestone> milestones) {
         this.milestones.setMilestones(milestones);
@@ -105,7 +105,7 @@ public class AddressBook implements ReadOnlyAddressBook {
     //// milestone-level operations
 
     /**
-     * Returns true if a milestone with the same code as {@code milestone} exists in the address book.
+     * Returns true if a milestone with the same case-insensitive code as {@code milestone} exists.
      */
     public boolean hasMilestone(Milestone milestone) {
         requireNonNull(milestone);
@@ -122,7 +122,7 @@ public class AddressBook implements ReadOnlyAddressBook {
 
     /**
      * Replaces {@code target} with {@code editedMilestone}.
-     * The target must exist, and both milestones must have the same code.
+     * The target must exist, and both milestones must have the same case-insensitive code.
      */
     public void setMilestone(Milestone target, Milestone editedMilestone) {
         milestones.setMilestone(target, editedMilestone);

@@ -3,13 +3,15 @@ package seedu.address.model.milestone;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import seedu.address.commons.util.ToStringBuilder;
 
 /**
  * Represents an immutable milestone reward with an identifying code, reward description, and required score.
- * Codes are case-sensitive and alphanumeric; reward descriptions are not blank; required scores are positive.
+ * Codes are case-insensitive and alphanumeric; reward descriptions are not blank; required scores are positive.
+ * Codes are normalized to uppercase when milestones are created.
  */
 public final class Milestone {
     public static final String MESSAGE_CODE_CONSTRAINTS = "Milestone codes must be alphanumeric.";
@@ -25,7 +27,7 @@ public final class Milestone {
     /**
      * Constructs a milestone reward with the given code, reward description, and required score.
      *
-     * @param code A case-sensitive alphanumeric milestone code.
+     * @param code A case-insensitive alphanumeric milestone code.
      * @param rewardDescription A nonblank description of the reward.
      * @param requiredScore A positive score required to reach the milestone.
      * @throws NullPointerException if {@code code} or {@code rewardDescription} is null.
@@ -36,7 +38,7 @@ public final class Milestone {
         checkArgument(isValidCode(code), MESSAGE_CODE_CONSTRAINTS);
         checkArgument(isValidRewardDescription(rewardDescription), MESSAGE_REWARD_DESCRIPTION_CONSTRAINTS);
         checkArgument(isValidRequiredScore(requiredScore), MESSAGE_REQUIRED_SCORE_CONSTRAINTS);
-        this.code = code;
+        this.code = code.toUpperCase(Locale.ROOT);
         this.rewardDescription = rewardDescription;
         this.requiredScore = requiredScore;
     }
@@ -75,7 +77,7 @@ public final class Milestone {
     }
 
     /**
-     * Returns true if both milestones have the same case-sensitive code.
+     * Returns true if both milestones have the same case-insensitive code.
      * This compares identity independently of the reward description and required score.
      */
     public boolean isSameMilestone(Milestone otherMilestone) {

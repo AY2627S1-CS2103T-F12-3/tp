@@ -17,7 +17,7 @@ public interface ReadOnlyAddressBook {
 
     /**
      * Returns an unmodifiable view of the milestone list.
-     * This list will not contain milestones with duplicate codes.
+     * This list will not contain milestones with duplicate case-insensitive codes.
      */
     ObservableList<Milestone> getMilestoneList();
 

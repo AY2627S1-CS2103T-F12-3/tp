@@ -2,7 +2,7 @@
   "persons": [],
   "milestones": [
     {
-      "code": "FREE500",
+      "code": "free500",
       "rewardDescription": "Free drink",
       "requiredScore": 500
     },

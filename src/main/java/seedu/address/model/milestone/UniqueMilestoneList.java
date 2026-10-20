@@ -14,7 +14,7 @@ import seedu.address.model.milestone.exceptions.DuplicateMilestoneException;
 import seedu.address.model.milestone.exceptions.MilestoneNotFoundException;
 
 /**
- * Stores milestones by ascending required score and code, enforcing unique case-sensitive codes and disallowing
+ * Stores milestones by ascending required score and code, enforcing unique case-insensitive codes and disallowing
  * nulls. Duplicate checks use {@link Milestone#isSameMilestone(Milestone)}. Replacement targets and removal use
  * {@link Milestone#equals(Object)} so that a milestone with exactly matching fields is selected.
  */
@@ -30,7 +30,7 @@ public class UniqueMilestoneList implements Iterable<Milestone> {
             FXCollections.unmodifiableObservableList(internalList);
 
     /**
-     * Returns true if a milestone with the same code as {@code toCheck} exists in the list.
+     * Returns true if a milestone with the same case-insensitive code as {@code toCheck} exists.
      */
     public boolean contains(Milestone toCheck) {
         requireNonNull(toCheck);
@@ -55,7 +55,7 @@ public class UniqueMilestoneList implements Iterable<Milestone> {
 
     /**
      * Replaces {@code target} with {@code editedMilestone} and restores the list's sorted order.
-     * Both milestones must have the same code because milestone identities cannot be edited.
+     * Both milestones must have the same case-insensitive code because milestone identities cannot be edited.
      *
      * @throws MilestoneNotFoundException if no milestone equals {@code target}.
      * @throws IllegalArgumentException if the edited milestone has a different code.
@@ -100,7 +100,7 @@ public class UniqueMilestoneList implements Iterable<Milestone> {
      * Invalid input leaves the existing contents unchanged.
      *
      * @throws NullPointerException if the list or a milestone is null.
-     * @throws DuplicateMilestoneException if two milestones have the same code.
+     * @throws DuplicateMilestoneException if two milestones have the same case-insensitive code.
      */
     public void setMilestones(List<Milestone> milestones) {
         requireNonNull(milestones);

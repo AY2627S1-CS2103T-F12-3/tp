@@ -23,6 +23,13 @@ public class JsonAdaptedMilestoneTest {
     }
 
     @Test
+    public void toModelType_lowercaseCode_normalizesCode() throws Exception {
+        JsonAdaptedMilestone milestone =
+                new JsonAdaptedMilestone("free500", VALID_REWARD_DESCRIPTION, VALID_REQUIRED_SCORE);
+        assertEquals(VALID_MILESTONE, milestone.toModelType());
+    }
+
+    @Test
     public void toModelType_nullCode_throwsIllegalValueException() {
         JsonAdaptedMilestone milestone =
                 new JsonAdaptedMilestone(null, VALID_REWARD_DESCRIPTION, VALID_REQUIRED_SCORE);

@@ -21,6 +21,11 @@ public class MilestoneTest {
     }
 
     @Test
+    public void constructor_lowercaseCode_normalizesToUppercase() {
+        assertEquals("FREE500", new Milestone("free500", "Free drink", 500).getCode());
+    }
+
+    @Test
     public void constructor_nullFields_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new Milestone(null, "Free drink", 500));
         assertThrows(NullPointerException.class, () -> new Milestone("FREE500", null, 500));
@@ -91,13 +96,14 @@ public class MilestoneTest {
         assertTrue(FREE_DRINK.isSameMilestone(new Milestone("FREE500", "Free dessert", 600)));
         assertFalse(FREE_DRINK.isSameMilestone(null));
         assertFalse(FREE_DRINK.isSameMilestone(new Milestone("FREE600", "Free drink", 500)));
-        assertFalse(FREE_DRINK.isSameMilestone(new Milestone("free500", "Free drink", 500)));
+        assertTrue(FREE_DRINK.isSameMilestone(new Milestone("free500", "Free drink", 500)));
     }
 
     @Test
     public void equals_comparesAllFields() {
         assertTrue(FREE_DRINK.equals(FREE_DRINK));
         assertTrue(FREE_DRINK.equals(new Milestone("FREE500", "Free drink", 500)));
+        assertTrue(FREE_DRINK.equals(new Milestone("free500", "Free drink", 500)));
         assertFalse(FREE_DRINK.equals(null));
         assertFalse(FREE_DRINK.equals("FREE500"));
         assertFalse(FREE_DRINK.equals(new Milestone("FREE600", "Free drink", 500)));
@@ -108,6 +114,7 @@ public class MilestoneTest {
     @Test
     public void hashCode_equalMilestones_sameHashCode() {
         assertEquals(FREE_DRINK.hashCode(), new Milestone("FREE500", "Free drink", 500).hashCode());
+        assertEquals(FREE_DRINK.hashCode(), new Milestone("free500", "Free drink", 500).hashCode());
     }
 
     @Test

@@ -65,7 +65,7 @@ public interface Model {
     void setPerson(Person target, Person editedPerson);
 
     /**
-     * Returns true if a milestone with the same code as {@code milestone} exists in the address book.
+     * Returns true if a milestone with the same case-insensitive code as {@code milestone} exists.
      */
     boolean hasMilestone(Milestone milestone);
 
@@ -83,7 +83,7 @@ public interface Model {
 
     /**
      * Replaces the given milestone {@code target} with {@code editedMilestone}.
-     * {@code target} must exist in the address book, and both milestones must have the same code.
+     * {@code target} must exist, and both milestones must have the same case-insensitive code.
      */
     void setMilestone(Milestone target, Milestone editedMilestone);
 

@@ -37,7 +37,7 @@ public class UniqueMilestoneListTest {
         assertTrue(milestones.contains(FREE_DRINK));
         assertTrue(milestones.contains(EDITED_FREE_DRINK));
         assertFalse(milestones.contains(FREE_DESSERT));
-        assertFalse(milestones.contains(new Milestone("free500", "Free drink", 500)));
+        assertTrue(milestones.contains(new Milestone("free500", "Free drink", 500)));
     }
 
     @Test
@@ -60,6 +60,8 @@ public class UniqueMilestoneListTest {
         milestones.add(FREE_DRINK);
         assertThrows(DuplicateMilestoneException.class, () -> milestones.add(FREE_DRINK));
         assertThrows(DuplicateMilestoneException.class, () -> milestones.add(EDITED_FREE_DRINK));
+        assertThrows(DuplicateMilestoneException.class, () ->
+                milestones.add(new Milestone("free500", "Different reward", 700)));
         assertEquals(List.of(FREE_DRINK), milestones.asUnmodifiableObservableList());
     }
 
