@@ -10,6 +10,7 @@ import java.util.Set;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.menu.FoodItem;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
@@ -96,16 +97,16 @@ public class ParserUtil {
     }
 
     /**
-     * Parses {@code itemName} and {@code quantity} into an {@code Order}.
+     * Parses {@code itemCode} and {@code quantity} into an {@code Order}.
      *
-     * @throws ParseException if the item name or quantity is invalid.
+     * @throws ParseException if the item code or quantity is invalid.
      */
-    public static Order parseOrder(String itemName, String quantity) throws ParseException {
-        requireAllNonNull(itemName, quantity);
+    public static Order parseOrder(String itemCode, String quantity) throws ParseException {
+        requireAllNonNull(itemCode, quantity);
 
-        String trimmedItemName = itemName.trim();
-        if (!Order.isValidItemName(trimmedItemName)) {
-            throw new ParseException(Order.ITEM_NAME_CONSTRAINTS);
+        String trimmedItemCode = itemCode.trim();
+        if (!FoodItem.isValidCode(trimmedItemCode)) {
+            throw new ParseException(Order.ITEM_CODE_CONSTRAINTS);
         }
 
         int numericQuantity;
@@ -119,7 +120,7 @@ public class ParserUtil {
             throw new ParseException(Order.QUANTITY_CONSTRAINTS);
         }
 
-        return new Order(trimmedItemName, numericQuantity);
+        return new Order(trimmedItemCode, numericQuantity);
     }
 
 }

@@ -25,13 +25,14 @@ public class AddOrderCommand extends Command {
             + "by the index number used in the displayed person list. "
             + "New order will be added to the OrderHistory.\n"
             + "Parameters: INDEX (must be a positive integer) "
-            + PREFIX_ORDER + "ORDER ITEM "
+            + PREFIX_ORDER + "ITEM_CODE "
             + PREFIX_QUANTITY + "QUANTITY\n"
             + "Example: " + COMMAND_WORD + " 1 "
-            + PREFIX_ORDER + "Chicken Rice "
+            + PREFIX_ORDER + "1 "
             + PREFIX_QUANTITY + "5";
 
     public static final String MESSAGE_SUCCESS = "New order added successfully!";
+    public static final String MESSAGE_ITEM_NOT_IN_MENU = "The item code is not in the menu.";
 
     public final Index index;
     public final Order order;
@@ -49,10 +50,17 @@ public class AddOrderCommand extends Command {
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
+        requireAllNonNull(model);
         List<Person> lastShownList = model.getFilteredPersonList();
 
         if (index.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        }
+
+        boolean isInMenu = model.getMenu().getFoodItemList().stream()
+                .anyMatch(item -> item.getCode().equals(order.itemCode));
+        if (!isInMenu) {
+            throw new CommandException(MESSAGE_ITEM_NOT_IN_MENU);
         }
 
         Person personWithNewOrder = lastShownList.get(index.getZeroBased());
