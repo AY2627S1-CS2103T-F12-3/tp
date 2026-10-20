@@ -131,6 +131,16 @@ public class MenuTest {
     }
 
     @Test
+    public void findFoodItemByCode_matchesCaseSensitiveCode() {
+        menu.addFoodItem(CHICKEN_RICE);
+
+        assertEquals(CHICKEN_RICE, menu.findFoodItemByCode("CR01").orElseThrow());
+        assertTrue(menu.findFoodItemByCode("cr01").isEmpty());
+        assertTrue(menu.findFoodItemByCode("CF01").isEmpty());
+        assertThrows(NullPointerException.class, () -> menu.findFoodItemByCode(null));
+    }
+
+    @Test
     public void equalsAndHashCode_compareContentsAndOrder() {
         menu.setFoodItems(List.of(CHICKEN_RICE, COFFEE));
         Menu copy = new Menu(menu);

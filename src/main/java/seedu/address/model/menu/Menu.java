@@ -3,6 +3,7 @@ package seedu.address.model.menu;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Optional;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
@@ -49,6 +50,16 @@ public class Menu implements ReadOnlyMenu {
      */
     public boolean hasFoodItem(FoodItem foodItem) {
         return foodItems.contains(foodItem);
+    }
+
+    /**
+     * Finds an item by its case-sensitive code.
+     */
+    public Optional<FoodItem> findFoodItemByCode(String code) {
+        requireNonNull(code);
+        return getFoodItemList().stream()
+                .filter(item -> item.getCode().equals(code))
+                .findFirst();
     }
 
     /**

@@ -9,7 +9,6 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
-import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.order.Order;
 import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Name;
@@ -66,10 +65,7 @@ public class SampleDataUtil {
      * Creates a sample order from an ISO-8601 timestamp.
      */
     private static Order sampleOrder(String itemCode, int quantity, String recordedAt) {
-        FoodItem foodItem = getSampleMenu().getFoodItemList().stream()
-                .filter(item -> item.getCode().equals(itemCode))
-                .findFirst()
-                .orElseThrow();
+        FoodItem foodItem = getSampleMenu().findFoodItemByCode(itemCode).orElseThrow();
         int scoreGained = (int) Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
         return new Order(itemCode, foodItem.getName(), quantity, scoreGained, Instant.parse(recordedAt));
     }
@@ -88,7 +84,7 @@ public class SampleDataUtil {
     /**
      * Returns a menu containing the items referenced by sample order histories.
      */
-    public static ReadOnlyMenu getSampleMenu() {
+    public static Menu getSampleMenu() {
         Menu sampleMenu = new Menu();
         sampleMenu.addFoodItem(new FoodItem("1", "Chicken Rice", 450));
         sampleMenu.addFoodItem(new FoodItem("2", "Laksa", 550));

@@ -220,6 +220,11 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public Optional<FoodItem> findFoodItemByCode(String code) {
+        return menu.findFoodItemByCode(code);
+    }
+
+    @Override
     public boolean hasFoodItem(FoodItem foodItem) {
         return menu.hasFoodItem(foodItem);
     }

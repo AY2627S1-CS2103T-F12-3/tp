@@ -89,6 +89,11 @@ public class AddMenuItemCommandTest {
         }
 
         @Override
+        public Optional<FoodItem> findFoodItemByCode(String code) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public boolean hasFoodItem(FoodItem foodItem) {
             throw new AssertionError("This method should not be called.");
         }

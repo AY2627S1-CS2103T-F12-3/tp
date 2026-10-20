@@ -66,13 +66,8 @@ public class AddOrderCommand extends Command {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         }
 
-        FoodItem foodItem = model.getMenu().getFoodItemList().stream()
-                .filter(item -> item.getCode().equals(itemCode))
-                .findFirst()
-                .orElse(null);
-        if (foodItem == null) {
-            throw new CommandException(MESSAGE_ITEM_NOT_IN_MENU);
-        }
+        FoodItem foodItem = model.findFoodItemByCode(itemCode)
+                .orElseThrow(() -> new CommandException(MESSAGE_ITEM_NOT_IN_MENU));
         Person personWithNewOrder = lastShownList.get(index.getZeroBased());
         long scoreGained = Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
         long updatedScore = personWithNewOrder.getScore().value + scoreGained;
