@@ -61,12 +61,12 @@ public class RedeemedMilestoneRewardHistoryTest {
     }
 
     @Test
-    public void contains_equalMilestone_returnsTrue() {
+    public void contains_sameCodeDifferentDetails_returnsTrue() {
         RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
                 .addRedeemedMilestoneReward(FIRST_REWARD);
-        Milestone equalMilestone = new Milestone("FIRST", "Free drink", 10);
+        Milestone sameCodeMilestone = new Milestone("first", "Different reward", 50);
 
-        assertTrue(history.contains(equalMilestone));
+        assertTrue(history.contains(sameCodeMilestone));
     }
 
     @Test
@@ -82,6 +82,16 @@ public class RedeemedMilestoneRewardHistoryTest {
         assertThrows(NullPointerException.class, () ->
                 new RedeemedMilestoneRewardHistory()
                         .addRedeemedMilestoneReward(null));
+    }
+
+    @Test
+    public void addRedeemedMilestoneReward_duplicateCode_throwsIllegalArgumentException() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD);
+        Milestone duplicateMilestone = new Milestone("first", "Different reward", 50);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                history.addRedeemedMilestoneReward(duplicateMilestone));
     }
 
     @Test

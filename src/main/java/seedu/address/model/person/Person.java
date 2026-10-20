@@ -91,7 +91,7 @@ public class Person {
     }
 
     /**
-     * Returns true if this person has redeemed a milestone equal to {@code milestone}.
+     * Returns true if this person has redeemed a milestone with the same code as {@code milestone}.
      *
      * @param milestone the milestone to check
      * @return true if this person's redemption history contains the given milestone

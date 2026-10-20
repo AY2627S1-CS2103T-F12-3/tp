@@ -13,6 +13,9 @@ import seedu.address.model.milestone.Milestone;
  * {@code RedeemedMilestoneRewardHistory}.
  */
 public class RedeemedMilestoneRewardHistory {
+    public static final String MESSAGE_DUPLICATE_MILESTONE =
+            "This milestone has already been redeemed.";
+
     private final ArrayList<Milestone> redeemedMilestoneRewards;
 
     /**
@@ -44,8 +47,13 @@ public class RedeemedMilestoneRewardHistory {
      * @throws NullPointerException if {@code redeemedMilestoneReward} is null
      */
     public RedeemedMilestoneRewardHistory addRedeemedMilestoneReward(Milestone redeemedMilestoneReward) {
+        requireNonNull(redeemedMilestoneReward);
+        if (contains(redeemedMilestoneReward)) {
+            throw new IllegalArgumentException(MESSAGE_DUPLICATE_MILESTONE);
+        }
+
         ArrayList<Milestone> updatedRewards = new ArrayList<>(redeemedMilestoneRewards);
-        updatedRewards.add(requireNonNull(redeemedMilestoneReward));
+        updatedRewards.add(redeemedMilestoneReward);
         return new RedeemedMilestoneRewardHistory(updatedRewards);
     }
 
@@ -64,13 +72,14 @@ public class RedeemedMilestoneRewardHistory {
     }
 
     /**
-     * Returns true if this history contains a milestone equal to {@code milestone}.
+     * Returns true if this history contains a milestone with the same code as {@code milestone}.
      *
      * @param milestone the milestone to search for
      * @return true if the history contains the given milestone
      */
     public boolean contains(Milestone milestone) {
-        return redeemedMilestoneRewards.contains(milestone);
+        return redeemedMilestoneRewards.stream()
+                .anyMatch(redeemedMilestone -> redeemedMilestone.isSameMilestone(milestone));
     }
 
     @Override
