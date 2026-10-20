@@ -8,6 +8,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -65,8 +66,8 @@ public class MenuTest {
     @Test
     public void resetData_duplicateCodes_throwsAndPreservesMenu() {
         menu.addFoodItem(COFFEE);
-        ReadOnlyMenu invalidMenu = () -> FXCollections.unmodifiableObservableList(
-                FXCollections.observableArrayList(CHICKEN_RICE, EDITED_CHICKEN_RICE));
+        ReadOnlyMenu invalidMenu = menuWithItems(FXCollections.unmodifiableObservableList(
+                FXCollections.observableArrayList(CHICKEN_RICE, EDITED_CHICKEN_RICE)));
 
         assertThrows(DuplicateFoodItemException.class, () -> menu.resetData(invalidMenu));
         assertEquals(List.of(COFFEE), menu.getFoodItemList());
@@ -75,9 +76,9 @@ public class MenuTest {
     @Test
     public void resetData_nullListOrElement_throwsAndPreservesMenu() {
         menu.addFoodItem(COFFEE);
-        ReadOnlyMenu nullListMenu = () -> null;
-        ReadOnlyMenu nullItemMenu = () -> FXCollections.unmodifiableObservableList(
-                FXCollections.observableArrayList(Arrays.asList(CHICKEN_RICE, null)));
+        ReadOnlyMenu nullListMenu = menuWithItems(null);
+        ReadOnlyMenu nullItemMenu = menuWithItems(FXCollections.unmodifiableObservableList(
+                FXCollections.observableArrayList(Arrays.asList(CHICKEN_RICE, null))));
 
         assertThrows(NullPointerException.class, () -> menu.resetData(nullListMenu));
         assertThrows(NullPointerException.class, () -> menu.resetData(nullItemMenu));
@@ -131,6 +132,28 @@ public class MenuTest {
     }
 
     @Test
+    public void findFoodItemByCode_matchesCaseSensitiveCode() {
+        menu.addFoodItem(CHICKEN_RICE);
+
+        assertEquals(CHICKEN_RICE, menu.findFoodItemByCode("CR01").orElseThrow());
+        assertTrue(menu.findFoodItemByCode("cr01").isEmpty());
+        assertTrue(menu.findFoodItemByCode("CF01").isEmpty());
+        assertThrows(NullPointerException.class, () -> menu.findFoodItemByCode(null));
+    }
+
+    @Test
+    public void readOnlyMenu_lookupMethodsReflectChanges() {
+        ReadOnlyMenu view = menu;
+        assertFalse(view.hasFoodItem(CHICKEN_RICE));
+        assertTrue(view.findFoodItemByCode("CR01").isEmpty());
+
+        menu.addFoodItem(CHICKEN_RICE);
+
+        assertTrue(view.hasFoodItem(EDITED_CHICKEN_RICE));
+        assertEquals(CHICKEN_RICE, view.findFoodItemByCode("CR01").orElseThrow());
+    }
+
+    @Test
     public void equalsAndHashCode_compareContentsAndOrder() {
         menu.setFoodItems(List.of(CHICKEN_RICE, COFFEE));
         Menu copy = new Menu(menu);
@@ -142,5 +165,24 @@ public class MenuTest {
         assertFalse(menu.equals(List.of(CHICKEN_RICE, COFFEE)));
         copy.setFoodItems(List.of(COFFEE, CHICKEN_RICE));
         assertFalse(menu.equals(copy));
+    }
+
+    private static ReadOnlyMenu menuWithItems(ObservableList<FoodItem> items) {
+        return new ReadOnlyMenu() {
+            @Override
+            public ObservableList<FoodItem> getFoodItemList() {
+                return items;
+            }
+
+            @Override
+            public boolean hasFoodItem(FoodItem foodItem) {
+                throw new AssertionError("This method should not be called.");
+            }
+
+            @Override
+            public Optional<FoodItem> findFoodItemByCode(String code) {
+                throw new AssertionError("This method should not be called.");
+            }
+        };
     }
 }

@@ -50,7 +50,7 @@ public class RecentOrdersPanel extends UiPart<Region> {
         }
     }
 
-    /** Creates a row showing an order's index, item name, and quantity. */
+    /** Creates a row showing an order's index, saved item name, quantity, and points gained. */
     private HBox createOrderRow(int index, Order order) {
         Label orderIndex = new Label(Integer.toString(index));
         orderIndex.getStyleClass().add("profile-order-index");
@@ -63,7 +63,10 @@ public class RecentOrdersPanel extends UiPart<Region> {
         Label quantity = new Label(Integer.toString(order.quantity));
         quantity.getStyleClass().add("profile-order-quantity");
 
-        HBox row = new HBox(orderIndex, itemName, quantity);
+        Label pointsGained = new Label("+" + order.scoreGained);
+        pointsGained.getStyleClass().add("profile-order-points");
+
+        HBox row = new HBox(orderIndex, itemName, quantity, pointsGained);
         row.getStyleClass().add("profile-order-row");
         return row;
     }
