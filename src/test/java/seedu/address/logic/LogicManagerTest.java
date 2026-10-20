@@ -35,9 +35,12 @@ import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.MilestoneCatalog;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonMenuStorage;
+import seedu.address.storage.JsonMilestoneCatalogStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
 import seedu.address.testutil.PersonBuilder;
@@ -59,7 +62,10 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         JsonMenuStorage menuStorage = new JsonMenuStorage(temporaryFolder.resolve("menu.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage);
+        JsonMilestoneCatalogStorage milestoneCatalogStorage =
+                new JsonMilestoneCatalogStorage(temporaryFolder.resolve("milestones.json"));
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage,
+                milestoneCatalogStorage);
         logic = new LogicManager(model, storage);
     }
 
@@ -134,10 +140,23 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_successfulCommand_savesBothDataSets() throws Exception {
+    public void execute_successfulCommand_savesMilestoneCatalog() throws Exception {
+        model.addMilestone(FREE_DRINK);
+
+        logic.execute("list");
+
+        JsonMilestoneCatalogStorage saved =
+                new JsonMilestoneCatalogStorage(temporaryFolder.resolve("milestones.json"));
+        assertEquals(new MilestoneCatalog(model.getMilestoneCatalog()),
+                new MilestoneCatalog(saved.readMilestoneCatalog().orElseThrow()));
+    }
+
+    @Test
+    public void execute_successfulCommand_savesAllDataSets() throws Exception {
         logic.execute("list");
         assertTrue(Files.exists(temporaryFolder.resolve("addressBook.json")));
         assertTrue(Files.exists(temporaryFolder.resolve("menu.json")));
+        assertTrue(Files.exists(temporaryFolder.resolve("milestones.json")));
     }
 
     @Test
@@ -145,6 +164,7 @@ public class LogicManagerTest {
         assertThrows(ParseException.class, () -> logic.execute("add-menu-item c/CR01 n/Chicken Rice p/4.501"));
         assertFalse(Files.exists(temporaryFolder.resolve("menu.json")));
         assertFalse(Files.exists(temporaryFolder.resolve("addressBook.json")));
+        assertFalse(Files.exists(temporaryFolder.resolve("milestones.json")));
     }
 
     @Test
@@ -170,6 +190,12 @@ public class LogicManagerTest {
                 String.format(LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, DUMMY_AD_EXCEPTION.getMessage()));
     }
 
+    @Test
+    public void execute_milestoneCatalogSaveThrowsIoException_throwsCommandException() {
+        assertCommandFailureForExceptionFromMilestoneCatalogStorage(DUMMY_IO_EXCEPTION,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()));
+    }
+
     private void assertCommandFailureForExceptionFromMenuStorage(IOException failure, String expectedMessage) {
         JsonMenuStorage menuStorage = new JsonMenuStorage(temporaryFolder.resolve("menu.json")) {
             @Override
@@ -179,13 +205,32 @@ public class LogicManagerTest {
         };
         StorageManager storage = new StorageManager(
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")),
-                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json")), menuStorage);
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json")), menuStorage,
+                new JsonMilestoneCatalogStorage(temporaryFolder.resolve("milestones.json")));
         logic = new LogicManager(model, storage);
         Model expected = new ModelManager();
         expected.addFoodItem(new FoodItem("CR01", "Chicken Rice", 450));
 
         assertCommandFailure("add-menu-item c/CR01 n/Chicken Rice p/4.50",
                 CommandException.class, expectedMessage, expected);
+    }
+
+    private void assertCommandFailureForExceptionFromMilestoneCatalogStorage(
+            IOException failure, String expectedMessage) {
+        JsonMilestoneCatalogStorage milestoneCatalogStorage =
+                new JsonMilestoneCatalogStorage(temporaryFolder.resolve("milestones.json")) {
+                    @Override
+                    public void saveMilestoneCatalog(ReadOnlyMilestoneCatalog milestoneCatalog) throws IOException {
+                        throw failure;
+                    }
+                };
+        StorageManager storage = new StorageManager(
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")),
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json")),
+                new JsonMenuStorage(temporaryFolder.resolve("menu.json")), milestoneCatalogStorage);
+        logic = new LogicManager(model, storage);
+
+        assertCommandFailure("list", CommandException.class, expectedMessage, new ModelManager());
     }
 
     /**
@@ -224,7 +269,8 @@ public class LogicManagerTest {
      */
     private void assertCommandFailure(String inputCommand, Class<? extends Throwable> expectedException,
             String expectedMessage) {
-        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs(),
+                model.getMenu(), model.getMilestoneCatalog());
         assertCommandFailure(inputCommand, expectedException, expectedMessage, expectedModel);
     }
 
@@ -261,7 +307,10 @@ public class LogicManagerTest {
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("ExceptionUserPrefs.json"));
         JsonMenuStorage menuStorage = new JsonMenuStorage(temporaryFolder.resolve("ExceptionMenu.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage);
+        JsonMilestoneCatalogStorage milestoneCatalogStorage =
+                new JsonMilestoneCatalogStorage(temporaryFolder.resolve("ExceptionMilestones.json"));
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage,
+                milestoneCatalogStorage);
 
         logic = new LogicManager(model, storage);
 

@@ -18,6 +18,8 @@ import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.MilestoneCatalog;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.testutil.AddressBookBuilder;
 
@@ -63,8 +65,27 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void constructor_loadedMilestoneCatalog_copiesContentsIndependently() {
+        MilestoneCatalog source = new MilestoneCatalog();
+        source.addMilestone(FREE_DRINK);
+        ModelManager loaded = new ModelManager(new AddressBook(), new UserPrefs(), new Menu(), source);
+
+        source.removeMilestone(FREE_DRINK);
+
+        assertEquals(List.of(FREE_DRINK), loaded.getMilestoneList());
+        loaded.addMilestone(FREE_DESSERT);
+        assertTrue(source.getMilestoneList().isEmpty());
+    }
+
+    @Test
     public void constructor_nullMenu_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new ModelManager(new AddressBook(), new UserPrefs(), null));
+    }
+
+    @Test
+    public void constructor_nullMilestoneCatalog_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () ->
+                new ModelManager(new AddressBook(), new UserPrefs(), new Menu(), null));
     }
 
     @Test
@@ -101,12 +122,12 @@ public class ModelManagerTest {
     }
 
     @Test
-    public void hasMilestone_milestoneNotInAddressBook_returnsFalse() {
+    public void hasMilestone_milestoneNotInCatalog_returnsFalse() {
         assertFalse(modelManager.hasMilestone(FREE_DRINK));
     }
 
     @Test
-    public void hasMilestone_milestoneInAddressBook_returnsTrue() {
+    public void hasMilestone_milestoneInCatalog_returnsTrue() {
         modelManager.addMilestone(FREE_DRINK);
         assertTrue(modelManager.hasMilestone(FREE_DRINK));
     }
@@ -127,6 +148,16 @@ public class ModelManagerTest {
     @Test
     public void getMilestoneList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getMilestoneList().add(FREE_DRINK));
+    }
+
+    @Test
+    public void getMilestoneCatalog_readOnlyView_reflectsUpdatesAndRejectsMutation() {
+        ReadOnlyMilestoneCatalog view = modelManager.getMilestoneCatalog();
+
+        modelManager.addMilestone(FREE_DRINK);
+
+        assertEquals(List.of(FREE_DRINK), view.getMilestoneList());
+        assertThrows(UnsupportedOperationException.class, () -> view.getMilestoneList().clear());
     }
 
     @Test
@@ -196,6 +227,17 @@ public class ModelManagerTest {
         assertFalse(modelManager.equals(otherModel));
 
         otherModel.addFoodItem(item);
+        assertTrue(modelManager.equals(otherModel));
+    }
+
+    @Test
+    public void equals_differentMilestoneCatalogContents_returnsFalse() {
+        ModelManager otherModel = new ModelManager();
+        modelManager.addMilestone(FREE_DRINK);
+
+        assertFalse(modelManager.equals(otherModel));
+
+        otherModel.addMilestone(FREE_DRINK);
         assertTrue(modelManager.equals(otherModel));
     }
 

@@ -16,16 +16,19 @@ import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.MilestoneCatalog;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
 
 /**
- * Represents the in-memory model of the address book data.
+ * Represents the in-memory model of member, menu, milestone catalog, and user preference data.
  */
 public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
     private final AddressBook addressBook;
     private final Menu menu;
+    private final MilestoneCatalog milestoneCatalog;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private Person selectedPerson;
@@ -34,19 +37,28 @@ public class ModelManager implements Model {
      * Initializes a ModelManager with the given addressBook and userPrefs.
      */
     public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs) {
-        this(addressBook, userPrefs, new Menu());
+        this(addressBook, userPrefs, new Menu(), new MilestoneCatalog());
     }
 
     /**
      * Initializes a ModelManager with the given address book, user preferences, and menu.
      */
     public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs, ReadOnlyMenu menu) {
-        requireAllNonNull(addressBook, userPrefs, menu);
+        this(addressBook, userPrefs, menu, new MilestoneCatalog());
+    }
+
+    /**
+     * Initializes a ModelManager with the given address book, user preferences, menu, and milestone catalog.
+     */
+    public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs, ReadOnlyMenu menu,
+            ReadOnlyMilestoneCatalog milestoneCatalog) {
+        requireAllNonNull(addressBook, userPrefs, menu, milestoneCatalog);
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
         this.addressBook = new AddressBook(addressBook);
         this.menu = new Menu(menu);
+        this.milestoneCatalog = new MilestoneCatalog(milestoneCatalog);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
     }
@@ -114,23 +126,28 @@ public class ModelManager implements Model {
     @Override
     public boolean hasMilestone(Milestone milestone) {
         requireNonNull(milestone);
-        return addressBook.hasMilestone(milestone);
+        return milestoneCatalog.hasMilestone(milestone);
     }
 
     @Override
     public void deleteMilestone(Milestone target) {
-        addressBook.removeMilestone(target);
+        milestoneCatalog.removeMilestone(target);
     }
 
     @Override
     public void addMilestone(Milestone milestone) {
-        addressBook.addMilestone(milestone);
+        milestoneCatalog.addMilestone(milestone);
     }
 
     @Override
     public void setMilestone(Milestone target, Milestone editedMilestone) {
         requireAllNonNull(target, editedMilestone);
-        addressBook.setMilestone(target, editedMilestone);
+        milestoneCatalog.setMilestone(target, editedMilestone);
+    }
+
+    @Override
+    public ReadOnlyMilestoneCatalog getMilestoneCatalog() {
+        return milestoneCatalog::getMilestoneList;
     }
 
     //=========== SelectedPerson =============================================================================
@@ -175,7 +192,7 @@ public class ModelManager implements Model {
 
     @Override
     public ObservableList<Milestone> getMilestoneList() {
-        return addressBook.getMilestoneList();
+        return milestoneCatalog.getMilestoneList();
     }
 
     @Override
@@ -193,7 +210,8 @@ public class ModelManager implements Model {
                 && userPrefs.equals(otherModelManager.userPrefs)
                 && filteredPersons.equals(otherModelManager.filteredPersons)
                 && Objects.equals(selectedPerson, otherModelManager.selectedPerson)
-                && menu.equals(otherModelManager.menu);
+                && menu.equals(otherModelManager.menu)
+                && milestoneCatalog.equals(otherModelManager.milestoneCatalog);
     }
 
     @Override

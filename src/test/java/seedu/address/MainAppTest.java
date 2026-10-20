@@ -17,8 +17,11 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
+import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.MilestoneCatalog;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonMenuStorage;
+import seedu.address.storage.JsonMilestoneCatalogStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
 
@@ -54,22 +57,68 @@ public class MainAppTest {
     }
 
     @Test
+    public void initMilestoneCatalog_missingFile_returnsEmptyCatalog() {
+        StorageManager storage = createStorage();
+        assertTrue(new MainApp().initMilestoneCatalog(storage).getMilestoneList().isEmpty());
+        assertFalse(Files.exists(storage.getMilestoneCatalogFilePath()));
+    }
+
+    @Test
+    public void initMilestoneCatalog_invalidFile_returnsEmptyWithoutChangingFile() throws Exception {
+        StorageManager storage = createStorage();
+        for (String json : List.of("not JSON", "null", "{}", "{\"milestones\":[null]}")) {
+            Files.writeString(storage.getMilestoneCatalogFilePath(), json);
+            assertTrue(new MainApp().initMilestoneCatalog(storage).getMilestoneList().isEmpty());
+            assertEquals(json, Files.readString(storage.getMilestoneCatalogFilePath()));
+        }
+    }
+
+    @Test
+    public void initMilestoneCatalog_validFile_loadsSavedCatalog() throws Exception {
+        StorageManager storage = createStorage();
+        MilestoneCatalog saved = new MilestoneCatalog();
+        saved.addMilestone(new Milestone("FREE500", "Free drink", 500));
+        storage.saveMilestoneCatalog(saved);
+
+        assertEquals(saved, new MilestoneCatalog(new MainApp().initMilestoneCatalog(storage)));
+    }
+
+    @Test
     public void addMenuItem_saveAndReload_retainsItemAfterRestart() throws Exception {
         StorageManager storage = createStorage();
         MainApp app = new MainApp();
-        ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage));
+        ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage),
+                app.initMilestoneCatalog(storage));
         new LogicManager(model, storage).execute("add-menu-item c/CR01 n/Chicken Rice p/4.50");
 
         ModelManager reloaded = new ModelManager(storage.readAddressBook().orElseThrow(),
-                new UserPrefs(), new MainApp().initMenu(storage));
+                new UserPrefs(), new MainApp().initMenu(storage), new MainApp().initMilestoneCatalog(storage));
 
         assertEquals(List.of(new FoodItem("CR01", "Chicken Rice", 450)), reloaded.getMenu().getFoodItemList());
+        assertEquals(model, reloaded);
+    }
+
+    @Test
+    public void milestone_saveAndReload_retainsMilestoneAfterRestart() throws Exception {
+        StorageManager storage = createStorage();
+        MainApp app = new MainApp();
+        ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage),
+                app.initMilestoneCatalog(storage));
+        Milestone milestone = new Milestone("FREE500", "Free drink", 500);
+        model.addMilestone(milestone);
+        new LogicManager(model, storage).execute("list");
+
+        ModelManager reloaded = new ModelManager(storage.readAddressBook().orElseThrow(),
+                new UserPrefs(), app.initMenu(storage), app.initMilestoneCatalog(storage));
+
+        assertEquals(List.of(milestone), reloaded.getMilestoneList());
         assertEquals(model, reloaded);
     }
 
     private StorageManager createStorage() {
         return new StorageManager(new JsonAddressBookStorage(testFolder.resolve("members.json")),
                 new JsonUserPrefsStorage(testFolder.resolve("preferences.json")),
-                new JsonMenuStorage(testFolder.resolve("menu.json")));
+                new JsonMenuStorage(testFolder.resolve("menu.json")),
+                new JsonMilestoneCatalogStorage(testFolder.resolve("milestones.json")));
     }
 }

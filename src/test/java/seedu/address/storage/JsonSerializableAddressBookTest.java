@@ -1,12 +1,15 @@
 package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.JsonUtil;
@@ -42,6 +45,25 @@ public class JsonSerializableAddressBookTest {
                 JsonSerializableAddressBook.class).get();
         assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_DUPLICATE_PERSON,
                 dataFromFile::toModelType);
+    }
+
+    @Test
+    public void toModelType_legacyMilestonesField_ignoresMilestones() throws Exception {
+        String legacyJson = "{\"persons\":[],\"milestones\":[{\"code\":\"FREE500\","
+                + "\"rewardDescription\":\"Free drink\",\"requiredScore\":500}]}";
+        JsonSerializableAddressBook saved =
+                JsonUtil.fromJsonString(legacyJson, JsonSerializableAddressBook.class);
+
+        assertEquals(new AddressBook(), saved.toModelType());
+    }
+
+    @Test
+    public void jsonRoundTrip_excludesMilestonesField() throws Exception {
+        String json = JsonUtil.toJsonString(new JsonSerializableAddressBook(new AddressBook()));
+        JsonNode fields = JsonUtil.fromJsonString(json, JsonNode.class);
+
+        assertEquals(1, fields.size());
+        assertFalse(fields.has("milestones"));
     }
 
 }
