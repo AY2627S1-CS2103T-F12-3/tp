@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.order.OrderHistory;
 import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 import seedu.address.model.tag.Tag;
@@ -87,6 +88,16 @@ public class Person {
     /** Returns the person's immutable redeemed milestone reward history. */
     public RedeemedMilestoneRewardHistory getRedeemedMilestoneRewardHistory() {
         return this.redeemedMilestoneRewardHistory;
+    }
+
+    /**
+     * Returns true if this person has redeemed a milestone equal to {@code milestone}.
+     *
+     * @param milestone the milestone to check
+     * @return true if this person's redemption history contains the given milestone
+     */
+    public boolean hasRedeemed(Milestone milestone) {
+        return redeemedMilestoneRewardHistory.contains(milestone);
     }
 
     /**

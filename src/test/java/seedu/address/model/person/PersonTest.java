@@ -131,6 +131,41 @@ public class PersonTest {
     }
 
     @Test
+    public void hasRedeemed_existingMilestone_returnsTrue() {
+        Milestone milestone = new Milestone("WELCOME", "Free drink", 10);
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(milestone);
+        Person person = new PersonBuilder(ALICE).withRedeemedMilestoneRewardHistory(history).build();
+
+        assertTrue(person.hasRedeemed(milestone));
+    }
+
+    @Test
+    public void hasRedeemed_equalMilestone_returnsTrue() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
+        Person person = new PersonBuilder(ALICE).withRedeemedMilestoneRewardHistory(history).build();
+
+        assertTrue(person.hasRedeemed(new Milestone("WELCOME", "Free drink", 10)));
+    }
+
+    @Test
+    public void hasRedeemed_absentMilestone_returnsFalse() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
+        Person person = new PersonBuilder(ALICE).withRedeemedMilestoneRewardHistory(history).build();
+
+        assertFalse(person.hasRedeemed(new Milestone("BIRTHDAY", "Birthday reward", 20)));
+    }
+
+    @Test
+    public void hasRedeemed_nullMilestone_returnsFalse() {
+        Person person = new PersonBuilder(ALICE).build();
+
+        assertFalse(person.hasRedeemed(null));
+    }
+
+    @Test
     public void equals_differentRedeemedMilestoneRewardHistory_returnsFalse() {
         RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
                 .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
