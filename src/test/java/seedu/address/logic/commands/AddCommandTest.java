@@ -25,6 +25,7 @@ import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
@@ -169,6 +170,11 @@ public class AddCommandTest {
 
         @Override
         public void setMilestone(Milestone target, Milestone editedMilestone) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public ReadOnlyMilestoneCatalog getMilestoneCatalog() {
             throw new AssertionError("This method should not be called.");
         }
 

@@ -8,6 +8,7 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
 
 /**
@@ -71,13 +72,13 @@ public interface Model {
 
     /**
      * Deletes the given milestone.
-     * The milestone must exist in the address book.
+     * The milestone must exist in the milestone catalog.
      */
     void deleteMilestone(Milestone target);
 
     /**
      * Adds the given milestone.
-     * Its code must not already exist in the address book.
+     * Its code must not already exist in the milestone catalog.
      */
     void addMilestone(Milestone milestone);
 
@@ -86,6 +87,11 @@ public interface Model {
      * {@code target} must exist, and both milestones must have the same case-insensitive code.
      */
     void setMilestone(Milestone target, Milestone editedMilestone);
+
+    /**
+     * Returns a read-only view of the milestone catalog.
+     */
+    ReadOnlyMilestoneCatalog getMilestoneCatalog();
 
     /**
      * Selects {@code person} for display. The person must be equal to a person in the address book.

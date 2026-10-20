@@ -17,6 +17,8 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
+import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.MilestoneCatalog;
 
 public class StorageManagerTest {
 
@@ -30,7 +32,10 @@ public class StorageManagerTest {
         JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(getTempFilePath("ab"));
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(getTempFilePath("prefs"));
         JsonMenuStorage menuStorage = new JsonMenuStorage(getTempFilePath("menu.json"));
-        storageManager = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage);
+        JsonMilestoneCatalogStorage milestoneCatalogStorage =
+                new JsonMilestoneCatalogStorage(getTempFilePath("milestones.json"));
+        storageManager = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage,
+                milestoneCatalogStorage);
     }
 
     private Path getTempFilePath(String fileName) {
@@ -86,6 +91,25 @@ public class StorageManagerTest {
     @Test
     public void getMenuFilePath_returnsConfiguredPath() {
         assertEquals(getTempFilePath("menu.json"), storageManager.getMenuFilePath());
+    }
+
+    @Test
+    public void milestoneCatalogReadSave() throws Exception {
+        MilestoneCatalog original = new MilestoneCatalog();
+        original.addMilestone(new Milestone("FREE500", "Free drink", 500));
+        storageManager.saveMilestoneCatalog(original);
+
+        assertEquals(original, new MilestoneCatalog(storageManager.readMilestoneCatalog().orElseThrow()));
+    }
+
+    @Test
+    public void readMilestoneCatalog_missingFile_returnsEmpty() throws Exception {
+        assertTrue(storageManager.readMilestoneCatalog().isEmpty());
+    }
+
+    @Test
+    public void getMilestoneCatalogFilePath_returnsConfiguredPath() {
+        assertEquals(getTempFilePath("milestones.json"), storageManager.getMilestoneCatalogFilePath());
     }
 
 }

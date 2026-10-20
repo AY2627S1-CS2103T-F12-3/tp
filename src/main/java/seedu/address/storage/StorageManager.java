@@ -11,6 +11,7 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.menu.ReadOnlyMenu;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 
 /**
  * Manages storage of address book, menu, and user preference data.
@@ -21,15 +22,17 @@ public class StorageManager implements Storage {
     private JsonAddressBookStorage addressBookStorage;
     private JsonUserPrefsStorage userPrefsStorage;
     private final JsonMenuStorage menuStorage;
+    private final JsonMilestoneCatalogStorage milestoneCatalogStorage;
 
     /**
-     * Creates a {@code StorageManager} with the given address book, user prefs, and menu storage.
+     * Creates a {@code StorageManager} with the given address book, user prefs, menu, and milestone catalog storage.
      */
     public StorageManager(JsonAddressBookStorage addressBookStorage, JsonUserPrefsStorage userPrefsStorage,
-            JsonMenuStorage menuStorage) {
+            JsonMenuStorage menuStorage, JsonMilestoneCatalogStorage milestoneCatalogStorage) {
         this.addressBookStorage = addressBookStorage;
         this.userPrefsStorage = userPrefsStorage;
         this.menuStorage = menuStorage;
+        this.milestoneCatalogStorage = milestoneCatalogStorage;
     }
 
     // ================ UserPrefs methods ==============================
@@ -86,6 +89,27 @@ public class StorageManager implements Storage {
     public void saveMenu(ReadOnlyMenu menu) throws IOException {
         logger.fine("Attempting to write menu to file: " + menuStorage.getMenuFilePath());
         menuStorage.saveMenu(menu);
+    }
+
+    // ================ Milestone catalog methods ========================
+
+    @Override
+    public Path getMilestoneCatalogFilePath() {
+        return milestoneCatalogStorage.getMilestoneCatalogFilePath();
+    }
+
+    @Override
+    public Optional<ReadOnlyMilestoneCatalog> readMilestoneCatalog() throws DataLoadingException {
+        logger.fine("Attempting to read milestone catalog from file: "
+                + milestoneCatalogStorage.getMilestoneCatalogFilePath());
+        return milestoneCatalogStorage.readMilestoneCatalog();
+    }
+
+    @Override
+    public void saveMilestoneCatalog(ReadOnlyMilestoneCatalog milestoneCatalog) throws IOException {
+        logger.fine("Attempting to write milestone catalog to file: "
+                + milestoneCatalogStorage.getMilestoneCatalogFilePath());
+        milestoneCatalogStorage.saveMilestoneCatalog(milestoneCatalog);
     }
 
 }
