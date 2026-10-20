@@ -34,6 +34,8 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `add-milestone c/FREE500 r/Free drink s/500` : Adds a milestone reward that requires 500 points.
 
+   * `list-milestones` : Lists all milestone rewards with their current indexes.
+
    * `add-order 1 o/Chicken Rice q/2` : Records an order of two Chicken Rice for the 1st contact shown.
 
    * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
@@ -154,6 +156,23 @@ Common errors:
 | `add-menu-item c/CR02 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
 
 These validation failures leave the existing menu unchanged and do not save either data file.
+
+### Listing milestone rewards: `list-milestones`
+
+Lists all milestone rewards with the index used by `edit-milestone` and `delete-milestone`.
+
+Format: `list-milestones`
+
+Milestones are ordered by required score from lowest to highest, then by code. Each entry shows its index, code,
+reward description, and required score. If the catalog is empty, the command displays `No milestones found.`
+
+Example output:
+
+```text
+2 milestone(s) listed!
+1. [FREE500] Free drink (Required score: 500)
+2. [VOUCHER1000] $10 voucher (Required score: 1000)
+```
 
 ### Adding a milestone reward: `add-milestone`
 
@@ -381,5 +400,6 @@ Action | Format, Examples
 **Edit milestone** | `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`<br> e.g., `edit-milestone 1 s/600`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
+**List milestones** | `list-milestones`
 **Update score** | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
 **Help** | `help`

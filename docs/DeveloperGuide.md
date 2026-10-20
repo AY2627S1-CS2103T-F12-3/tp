@@ -241,9 +241,11 @@ stable by delegating them to its catalog.
 the next successfully executed command saves the model. Legacy `milestones` properties in `memberlist.json` are
 ignored, so the address-book file remains responsible only for customer data.
 
-The `add-milestone`, `edit-milestone`, and `delete-milestone` commands expose catalog mutation through the CLI.
-`AddressBookParser` routes each command to its dedicated parser. The milestone parsers share strict tokenization that
-normalizes tabs, rejects unsupported single-letter prefixes, and rejects control characters other than tabs.
+The `list-milestones`, `add-milestone`, `edit-milestone`, and `delete-milestone` commands expose catalog access and
+mutation through the CLI. `ListMilestonesCommand` formats `Model#getMilestoneList()` as a numbered list, making the
+indexes used by edit and delete discoverable. `AddressBookParser` routes each mutating command to its dedicated
+parser. The milestone parsers share strict tokenization that normalizes tabs, rejects unsupported single-letter
+prefixes, and rejects control characters other than tabs.
 
 `AddMilestoneCommandParser` requires a code, reward description, and required score in any order.
 `EditMilestoneCommandParser` requires a displayed index and at least one editable field; its
@@ -258,8 +260,9 @@ required-score order with code as the tie-breaker. Editing a required score can 
 displayed index. None of these commands reads or modifies a person's score or reward-claim records.
 
 The milestone model tests cover validation, sorting, uniqueness, mutation, and read-only views. Command and parser
-tests cover successful mutations, duplicate codes, defensive descriptor copying, reordered edits, index boundaries,
-arbitrary prefix order, duplicate and unsupported prefixes, control characters, and required-score boundaries.
+tests cover numbered listing, empty catalogs, successful mutations, duplicate codes, defensive descriptor copying,
+reordered edits, index boundaries, arbitrary prefix order, duplicate and unsupported prefixes, control characters,
+and required-score boundaries.
 `AddressBookParserTest` checks command routing. The JSON adapter, serializable catalog, storage, `MainApp`, and
 `LogicManager` tests cover invalid data, round trips, startup fallback, and automatic saving.
 
@@ -737,11 +740,16 @@ Use a disposable app home folder for these tests. Start with no `data/menu.json`
 Use a disposable app home folder for these tests. Start with no `data/milestones.json`, so the milestone codes are
 unused. The milestone list is sorted by required score, then by code.
 
+1. Test case: `list-milestones` before adding a milestone<br>
+   Expected: `No milestones found.`
 1. Test case: `add-milestone c/FREE500 r/Free drink s/500`<br>
    Expected: `New milestone added: [FREE500] Free drink (Required score: 500)` and `data/milestones.json` contains the
    milestone.
 1. Test case: `add-milestone s/1000 c/VOUCHER1000 r/$10 voucher`<br>
    Expected: The milestone is added even though the prefixes are in a different order.
+1. Test case: `list-milestones`<br>
+   Expected: Both milestones are shown with numbered indexes. `FREE500` appears first because its required score is
+   lower.
 1. Test case: `add-milestone c/free500 r/Different reward s/700`<br>
    Expected: The duplicate-code error is shown because codes are case-insensitive. The original milestone remains.
 1. Test cases: `add-milestone c/INVALID r/Reward s/+500`, `add-milestone c/INVALID r/Reward s/0`, and
