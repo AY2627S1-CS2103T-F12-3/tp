@@ -22,6 +22,7 @@ public class Order {
     public static final String QUANTITY_CONSTRAINTS = "Quantity must be a positive whole number";
     public static final String SCORE_GAINED_CONSTRAINTS = "Score gained must be a non-negative whole number";
     public static final String RECORDED_AT_CONSTRAINTS = "Timestamp must be a valid ISO-8601 instant";
+    public static final int CENTS_PER_POINT = 10;
 
     public final String itemCode;
     public final String itemName;
@@ -96,7 +97,7 @@ public class Order {
     public static long calculateScoreGained(int priceInCents, int quantity) {
         checkArgument(FoodItem.isValidPrice(priceInCents), FoodItem.MESSAGE_PRICE_CONSTRAINTS);
         checkArgument(isValidQuantity(quantity), QUANTITY_CONSTRAINTS);
-        return (long) priceInCents * quantity / 10;
+        return (long) priceInCents * quantity / CENTS_PER_POINT;
     }
 
     /**
