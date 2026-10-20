@@ -107,7 +107,8 @@ public class DeleteOrderCommandTest {
         Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Order scoredOrder = new Order("3A", "Nasi Lemak", 2, 96);
         Person withOrder = new Person(original.getName(), original.getPhone(), original.getTags(),
-                new Score(96), original.getOrderHistory().addOrder(scoredOrder));
+                new Score(96), original.getOrderHistory().addOrder(scoredOrder),
+                original.getRedeemedMilestoneRewardHistory());
         model.setPerson(original, withOrder);
 
         Index newOrderIndex = Index.fromOneBased(withOrder.getOrderHistory().getOrders().size());
@@ -123,7 +124,8 @@ public class DeleteOrderCommandTest {
         Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Order scoredOrder = new Order("3A", "Nasi Lemak", 1, 48);
         Person withOrder = new Person(original.getName(), original.getPhone(), original.getTags(),
-                new Score(0), original.getOrderHistory().addOrder(scoredOrder));
+                new Score(0), original.getOrderHistory().addOrder(scoredOrder),
+                original.getRedeemedMilestoneRewardHistory());
         model.setPerson(original, withOrder);
 
         Index newOrderIndex = Index.fromOneBased(withOrder.getOrderHistory().getOrders().size());

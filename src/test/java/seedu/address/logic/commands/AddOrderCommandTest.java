@@ -87,7 +87,7 @@ public class AddOrderCommandTest {
         Model model = modelWithMenuItem();
         Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person nearLimit = new Person(original.getName(), original.getPhone(), original.getTags(),
-                new Score(999999950), original.getOrderHistory());
+                new Score(999999950), original.getOrderHistory(), original.getRedeemedMilestoneRewardHistory());
         model.setPerson(original, nearLimit);
 
         CommandException exception = assertThrows(CommandException.class, () ->
@@ -102,7 +102,7 @@ public class AddOrderCommandTest {
         Model model = modelWithMenuItem();
         Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person nearLimit = new Person(original.getName(), original.getPhone(), original.getTags(),
-                new Score(999999903), original.getOrderHistory());
+                new Score(999999903), original.getOrderHistory(), original.getRedeemedMilestoneRewardHistory());
         model.setPerson(original, nearLimit);
 
         new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY).execute(model);
