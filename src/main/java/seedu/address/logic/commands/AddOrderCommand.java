@@ -68,27 +68,32 @@ public class AddOrderCommand extends Command {
 
         FoodItem foodItem = model.findFoodItemByCode(itemCode)
                 .orElseThrow(() -> new CommandException(MESSAGE_ITEM_NOT_IN_MENU));
-        Person personWithNewOrder = lastShownList.get(index.getZeroBased());
+        Person person = lastShownList.get(index.getZeroBased());
+        Person personWithOrderAdded = createPersonWithOrder(person, foodItem);
+
+        model.setPerson(person, personWithOrderAdded);
+        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        model.selectPerson(personWithOrderAdded);
+
+        return new CommandResult(generateSuccessMessage(personWithOrderAdded));
+    }
+
+    /** Creates the updated member using the menu item's current name and price. */
+    private Person createPersonWithOrder(Person person, FoodItem foodItem) throws CommandException {
         long scoreGained = Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
-        long updatedScore = personWithNewOrder.getScore().value + scoreGained;
+        long updatedScore = person.getScore().value + scoreGained;
         if (!Score.isValidScore(String.valueOf(updatedScore))) {
             throw new CommandException(MESSAGE_SCORE_TOO_LARGE);
         }
         Order order = new Order(itemCode, foodItem.getName(), quantity, (int) scoreGained);
 
-        Person personWithOrderAdded = new Person(
-                personWithNewOrder.getName(),
-                personWithNewOrder.getPhone(),
-                personWithNewOrder.getTags(),
+        return new Person(
+                person.getName(),
+                person.getPhone(),
+                person.getTags(),
                 new Score((int) updatedScore),
-                personWithNewOrder.getOrderHistory().addOrder(order)
+                person.getOrderHistory().addOrder(order)
         );
-
-        model.setPerson(personWithNewOrder, personWithOrderAdded);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        model.selectPerson(personWithOrderAdded);
-
-        return new CommandResult(generateSuccessMessage(personWithOrderAdded));
     }
 
     @Override
