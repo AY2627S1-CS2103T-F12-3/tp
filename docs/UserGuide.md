@@ -30,9 +30,9 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `add n/John Doe p/98765432` : Adds a contact named `John Doe` to the Address Book.
 
-   * `add-menu-item c/CR01 n/Chicken Rice p/4.50` : Adds Chicken Rice to the menu at $4.50.
+   * `add-menu-item c/12A n/Dessert p/3.50` : Adds Dessert to the menu at $3.50.
 
-   * `add-order 1 o/Chicken Rice q/2` : Records an order of two Chicken Rice for the 1st contact shown.
+   * `add-order 1 o/1 q/2` : Records an order of two Chicken Rice for the 1st contact shown.
 
    * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
 
@@ -120,12 +120,14 @@ Examples:
 ### Adding a menu item: `add-menu-item`
 
 Adds a food item with a unique code, name, and price to the menu. The item is saved for future sessions.
+On a fresh installation, the menu starts with sample items such as `1` (Chicken Rice), `3A` (Nasi Lemak),
+and `3B` (Nasi Lemak + Chicken).
 
 Format: `add-menu-item c/CODE n/NAME p/PRICE`
 
 * Provide all three prefixes exactly once. They may appear in any order, separated by spaces or tabs.
 * `CODE` must contain one or more letters (`A`–`Z`, `a`–`z`) or digits (`0`–`9`), without spaces or punctuation.
-* Codes are case-sensitive: `CR01` and `cr01` identify different items. A code already in the menu cannot be reused,
+* Codes are case-sensitive: `3A` and `3a` identify different items. A code already in the menu cannot be reused,
   even if the new name or price differs. Different codes may have the same item name.
 * `NAME` must not be blank. Spaces, punctuation, and non-English characters are accepted.
 * Single-letter prefixes such as `c/`, `n/`, and `p/` are interpreted as arguments when preceded by a space or tab;
@@ -136,20 +138,20 @@ Format: `add-menu-item c/CODE n/NAME p/PRICE`
 
 Examples:
 
-* `add-menu-item c/CR01 n/Chicken Rice p/4.50`
-* `add-menu-item p/1.20 n/Coffee c/CF01`
+* `add-menu-item c/12A n/Dessert p/3.50`
+* `add-menu-item p/1.20 n/Coffee c/12B`
 
-The first example shows `New menu item added: Chicken Rice` after saving succeeds. The customer list stays as it is;
+The first example shows `New menu item added: Dessert` after saving succeeds. The customer list stays as it is;
 `list` displays customers, not the menu. Menu items are stored separately, and `clear` does not delete them.
 
 Common errors:
 
 | Input | Result and recovery |
 |---|---|
-| Reusing `c/CR01` after adding that code | `A menu item with this code already exists.` Choose a different code. |
-| `add-menu-item c/CR02 n/Dish` | The command format is shown. Supply the missing `p/PRICE`. |
-| `add-menu-item c/CR02 n/Dish p/4.501` | The price constraint is shown. Use at most two decimal places. |
-| `add-menu-item c/CR02 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
+| Reusing `c/12A` after adding that code | `A menu item with this code already exists.` Choose a different code. |
+| `add-menu-item c/13 n/Dish` | The command format is shown. Supply the missing `p/PRICE`. |
+| `add-menu-item c/13 n/Dish p/4.501` | The price constraint is shown. Use at most two decimal places. |
+| `add-menu-item c/13 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
 
 These validation failures leave the existing menu unchanged and do not save either data file.
 
@@ -157,17 +159,26 @@ These validation failures leave the existing menu unchanged and do not save eith
 
 Records an order for a person and adds it to that person's order history.
 
-Format: `add-order INDEX o/ORDER_ITEM q/QUANTITY`
+Format: `add-order INDEX o/ITEM_CODE q/QUANTITY`
 
 * `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
-* `ORDER_ITEM` must contain letters, digits, or spaces, and cannot be blank. Special characters such as `/` and `-` are not accepted.
+* `ITEM_CODE` must be an existing menu item's case-sensitive code. Add the item with `add-menu-item` first.
+  Codes contain only letters and digits, without spaces or punctuation.
 * `QUANTITY` must be a positive whole number.
 * Provide `o/` and `q/` once each. They can appear in either order.
+* The order earns 10 points for each $1 spent (`price × quantity`), rounded down to a whole point. These points are
+  added to the person's score. An order that would raise the score above `999999999` is rejected.
 * After a successful order, the full person list is shown.
 
 Examples:
-* `add-order 1 o/Chicken Rice q/2` records two Chicken Rice for the 1st person shown.
-* `add-order 2 q/1 o/Coffee` records one Coffee for the 2nd person shown.
+* With the sample menu, `add-order 1 o/1 q/2` records two Chicken Rice for the 1st person shown and adds 90 points
+  to their score ($4.50 × 2 × 10).
+* With the sample menu, `add-order 2 q/1 o/3B` records one Nasi Lemak + Chicken for the 2nd person shown.
+
+An unknown code shows `The item code is not in the menu.` and leaves the person's history unchanged. Each order saves
+the code, the menu item's name at the time of the order, the quantity, the recorded time, and `scoreGained`. The
+order history shows the saved name and points gained for each order, even if the menu item's name later changes. The
+saved `scoreGained` also stays the same if the menu price changes.
 
 ### Deleting an order: `delete-order`
 
@@ -178,6 +189,8 @@ Format: `delete-order INDEX o/ORDER_INDEX`
 * `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
 * `ORDER_INDEX` is the positive index number of the order in that person's order history, counted from the oldest order.
 * Provide `o/` exactly once.
+* Deleting an order subtracts its saved `scoreGained` from the person's score. If this would make the score negative,
+  the deletion is rejected; update the person's score first if needed.
 * After a successful deletion, the full person list is shown.
 
 Examples:
@@ -260,13 +273,18 @@ Advanced users can edit these files while the app is closed.
 
 Customer records contain a name, phone number, tags, score, and order history.
 Unknown properties in older data files are ignored and omitted the next time the data is saved.
+Each entry in `orderHistory` uses `itemCode` (for example, `"itemCode": "3A"`), `itemName`, `quantity`,
+`recordedAt`, and `scoreGained` (a non-negative whole number of points). `itemName` is the name recorded with that
+order, not a live lookup from the menu. Older orders without `scoreGained` load with zero points. If an existing file
+lacks either `itemCode` or `itemName`, back it up and add the missing field to each order before opening this version.
+Use the corresponding menu item's code or name where possible. Orders missing either field cannot be loaded.
 
 In `menu.json`, each entry in `foodItems` has a string `code`, a string `name`, and a positive integer
 `priceInCents`. For example, the command price `p/4.50` is saved as `"priceInCents": 450`.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If the customer file is invalid, the app starts with an empty address book. If the menu file is missing or invalid,
-the app starts with an empty menu. A missing customer file instead loads sample contacts. Loading does not replace
+If the customer file is invalid, the app starts with an empty address book. A missing customer file loads sample
+contacts, and a missing menu file loads the sample menu. An invalid menu file starts with an empty menu. Loading does not replace
 an invalid file, but the next successfully executed command attempts to save both files and can overwrite the
 invalid data. Back up both files before editing them, and restore a valid backup before running commands if you
 need to recover existing records.<br>
@@ -299,7 +317,7 @@ from the old home folder into the new home folder's `data` directory.
 Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
-**Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/CR01 n/Chicken Rice p/4.50`
+**Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
