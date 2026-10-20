@@ -32,6 +32,8 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `add-menu-item c/CR01 n/Chicken Rice p/4.50` : Adds Chicken Rice to the menu at $4.50.
 
+   * `update-menu-item CR01 c/CR03 p/5.00` : Updates the code and price of Chicken Rice.
+
    * `add-order 1 o/Chicken Rice q/2` : Records an order of two Chicken Rice for the 1st contact shown.
 
    * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
@@ -152,6 +154,37 @@ Common errors:
 | `add-menu-item c/CR02 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
 
 These validation failures leave the existing menu unchanged and do not save either data file.
+
+### Updating a menu item: `update-menu-item`
+
+Updates an existing menu item using its current code. The item is saved for future sessions.
+
+Format: `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`
+
+* `CURRENT_CODE` identifies the existing menu item. It must contain one or more letters or digits, without spaces
+  or punctuation.
+* `c/NEW_CODE` changes the item's code. The new code must be alphanumeric and must not already exist in the menu.
+* `n/NAME` changes the item's name. The name must not be blank.
+* `p/PRICE` changes the item's price. Prices use the same dollar format as `add-menu-item`.
+* At least one of `c/NEW_CODE`, `n/NAME`, or `p/PRICE` must be provided. They may appear in any order.
+* Fields that are not provided retain their existing values.
+
+Examples:
+
+* `update-menu-item CR01 n/Roasted Chicken Rice` changes only the name.
+* `update-menu-item CR01 p/5.00` changes only the price.
+* `update-menu-item CR01 c/CR03 n/Roasted Chicken Rice p/5.00` changes the code, name, and price.
+
+Common errors:
+
+| Input | Result and recovery |
+|---|---|
+| `update-menu-item UNKNOWN n/Dish` | The item-not-found error is shown. Enter the current code of an existing item. |
+| `update-menu-item CR01 c/CF01` | The duplicate-code error is shown. Choose a code that is not already in the menu. |
+| `update-menu-item CR01` | The command format is shown. Supply at least one field to update. |
+| `update-menu-item CR01 p/4.501` | The price constraint is shown. Use at most two decimal places. |
+
+Validation failures leave the existing menu item unchanged.
 
 ### Recording an order: `add-order`
 
@@ -304,6 +337,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/CR01 n/Chicken Rice p/4.50`
+**Update menu item** | `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `update-menu-item CR01 c/CR03 p/5.00`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
