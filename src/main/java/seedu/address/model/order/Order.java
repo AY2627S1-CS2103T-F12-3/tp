@@ -7,57 +7,49 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
+import seedu.address.model.menu.FoodItem;
+
 /**
  * Represents an order in the address book.
- * Guarantees: immutable; item name and quantity are valid as declared in
- * {@link #isValidItemName(String)} and {@link #isValidQuantity(int)}; recorded time is present, and its string
+ * Guarantees: immutable; item code and quantity are valid as declared in
+ * {@link FoodItem#isValidCode(String)} and {@link #isValidQuantity(int)}; recorded time is present, and its string
  * representation is valid as declared in {@link #isValidRecordedAt(String)}.
  */
 public class Order {
 
-    public static final String ITEM_NAME_CONSTRAINTS =
-            "Item name must contain only alphanumeric characters and spaces, and cannot be blank";
+    public static final String ITEM_CODE_CONSTRAINTS = FoodItem.MESSAGE_CODE_CONSTRAINTS;
     public static final String QUANTITY_CONSTRAINTS = "Quantity must be a positive whole number";
     public static final String RECORDED_AT_CONSTRAINTS = "Timestamp must be a valid ISO-8601 instant";
-    private static final String ITEM_NAME_VALIDATION_REGEX = "[\\p{Alnum}]+(?: +[\\p{Alnum}]+)*";
-
-    public final String itemName;
+    public final String itemCode;
     public final int quantity;
     public final Instant recordedAt;
 
     /**
      * Constructs an {@code Order}.
      *
-     * @param itemName Name of the item bought.
+     * @param itemCode Code of the menu item bought.
      * @param quantity Number of units bought; must be positive.
      */
-    public Order(String itemName, int quantity) {
-        this(itemName, quantity, Instant.now());
+    public Order(String itemCode, int quantity) {
+        this(itemCode, quantity, Instant.now());
     }
 
     /**
      * Constructs an {@code Order} with the given recorded time.
      * This constructor is also useful when restoring an order from storage.
      *
-     * @param itemName Name of the item bought.
+     * @param itemCode Code of the menu item bought.
      * @param quantity Number of units bought; must be positive.
      * @param recordedAt Time at which the order was recorded.
      */
-    public Order(String itemName, int quantity, Instant recordedAt) {
-        requireNonNull(itemName);
+    public Order(String itemCode, int quantity, Instant recordedAt) {
+        requireNonNull(itemCode);
         requireNonNull(recordedAt, RECORDED_AT_CONSTRAINTS);
-        checkArgument(isValidItemName(itemName), ITEM_NAME_CONSTRAINTS);
+        checkArgument(FoodItem.isValidCode(itemCode), ITEM_CODE_CONSTRAINTS);
         checkArgument(isValidQuantity(quantity), QUANTITY_CONSTRAINTS);
-        this.itemName = itemName;
+        this.itemCode = itemCode;
         this.quantity = quantity;
         this.recordedAt = recordedAt;
-    }
-
-    /**
-     * Returns true if a given item name contains only alphanumeric words separated by spaces.
-     */
-    public static boolean isValidItemName(String test) {
-        return test != null && test.matches(ITEM_NAME_VALIDATION_REGEX);
     }
 
     /**
@@ -90,14 +82,14 @@ public class Order {
         if (!(other instanceof Order otherOrder)) {
             return false;
         }
-        return itemName.equals(otherOrder.itemName)
+        return itemCode.equals(otherOrder.itemCode)
                 && quantity == otherOrder.quantity
                 && recordedAt.equals(otherOrder.recordedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(itemName, quantity, recordedAt);
+        return Objects.hash(itemCode, quantity, recordedAt);
     }
 
     /**
@@ -105,6 +97,6 @@ public class Order {
      */
     @Override
     public String toString() {
-        return '[' + itemName + " x " + quantity + " at " + recordedAt + ']';
+        return '[' + itemCode + " x " + quantity + " at " + recordedAt + ']';
     }
 }

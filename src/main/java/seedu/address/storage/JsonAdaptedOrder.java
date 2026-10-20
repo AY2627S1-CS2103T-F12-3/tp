@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.menu.FoodItem;
 import seedu.address.model.order.Order;
 
 /**
@@ -13,19 +14,19 @@ import seedu.address.model.order.Order;
  */
 public class JsonAdaptedOrder {
 
-    private final String itemName;
+    private final String itemCode;
     private final Integer quantity;
     private final String recordedAt;
 
     /**
-     * Constructs a {@code JsonAdaptedOrder} with the given {@code itemName}, {@code quantity}, {@code recordedAt}.
+     * Constructs a {@code JsonAdaptedOrder} with the given {@code itemCode}, {@code quantity}, {@code recordedAt}.
      */
     @JsonCreator
     public JsonAdaptedOrder(
-            @JsonProperty("itemName") String itemName,
+            @JsonProperty("itemCode") String itemCode,
             @JsonProperty("quantity") Integer quantity,
             @JsonProperty("recordedAt") String recordedAt) {
-        this.itemName = itemName;
+        this.itemCode = itemCode;
         this.quantity = quantity;
         this.recordedAt = recordedAt;
     }
@@ -34,7 +35,7 @@ public class JsonAdaptedOrder {
      *  Converts a given {@code Order} into this class for Jackson use
      */
     public JsonAdaptedOrder(Order source) {
-        itemName = source.itemName;
+        itemCode = source.itemCode;
         quantity = source.quantity;
         recordedAt = source.recordedAt.toString();
     }
@@ -45,8 +46,8 @@ public class JsonAdaptedOrder {
      * @throws IllegalValueException if there were any data constraints violated in the adapted order.
      */
     public Order toModelType() throws IllegalValueException {
-        if (!Order.isValidItemName(itemName)) {
-            throw new IllegalValueException(Order.ITEM_NAME_CONSTRAINTS);
+        if (!FoodItem.isValidCode(itemCode)) {
+            throw new IllegalValueException(Order.ITEM_CODE_CONSTRAINTS);
         }
         if (quantity == null || !Order.isValidQuantity(quantity)) {
             throw new IllegalValueException(Order.QUANTITY_CONSTRAINTS);
@@ -54,6 +55,6 @@ public class JsonAdaptedOrder {
         if (!Order.isValidRecordedAt(recordedAt)) {
             throw new IllegalValueException(Order.RECORDED_AT_CONSTRAINTS);
         }
-        return new Order(itemName, quantity, Instant.parse(recordedAt));
+        return new Order(itemCode, quantity, Instant.parse(recordedAt));
     }
 }

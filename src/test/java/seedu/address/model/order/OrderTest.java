@@ -13,26 +13,6 @@ public class OrderTest {
     private static final Instant VALID_RECORDED_AT = Instant.parse("2026-01-01T00:00:00Z");
 
     @Test
-    public void isValidItemName_validName_returnsTrue() {
-        assertTrue(Order.isValidItemName("pancake"));
-        assertTrue(Order.isValidItemName("Chicken Rice"));
-        assertTrue(Order.isValidItemName("Chicken  Rice 2"));
-    }
-
-    @Test
-    public void isValidItemName_invalidNames_returnsFalse() {
-        assertFalse(Order.isValidItemName(""));
-        assertFalse(Order.isValidItemName("  "));
-        assertFalse(Order.isValidItemName(null));
-        assertFalse(Order.isValidItemName("chicken p/asdad"));
-        assertFalse(Order.isValidItemName("chicken a/asdad"));
-        assertFalse(Order.isValidItemName("chicken-rice"));
-        assertFalse(Order.isValidItemName("chicken\trice"));
-        assertFalse(Order.isValidItemName(" chicken"));
-        assertFalse(Order.isValidItemName("chicken "));
-    }
-
-    @Test
     public void isValidQuantity_positiveQuantity_returnsTrue() {
         assertTrue(Order.isValidQuantity(1));
         assertTrue(Order.isValidQuantity(10));
@@ -56,50 +36,50 @@ public class OrderTest {
     }
 
     @Test
-    public void constructor_validItemNameAndQuantity_setsRecordedAt() {
-        Order order = new Order("pancake", 1);
+    public void constructor_validItemCodeAndQuantity_setsRecordedAt() {
+        Order order = new Order("PC01", 1);
 
-        assertEquals("pancake", order.itemName);
+        assertEquals("PC01", order.itemCode);
         assertEquals(1, order.quantity);
         assertTrue(Order.isValidRecordedAt(order.recordedAt.toString()));
     }
 
     @Test
     public void constructor_validFields_createsOrder() {
-        Order order = new Order("pancake", 1, VALID_RECORDED_AT);
+        Order order = new Order("PC01", 1, VALID_RECORDED_AT);
 
-        assertEquals("pancake", order.itemName);
+        assertEquals("PC01", order.itemCode);
         assertEquals(1, order.quantity);
         assertEquals(VALID_RECORDED_AT, order.recordedAt);
     }
 
     @Test
-    public void constructor_nullItemName_throwsNullPointerException() {
+    public void constructor_nullItemCode_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new Order(null, 1));
     }
 
     @Test
-    public void constructor_nullItemNameWithTimestamp_throwsNullPointerException() {
+    public void constructor_nullItemCodeWithTimestamp_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new Order(null, 1, VALID_RECORDED_AT));
     }
 
     @Test
     public void constructor_negativeQuantity_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Order("pancake", -1));
+        assertThrows(IllegalArgumentException.class, () -> new Order("PC01", -1));
     }
 
     @Test
-    public void constructor_blankItemName_throwsIllegalArgumentException() {
+    public void constructor_blankItemCode_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> new Order("  ", 1, VALID_RECORDED_AT));
     }
 
     @Test
     public void constructor_zeroQuantity_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Order("pancake", 0, VALID_RECORDED_AT));
+        assertThrows(IllegalArgumentException.class, () -> new Order("PC01", 0, VALID_RECORDED_AT));
     }
 
     @Test
     public void constructor_nullRecordedAt_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new Order("pancake", 1, null));
+        assertThrows(NullPointerException.class, () -> new Order("PC01", 1, null));
     }
 }
