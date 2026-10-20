@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddMenuItemCommand;
+import seedu.address.logic.commands.AddMilestoneCommand;
 import seedu.address.logic.commands.AddOrderCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
@@ -30,6 +31,7 @@ import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.menu.FoodItem;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
@@ -51,6 +53,21 @@ public class AddressBookParserTest {
     public void parseCommand_addMenuItemMissingArguments_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddMenuItemCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(AddMenuItemCommand.COMMAND_WORD));
+    }
+
+    @Test
+    public void parseCommand_addMilestone() throws Exception {
+        assertEquals(new AddMilestoneCommand(new Milestone("FREE500", "Free drink", 500)),
+                parser.parseCommand(AddMilestoneCommand.COMMAND_WORD
+                        + " c/FREE500 r/Free drink s/500"));
+    }
+
+    @Test
+    public void parseCommand_addMilestoneMissingArguments_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                AddMilestoneCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expectedMessage, () ->
+                parser.parseCommand(AddMilestoneCommand.COMMAND_WORD));
     }
 
     @Test

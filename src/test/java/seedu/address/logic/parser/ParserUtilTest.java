@@ -50,6 +50,21 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseRequiredScore_invalidInput_throwsParseException() {
+        for (String input : List.of("", "0", "-1", "+500", "1.5", "1e3", "2147483648")) {
+            assertThrows(ParseException.class, ParserUtil.MESSAGE_INVALID_REQUIRED_SCORE, () ->
+                    ParserUtil.parseRequiredScore(input));
+        }
+    }
+
+    @Test
+    public void parseRequiredScore_validInput_returnsScore() throws Exception {
+        assertEquals(1, ParserUtil.parseRequiredScore("1"));
+        assertEquals(500, ParserUtil.parseRequiredScore(" 00500 "));
+        assertEquals(Integer.MAX_VALUE, ParserUtil.parseRequiredScore("2147483647"));
+    }
+
+    @Test
     public void parseName_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseName((String) null));
     }

@@ -21,6 +21,9 @@ import seedu.address.model.tag.Tag;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
+    public static final String MESSAGE_INVALID_REQUIRED_SCORE =
+            "Required score must be a positive whole number no greater than 2147483647.";
+    private static final String REQUIRED_SCORE_VALIDATION_REGEX = "[0-9]+";
 
     /**
      * Parses {@code oneBasedIndex} into an {@code Index} and returns it. Leading and trailing whitespaces will be
@@ -33,6 +36,30 @@ public class ParserUtil {
             throw new ParseException(MESSAGE_INVALID_INDEX);
         }
         return Index.fromOneBased(Integer.parseInt(trimmedIndex));
+    }
+
+    /**
+     * Parses {@code requiredScore} into a positive integer.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the specified score is not a positive integer within the supported range.
+     */
+    public static int parseRequiredScore(String requiredScore) throws ParseException {
+        requireNonNull(requiredScore);
+        String trimmedRequiredScore = requiredScore.trim();
+        if (!trimmedRequiredScore.matches(REQUIRED_SCORE_VALIDATION_REGEX)) {
+            throw new ParseException(MESSAGE_INVALID_REQUIRED_SCORE);
+        }
+
+        try {
+            int parsedRequiredScore = Integer.parseInt(trimmedRequiredScore);
+            if (parsedRequiredScore <= 0) {
+                throw new ParseException(MESSAGE_INVALID_REQUIRED_SCORE);
+            }
+            return parsedRequiredScore;
+        } catch (NumberFormatException e) {
+            throw new ParseException(MESSAGE_INVALID_REQUIRED_SCORE, e);
+        }
     }
 
     /**

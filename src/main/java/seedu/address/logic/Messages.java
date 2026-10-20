@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import seedu.address.logic.parser.Prefix;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
 /**
@@ -42,6 +43,14 @@ public class Messages {
                 .append("; Tags: ");
         person.getTags().forEach(builder::append);
         return builder.toString();
+    }
+
+    /**
+     * Formats the {@code milestone} for display to the user.
+     */
+    public static String format(Milestone milestone) {
+        return String.format("[%s] %s (Required score: %d)", milestone.getCode(),
+                milestone.getRewardDescription(), milestone.getRequiredScore());
     }
 
 }
