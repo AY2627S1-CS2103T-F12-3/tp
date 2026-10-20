@@ -86,7 +86,8 @@ public class DeleteOrderCommand extends Command {
                 person.getPhone(),
                 person.getTags(),
                 new Score((int) updatedScore),
-                updatedOrderHistory
+                updatedOrderHistory,
+                person.getRedeemedMilestoneRewardHistory()
         );
     }
 

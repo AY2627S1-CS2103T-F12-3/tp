@@ -13,10 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import seedu.address.model.AddressBook;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.order.Order;
 import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Score;
+import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 
 /**
  * A utility class containing a list of {@code Person} objects to be used in tests.
@@ -50,6 +52,9 @@ public class TypicalPersons {
                     new OrderHistory()
                             .addOrder(new Order("Potato", "Potato", 1, BENSON_POTATO_ORDER_TIME))
             )
+            .withRedeemedMilestoneRewardHistory(
+                    new RedeemedMilestoneRewardHistory()
+                            .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10)))
             .build();
     public static final Person CARL = new PersonBuilder()
             .withName("Carl Kurz")

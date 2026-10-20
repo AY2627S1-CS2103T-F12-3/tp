@@ -92,7 +92,8 @@ public class AddOrderCommand extends Command {
                 person.getPhone(),
                 person.getTags(),
                 new Score((int) updatedScore),
-                person.getOrderHistory().addOrder(order)
+                person.getOrderHistory().addOrder(order),
+                person.getRedeemedMilestoneRewardHistory()
         );
     }
 

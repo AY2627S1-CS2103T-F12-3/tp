@@ -14,20 +14,22 @@ import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.order.Order;
 import seedu.address.model.order.OrderHistory;
+import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 import seedu.address.testutil.PersonBuilder;
 
 public class PersonTest {
 
     @Test
-    public void asObservableList_modifyList_throwsUnsupportedOperationException() {
+    public void getTags_modifyReturnedSet_throwsUnsupportedOperationException() {
         Person person = new PersonBuilder().build();
         assertThrows(UnsupportedOperationException.class, () -> person.getTags().remove(0));
     }
 
     @Test
-    public void isSamePerson() {
+    public void isSamePerson_sameAndDifferentDetails_returnsExpectedResult() {
         // same object -> returns true
         assertTrue(ALICE.isSamePerson(ALICE));
 
@@ -54,7 +56,7 @@ public class PersonTest {
     }
 
     @Test
-    public void equals() {
+    public void equals_sameAndDifferentPersons_returnsExpectedResult() {
         // same values -> returns true
         Person aliceCopy = new PersonBuilder(ALICE).build();
         assertTrue(ALICE.equals(aliceCopy));
@@ -111,17 +113,81 @@ public class PersonTest {
 
         assertEquals(aliceWithHistory, aliceCopyWithSameHistory);
     }
+    @Test
+    public void constructor_nullRedeemedMilestoneRewardHistory_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new Person(
+                ALICE.getName(), ALICE.getPhone(), ALICE.getTags(), ALICE.getScore(),
+                ALICE.getOrderHistory(), null));
+    }
+
+    @Test
+    public void getRedeemedMilestoneRewardHistory_existingHistory_returnsHistory() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
+        Person person = new Person(ALICE.getName(), ALICE.getPhone(), ALICE.getTags(), ALICE.getScore(),
+                ALICE.getOrderHistory(), history);
+
+        assertEquals(history, person.getRedeemedMilestoneRewardHistory());
+    }
+
+    @Test
+    public void hasRedeemed_existingMilestone_returnsTrue() {
+        Milestone milestone = new Milestone("WELCOME", "Free drink", 10);
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(milestone);
+        Person person = new PersonBuilder(ALICE).withRedeemedMilestoneRewardHistory(history).build();
+
+        assertTrue(person.hasRedeemed(milestone));
+    }
+
+    @Test
+    public void hasRedeemed_equalMilestone_returnsTrue() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
+        Person person = new PersonBuilder(ALICE).withRedeemedMilestoneRewardHistory(history).build();
+
+        assertTrue(person.hasRedeemed(new Milestone("WELCOME", "Free drink", 10)));
+    }
+
+    @Test
+    public void hasRedeemed_absentMilestone_returnsFalse() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
+        Person person = new PersonBuilder(ALICE).withRedeemedMilestoneRewardHistory(history).build();
+
+        assertFalse(person.hasRedeemed(new Milestone("BIRTHDAY", "Birthday reward", 20)));
+    }
+
+    @Test
+    public void hasRedeemed_nullMilestone_returnsFalse() {
+        Person person = new PersonBuilder(ALICE).build();
+
+        assertFalse(person.hasRedeemed(null));
+    }
+
+    @Test
+    public void equals_differentRedeemedMilestoneRewardHistory_returnsFalse() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
+        Person personWithReward = new Person(ALICE.getName(), ALICE.getPhone(), ALICE.getTags(), ALICE.getScore(),
+                ALICE.getOrderHistory(), history);
+
+        assertFalse(ALICE.equals(personWithReward));
+    }
+
+    @Test
     public void hashCode_sameFields_sameHashCode() {
         Person aliceCopy = new PersonBuilder(ALICE).build();
         assertEquals(ALICE.hashCode(), aliceCopy.hashCode());
     }
 
     @Test
-    public void toStringMethod() {
+    public void toString_allFields_returnsExpectedString() {
         String expected = Person.class.getCanonicalName()
                 + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", tags=" + ALICE.getTags() + ", score=" + ALICE.getScore()
-                + ", order history=" + ALICE.getOrderHistory() + "}";
+                + ", order history=" + ALICE.getOrderHistory()
+                + ", redeemed milestone rewards=" + ALICE.getRedeemedMilestoneRewardHistory() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }
