@@ -153,6 +153,20 @@ Common errors:
 
 These validation failures leave the existing menu unchanged and do not save either data file.
 
+### Deleting a menu item: `delete-menu-item`
+
+Deletes the menu item with the specified code and saves the updated menu.
+
+Format: `delete-menu-item c/CODE`
+
+* Provide `c/` exactly once, with a nonblank alphanumeric code. Extra arguments are rejected.
+* Codes are case-sensitive. Deleting `CR01` leaves an item with code `cr01` unchanged.
+* If the code does not exist, the app shows `No menu item with this code exists.` and leaves the menu unchanged.
+* Successful deletion shows, for example, `Deleted menu item: CR01 (Chicken Rice)`.
+* Customer records, existing order histories, and milestone rewards are unchanged. The deleted code can be reused.
+
+Example: `delete-menu-item c/CR01`
+
 ### Recording an order: `add-order`
 
 Records an order for a person and adds it to that person's order history.
@@ -304,6 +318,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/CR01 n/Chicken Rice p/4.50`
+**Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`

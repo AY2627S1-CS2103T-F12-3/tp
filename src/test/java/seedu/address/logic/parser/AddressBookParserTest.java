@@ -20,6 +20,7 @@ import seedu.address.logic.commands.AddMenuItemCommand;
 import seedu.address.logic.commands.AddOrderCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeleteMenuItemCommand;
 import seedu.address.logic.commands.DeleteOrderCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
@@ -40,6 +41,11 @@ import seedu.address.testutil.PersonUtil;
 public class AddressBookParserTest {
 
     private final AddressBookParser parser = new AddressBookParser();
+
+    @Test
+    public void parseCommand_deleteMenuItem() throws Exception {
+        assertEquals(new DeleteMenuItemCommand("CR01"), parser.parseCommand("delete-menu-item c/CR01"));
+    }
 
     @Test
     public void parseCommand_addMenuItem() throws Exception {

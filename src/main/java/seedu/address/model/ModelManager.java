@@ -228,4 +228,9 @@ public class ModelManager implements Model {
     public void addFoodItem(FoodItem foodItem) {
         menu.addFoodItem(foodItem);
     }
+
+    @Override
+    public void deleteFoodItem(FoodItem target) {
+        menu.removeFoodItem(target);
+    }
 }

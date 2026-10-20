@@ -128,6 +128,11 @@ public interface Model {
      */
     void addFoodItem(FoodItem foodItem);
 
+    /**
+     * Deletes the food item equal to {@code target}, which must exist in the menu.
+     */
+    void deleteFoodItem(FoodItem target);
+
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();
 

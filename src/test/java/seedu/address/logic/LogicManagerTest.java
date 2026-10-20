@@ -215,6 +215,70 @@ public class LogicManagerTest {
                 CommandException.class, expectedMessage, expected);
     }
 
+    @Test
+    public void execute_invalidMenuDeletion_preservesSavedData() throws Exception {
+        logic.execute("add-menu-item c/CR01 n/Chicken Rice p/4.50");
+        List<Path> paths = List.of(temporaryFolder.resolve("addressBook.json"), temporaryFolder.resolve("menu.json"),
+                temporaryFolder.resolve("milestones.json"));
+        List<String> saved = List.of(Files.readString(paths.get(0)), Files.readString(paths.get(1)),
+                Files.readString(paths.get(2)));
+
+        for (String input : List.of("delete-menu-item", "delete-menu-item c/", "delete-menu-item 1",
+                "delete-menu-item c/CR01 c/CR02", "delete-menu-item c/CR01 n/extra",
+                "delete-menu-item c/CR01 p/4.50", "delete-menu-item c/CR01!")) {
+            assertThrows(ParseException.class, () -> logic.execute(input));
+        }
+        for (String code : List.of("MISSING", "cr01")) {
+            assertThrows(CommandException.class, () -> logic.execute("delete-menu-item c/" + code));
+        }
+
+        assertEquals(List.of(new FoodItem("CR01", "Chicken Rice", 450)), model.getMenu().getFoodItemList());
+        for (int i = 0; i < paths.size(); i++) {
+            assertEquals(saved.get(i), Files.readString(paths.get(i)));
+        }
+    }
+
+    @Test
+    public void execute_deleteMenuSaveFails_reportsErrorAndCanSaveLater() throws Exception {
+        assertFailedDeletionSaveCanBeRetried(DUMMY_IO_EXCEPTION,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()));
+    }
+
+    @Test
+    public void execute_deleteMenuAccessDenied_reportsErrorAndCanSaveLater() throws Exception {
+        assertFailedDeletionSaveCanBeRetried(DUMMY_AD_EXCEPTION,
+                String.format(LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, DUMMY_AD_EXCEPTION.getMessage()));
+    }
+
+    private void assertFailedDeletionSaveCanBeRetried(IOException failure, String expectedMessage) throws Exception {
+        logic.execute("add-menu-item c/CR01 n/Chicken Rice p/4.50");
+        Path menuPath = temporaryFolder.resolve("menu.json");
+        String saved = Files.readString(menuPath);
+        JsonMenuStorage failingMenuStorage = new JsonMenuStorage(menuPath) {
+            @Override
+            public void saveMenu(ReadOnlyMenu menu) throws IOException {
+                throw failure;
+            }
+        };
+        StorageManager storage = createStorageForDeletion(failingMenuStorage);
+        logic = new LogicManager(model, storage);
+
+        assertThrows(CommandException.class, expectedMessage, () -> logic.execute("delete-menu-item c/CR01"));
+        assertTrue(model.getMenu().getFoodItemList().isEmpty());
+        assertEquals(saved, Files.readString(menuPath));
+
+        storage = createStorageForDeletion(new JsonMenuStorage(menuPath));
+        logic = new LogicManager(model, storage);
+        logic.execute("list");
+        assertTrue(storage.readMenu().orElseThrow().getFoodItemList().isEmpty());
+    }
+
+    private StorageManager createStorageForDeletion(JsonMenuStorage menuStorage) {
+        return new StorageManager(new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")),
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json")), menuStorage,
+                new JsonMilestoneCatalogStorage(temporaryFolder.resolve("milestones.json")));
+    }
+
     private void assertCommandFailureForExceptionFromMilestoneCatalogStorage(
             IOException failure, String expectedMessage) {
         JsonMilestoneCatalogStorage milestoneCatalogStorage =
