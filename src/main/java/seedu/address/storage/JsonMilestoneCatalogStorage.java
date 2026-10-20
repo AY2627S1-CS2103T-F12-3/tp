@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -66,7 +67,7 @@ public class JsonMilestoneCatalogStorage {
             }
             return Optional.of(savedCatalog.toModelType());
         } catch (IOException | IllegalValueException e) {
-            logger.info("Could not load milestone catalog from " + filePath + ": " + e.getMessage());
+            logger.log(Level.INFO, "Could not load milestone catalog from " + filePath, e);
             throw new DataLoadingException(e);
         }
     }

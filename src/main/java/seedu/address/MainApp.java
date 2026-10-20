@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
@@ -126,8 +127,8 @@ public class MainApp extends Application {
         try {
             return storage.readMilestoneCatalog().orElseGet(MilestoneCatalog::new);
         } catch (DataLoadingException e) {
-            logger.warning("Milestone catalog file at " + storage.getMilestoneCatalogFilePath()
-                    + " could not be loaded. Will be starting with an empty milestone catalog.");
+            logger.log(Level.WARNING, "Milestone catalog file at " + storage.getMilestoneCatalogFilePath()
+                    + " could not be loaded. Will be starting with an empty milestone catalog.", e);
             return new MilestoneCatalog();
         }
     }
