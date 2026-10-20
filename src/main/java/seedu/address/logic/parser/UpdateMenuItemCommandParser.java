@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CODE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_NEW_CODE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PRICE;
 
 import java.util.Set;
@@ -21,25 +20,25 @@ import seedu.address.model.menu.FoodItem;
 public class UpdateMenuItemCommandParser implements Parser<UpdateMenuItemCommand> {
     private static final Pattern ARGUMENT_PREFIX = Pattern.compile("(?<= )[A-Za-z]/");
     private static final Set<String> SUPPORTED_PREFIXES = Set.of(
-            PREFIX_CODE.getPrefix(), PREFIX_NEW_CODE.getPrefix(), PREFIX_NAME.getPrefix(), PREFIX_PRICE.getPrefix());
+            PREFIX_CODE.getPrefix(), PREFIX_NAME.getPrefix(), PREFIX_PRICE.getPrefix());
 
     @Override
     public UpdateMenuItemCommand parse(String args) throws ParseException {
         requireNonNull(args);
         ArgumentMultimap argMultimap = tokenizeArguments(args);
 
-        if (argMultimap.getPreamble().isEmpty() && argMultimap.getValue(PREFIX_CODE).isPresent()
-                && (argMultimap.getValue(PREFIX_NAME).isPresent()
-                || argMultimap.getValue(PREFIX_PRICE).isPresent()
-                || argMultimap.getValue(PREFIX_NEW_CODE).isPresent())) {
-            argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_CODE, PREFIX_NEW_CODE, PREFIX_NAME, PREFIX_PRICE);
+        if (!argMultimap.getPreamble().isEmpty()
+                && (argMultimap.getValue(PREFIX_CODE).isPresent()
+                || argMultimap.getValue(PREFIX_NAME).isPresent()
+                || argMultimap.getValue(PREFIX_PRICE).isPresent())) {
+            argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_CODE, PREFIX_NAME, PREFIX_PRICE);
 
-            String code = argMultimap.getValue(PREFIX_CODE).get();
-            if (!FoodItem.isValidCode(code)) {
+            String targetCode = argMultimap.getPreamble();
+            if (!FoodItem.isValidCode(targetCode)) {
                 throw new ParseException(FoodItem.MESSAGE_CODE_CONSTRAINTS);
             }
 
-            String newCode = argMultimap.getValue(PREFIX_NEW_CODE).orElse(null);
+            String newCode = argMultimap.getValue(PREFIX_CODE).orElse(null);
             if (newCode != null && !FoodItem.isValidCode(newCode)) {
                 throw new ParseException(FoodItem.MESSAGE_CODE_CONSTRAINTS);
             }
@@ -52,7 +51,7 @@ public class UpdateMenuItemCommandParser implements Parser<UpdateMenuItemCommand
             Integer priceInCents = argMultimap.getValue(PREFIX_PRICE).isPresent()
                     ? AddMenuItemCommandParser.parsePrice(argMultimap.getValue(PREFIX_PRICE).get())
                     : null;
-            return new UpdateMenuItemCommand(code, newCode, name, priceInCents);
+            return new UpdateMenuItemCommand(targetCode, newCode, name, priceInCents);
         }
 
         throw invalidFormat();
@@ -70,7 +69,7 @@ public class UpdateMenuItemCommandParser implements Parser<UpdateMenuItemCommand
                 throw invalidFormat();
             }
         }
-        return ArgumentTokenizer.tokenize(normalizedArgs, PREFIX_CODE, PREFIX_NEW_CODE, PREFIX_NAME, PREFIX_PRICE);
+        return ArgumentTokenizer.tokenize(normalizedArgs, PREFIX_CODE, PREFIX_NAME, PREFIX_PRICE);
     }
 
     private static ParseException invalidFormat() {

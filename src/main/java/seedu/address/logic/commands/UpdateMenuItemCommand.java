@@ -19,8 +19,8 @@ public class UpdateMenuItemCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Updates the details of a menu item identified by its code.\n"
             + "Parameters: "
-            + "c/CURRENT_CODE [nc/NEW_CODE] [n/NAME] [p/PRICE]\n"
-            + "Example: " + COMMAND_WORD + " c/CR01 nc/CR02 n/Roasted Chicken Rice p/5.00";
+            + "CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]\n"
+            + "Example: " + COMMAND_WORD + " CR01 c/CR03 n/Roasted Chicken Rice p/5.00";
 
     public static final String MESSAGE_SUCCESS = "Menu item updated: %s";
     public static final String MESSAGE_ITEM_NOT_FOUND = "A menu item with this code does not exist.";
