@@ -52,6 +52,9 @@ public class MainWindow extends UiPart<Stage> {
     private StackPane profilePanelPlaceholder;
 
     @FXML
+    private StackPane menuPanelPlaceholder;
+
+    @FXML
     private Label noMemberSelectedLabel;
 
     @FXML
@@ -130,6 +133,8 @@ public class MainWindow extends UiPart<Stage> {
 
         StatusBarFooter statusBarFooter = new StatusBarFooter(dataFilePath);
         statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
+
+        menuPanelPlaceholder.getChildren().add(new MenuPanel(logic.getFoodItemList()).getRoot());
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
