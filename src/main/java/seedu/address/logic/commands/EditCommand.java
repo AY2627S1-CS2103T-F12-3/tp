@@ -102,7 +102,8 @@ public class EditCommand extends Command {
         return new Person(
                 updatedName, updatedPhone,
                 updatedTags, updatedScore,
-                updatedOrderHistory
+                updatedOrderHistory,
+                personToEdit.getRedeemedMilestoneRewardHistory()
         );
     }
 

@@ -64,7 +64,8 @@ public class UpdateScoreCommand extends Command {
                 personToUpdate.getPhone(),
                 personToUpdate.getTags(),
                 new Score((int) updatedScore),
-                personToUpdate.getOrderHistory());
+                personToUpdate.getOrderHistory(),
+                personToUpdate.getRedeemedMilestoneRewardHistory());
 
         model.setPerson(personToUpdate, updatedPerson);
         model.selectPerson(updatedPerson);

@@ -68,7 +68,8 @@ public class DeleteOrderCommand extends Command {
                 personToEdit.getPhone(),
                 personToEdit.getTags(),
                 personToEdit.getScore(),
-                updatedOrderHistory
+                updatedOrderHistory,
+                personToEdit.getRedeemedMilestoneRewardHistory()
         );
 
         model.setPerson(personToEdit, editedPerson);
