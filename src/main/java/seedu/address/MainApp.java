@@ -99,12 +99,13 @@ public class MainApp extends Application {
     }
 
     /**
-     * Loads the saved menu, or starts with an empty menu if the file is missing or cannot be loaded.
+     * Loads the saved menu, or starts with a sample menu if the file is missing.
+     * An unreadable menu file results in an empty menu.
      */
     protected ReadOnlyMenu initMenu(Storage storage) {
         logger.info("Using menu file : " + storage.getMenuFilePath());
         try {
-            return storage.readMenu().orElseGet(Menu::new);
+            return storage.readMenu().orElseGet(SampleDataUtil::getSampleMenu);
         } catch (DataLoadingException e) {
             logger.warning("Menu file at " + storage.getMenuFilePath() + " could not be loaded."
                     + " Will be starting with an empty menu.");
