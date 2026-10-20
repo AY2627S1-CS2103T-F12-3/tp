@@ -2,7 +2,6 @@ package seedu.address.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ORDER;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_QUANTITY;
@@ -25,7 +24,7 @@ public class AddOrderCommandParserTest {
     private static final String VALID_QUANTITY = "2";
     private static final String VALID_PERSON_INDEX = "1";
     private static final List<Prefix> OTHER_UNSUPPORTED_PREFIXES =
-            List.of(PREFIX_NAME, PREFIX_EMAIL, PREFIX_TAG, new Prefix("a/"));
+            List.of(PREFIX_NAME, new Prefix("x/"), PREFIX_TAG, new Prefix("y/"));
 
     private final AddOrderCommandParser parser = new AddOrderCommandParser();
 

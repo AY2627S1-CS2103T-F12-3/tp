@@ -5,6 +5,10 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.menu.FoodItem;
+import seedu.address.model.menu.ReadOnlyMenu;
+import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
 
 /**
@@ -62,6 +66,34 @@ public interface Model {
     void setPerson(Person target, Person editedPerson);
 
     /**
+     * Returns true if a milestone with the same case-insensitive code as {@code milestone} exists.
+     */
+    boolean hasMilestone(Milestone milestone);
+
+    /**
+     * Deletes the given milestone.
+     * The milestone must exist in the milestone catalog.
+     */
+    void deleteMilestone(Milestone target);
+
+    /**
+     * Adds the given milestone.
+     * Its code must not already exist in the milestone catalog.
+     */
+    void addMilestone(Milestone milestone);
+
+    /**
+     * Replaces the given milestone {@code target} with {@code editedMilestone}.
+     * {@code target} must exist, and both milestones must have the same case-insensitive code.
+     */
+    void setMilestone(Milestone target, Milestone editedMilestone);
+
+    /**
+     * Returns a read-only view of the milestone catalog.
+     */
+    ReadOnlyMilestoneCatalog getMilestoneCatalog();
+
+    /**
      * Selects {@code person} for display. The person must be equal to a person in the address book.
      * The selected person acts as a snapshot of the person's state and is not updated when the person's data changes.
      *
@@ -81,8 +113,26 @@ public interface Model {
      */
     Optional<Person> getSelectedPerson();
 
+    /**
+     * Returns a read-only view of the menu.
+     */
+    ReadOnlyMenu getMenu();
+
+    /**
+     * Returns true if a menu item with the same code exists.
+     */
+    boolean hasFoodItem(FoodItem foodItem);
+
+    /**
+     * Adds a food item whose code is not already in the menu.
+     */
+    void addFoodItem(FoodItem foodItem);
+
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();
+
+    /** Returns an unmodifiable view of the milestone list. */
+    ObservableList<Milestone> getMilestoneList();
 
     /**
      * Updates the filter of the filtered person list to filter by the given {@code predicate}.

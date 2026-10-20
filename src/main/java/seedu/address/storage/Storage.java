@@ -8,6 +8,8 @@ import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.menu.ReadOnlyMenu;
+import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 
 /**
  * API of the Storage component
@@ -53,5 +55,43 @@ public interface Storage {
      * @throws IOException if there was any problem writing to the file.
      */
     void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException;
+
+    /**
+     * Returns the file path of the menu data file.
+     */
+    Path getMenuFilePath();
+
+    /**
+     * Returns the saved menu, or {@code Optional.empty()} if the file is missing.
+     *
+     * @throws DataLoadingException if the menu cannot be loaded.
+     */
+    Optional<ReadOnlyMenu> readMenu() throws DataLoadingException;
+
+    /**
+     * Saves the given menu.
+     *
+     * @throws IOException if the menu cannot be saved.
+     */
+    void saveMenu(ReadOnlyMenu menu) throws IOException;
+
+    /**
+     * Returns the file path of the milestone catalog data file.
+     */
+    Path getMilestoneCatalogFilePath();
+
+    /**
+     * Returns the saved milestone catalog, or {@code Optional.empty()} if the file is missing.
+     *
+     * @throws DataLoadingException if the milestone catalog cannot be loaded.
+     */
+    Optional<ReadOnlyMilestoneCatalog> readMilestoneCatalog() throws DataLoadingException;
+
+    /**
+     * Saves the given milestone catalog.
+     *
+     * @throws IOException if the milestone catalog cannot be saved.
+     */
+    void saveMilestoneCatalog(ReadOnlyMilestoneCatalog milestoneCatalog) throws IOException;
 
 }
