@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -12,8 +11,8 @@
 <GridPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
           styleClass="profile-panel" minWidth="0">
   <columnConstraints>
-    <ColumnConstraints percentWidth="54" />
-    <ColumnConstraints percentWidth="46" />
+    <ColumnConstraints percentWidth="60" />
+    <ColumnConstraints percentWidth="40" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints vgrow="ALWAYS" />
@@ -25,11 +24,11 @@
     <Label fx:id="name" styleClass="profile-name" wrapText="true" />
     <Label fx:id="phone" styleClass="profile-phone" />
     <Label fx:id="index" styleClass="profile-index" wrapText="true" />
-    <Pane fx:id="scoreScale" minHeight="160" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+    <StackPane fx:id="milestonesPlaceholder" minHeight="160" maxHeight="Infinity" VBox.vgrow="ALWAYS">
       <VBox.margin>
         <Insets top="20" />
       </VBox.margin>
-    </Pane>
+    </StackPane>
   </VBox>
   <StackPane fx:id="recentOrdersPlaceholder" minWidth="0" maxHeight="Infinity"
              GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
