@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddMenuItemCommand;
 import seedu.address.logic.commands.AddOrderCommand;
+import seedu.address.logic.commands.CancelRedeemCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.DeleteOrderCommand;
@@ -176,6 +177,34 @@ public class AddressBookParserTest {
         String command = RedeemMilestoneCommand.COMMAND_WORD + " 1 " + PREFIX_MILESTONE + "abc";
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
                 RedeemMilestoneCommand.MESSAGE_USAGE);
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
+    }
+
+    @Test
+    public void parseCommand_cancelRedeem() throws Exception {
+        String command = CancelRedeemCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased()
+                + " " + PREFIX_MILESTONE + "2";
+        CancelRedeemCommand parsedCommand = (CancelRedeemCommand) parser.parseCommand(command);
+
+        assertEquals(INDEX_FIRST_PERSON, parsedCommand.personIndex);
+        assertEquals(2, parsedCommand.milestoneIndex.getOneBased());
+    }
+
+    @Test
+    public void parseCommand_cancelRedeemMissingArguments_throwsParseException() {
+        String command = CancelRedeemCommand.COMMAND_WORD;
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                CancelRedeemCommand.MESSAGE_USAGE);
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
+    }
+
+    @Test
+    public void parseCommand_cancelRedeemInvalidIndex_throwsParseException() {
+        String command = CancelRedeemCommand.COMMAND_WORD + " 1 " + PREFIX_MILESTONE + "abc";
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                CancelRedeemCommand.MESSAGE_USAGE);
 
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
     }
