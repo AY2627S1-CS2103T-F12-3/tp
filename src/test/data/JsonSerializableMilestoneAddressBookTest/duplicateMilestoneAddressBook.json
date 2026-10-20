@@ -1,0 +1,15 @@
+{
+  "persons": [],
+  "milestones": [
+    {
+      "code": "FREE500",
+      "rewardDescription": "Free drink",
+      "requiredScore": 500
+    },
+    {
+      "code": "FREE500",
+      "rewardDescription": "Free drink and snack",
+      "requiredScore": 600
+    }
+  ]
+}
