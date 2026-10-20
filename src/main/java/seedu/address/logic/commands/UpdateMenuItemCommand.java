@@ -19,25 +19,29 @@ public class UpdateMenuItemCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Updates the details of a menu item identified by its code.\n"
             + "Parameters: "
-            + "c/CODE [n/NAME] [p/PRICE]\n"
-            + "Example: " + COMMAND_WORD + " c/CR01 n/Roasted Chicken Rice p/5.00";
+            + "c/CURRENT_CODE [nc/NEW_CODE] [n/NAME] [p/PRICE]\n"
+            + "Example: " + COMMAND_WORD + " c/CR01 nc/CR02 n/Roasted Chicken Rice p/5.00";
 
     public static final String MESSAGE_SUCCESS = "Menu item updated: %s";
     public static final String MESSAGE_ITEM_NOT_FOUND = "A menu item with this code does not exist.";
+    public static final String MESSAGE_DUPLICATE_ITEM = "A menu item with the new code already exists.";
 
     private final String targetCode;
+    private final String updatedCode;
     private final String updatedName;
     private final Integer updatedPriceInCents;
 
     /**
      * Creates a command to update the specified fields of a menu item.
      */
-    public UpdateMenuItemCommand(String targetCode, String updatedName, Integer updatedPriceInCents) {
+    public UpdateMenuItemCommand(String targetCode, String updatedCode, String updatedName,
+            Integer updatedPriceInCents) {
         requireAllNonNull(targetCode);
-        if (updatedName == null && updatedPriceInCents == null) {
+        if (updatedCode == null && updatedName == null && updatedPriceInCents == null) {
             throw new IllegalArgumentException("At least one menu item field must be updated.");
         }
         this.targetCode = targetCode;
+        this.updatedCode = updatedCode;
         this.updatedName = updatedName;
         this.updatedPriceInCents = updatedPriceInCents;
     }
@@ -52,9 +56,12 @@ public class UpdateMenuItemCommand extends Command {
                 .orElseThrow(() -> new CommandException(MESSAGE_ITEM_NOT_FOUND));
 
         FoodItem updatedItem = new FoodItem(
-                itemToUpdate.getCode(),
+                updatedCode == null ? itemToUpdate.getCode() : updatedCode,
                 updatedName == null ? itemToUpdate.getName() : updatedName,
                 updatedPriceInCents == null ? itemToUpdate.getPriceInCents() : updatedPriceInCents);
+        if (!itemToUpdate.isSameFoodItem(updatedItem) && model.hasFoodItem(updatedItem)) {
+            throw new CommandException(MESSAGE_DUPLICATE_ITEM);
+        }
         model.setFoodItem(itemToUpdate, updatedItem);
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, updatedItem.getName()));
@@ -69,6 +76,7 @@ public class UpdateMenuItemCommand extends Command {
             return false;
         }
         return targetCode.equals(otherUpdateMenuItemCommand.targetCode)
+                && Objects.equals(updatedCode, otherUpdateMenuItemCommand.updatedCode)
                 && Objects.equals(updatedName, otherUpdateMenuItemCommand.updatedName)
                 && Objects.equals(updatedPriceInCents, otherUpdateMenuItemCommand.updatedPriceInCents);
     }
@@ -77,6 +85,7 @@ public class UpdateMenuItemCommand extends Command {
     public String toString() {
         return new ToStringBuilder(this)
                 .add("targetCode", targetCode)
+                .add("updatedCode", updatedCode)
                 .add("updatedName", updatedName)
                 .add("updatedPriceInCents", updatedPriceInCents)
                 .toString();

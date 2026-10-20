@@ -17,10 +17,10 @@ public class UpdateMenuItemCommandTest {
         ModelManager model = new ModelManager();
         model.addFoodItem(CHICKEN_RICE);
 
-        CommandResult result = new UpdateMenuItemCommand("CR01", "Roasted Chicken Rice", 500).execute(model);
+        CommandResult result = new UpdateMenuItemCommand("CR01", "CR02", "Roasted Chicken Rice", 500).execute(model);
 
         assertEquals(new CommandResult("Menu item updated: Roasted Chicken Rice"), result);
-        assertEquals(new FoodItem("CR01", "Roasted Chicken Rice", 500),
+        assertEquals(new FoodItem("CR02", "Roasted Chicken Rice", 500),
                 model.getMenu().getFoodItemList().get(0));
     }
 
@@ -29,7 +29,7 @@ public class UpdateMenuItemCommandTest {
         ModelManager model = new ModelManager();
         model.addFoodItem(CHICKEN_RICE);
 
-        new UpdateMenuItemCommand("CR01", "Roasted Chicken Rice", null).execute(model);
+        new UpdateMenuItemCommand("CR01", null, "Roasted Chicken Rice", null).execute(model);
 
         assertEquals(new FoodItem("CR01", "Roasted Chicken Rice", 450),
                 model.getMenu().getFoodItemList().get(0));
@@ -40,7 +40,7 @@ public class UpdateMenuItemCommandTest {
         ModelManager model = new ModelManager();
         model.addFoodItem(CHICKEN_RICE);
 
-        new UpdateMenuItemCommand("CR01", null, 500).execute(model);
+        new UpdateMenuItemCommand("CR01", null, null, 500).execute(model);
 
         assertEquals(new FoodItem("CR01", "Chicken Rice", 500),
                 model.getMenu().getFoodItemList().get(0));
@@ -49,7 +49,7 @@ public class UpdateMenuItemCommandTest {
     @Test
     public void execute_missingCode_throwsCommandException() {
         ModelManager model = new ModelManager();
-        UpdateMenuItemCommand command = new UpdateMenuItemCommand("CR01", "Roasted Chicken Rice", null);
+        UpdateMenuItemCommand command = new UpdateMenuItemCommand("CR01", null, "Roasted Chicken Rice", null);
 
         String expectedMessage = UpdateMenuItemCommand.MESSAGE_ITEM_NOT_FOUND;
         assertThrows(CommandException.class, expectedMessage, () -> command.execute(model));
@@ -57,6 +57,18 @@ public class UpdateMenuItemCommandTest {
 
     @Test
     public void constructor_noUpdatedFields_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new UpdateMenuItemCommand("CR01", null, null));
+        assertThrows(IllegalArgumentException.class, () -> new UpdateMenuItemCommand("CR01", null, null, null));
+    }
+
+    @Test
+    public void execute_duplicateNewCode_throwsCommandException() {
+        ModelManager model = new ModelManager();
+        model.addFoodItem(CHICKEN_RICE);
+        model.addFoodItem(new FoodItem("CF01", "Coffee", 150));
+
+        UpdateMenuItemCommand command = new UpdateMenuItemCommand("CR01", "CF01", null, null);
+
+        String expectedMessage = UpdateMenuItemCommand.MESSAGE_DUPLICATE_ITEM;
+        assertThrows(CommandException.class, expectedMessage, () -> command.execute(model));
     }
 }

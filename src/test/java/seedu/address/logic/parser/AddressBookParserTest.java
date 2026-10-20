@@ -56,8 +56,8 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_updateMenuItem() throws Exception {
-        assertEquals(new UpdateMenuItemCommand("CR01", "Roasted Chicken Rice", 500),
-                parser.parseCommand("update-menu-item c/CR01 n/Roasted Chicken Rice p/5.00"));
+        assertEquals(new UpdateMenuItemCommand("CR01", "CR02", "Roasted Chicken Rice", 500),
+                parser.parseCommand("update-menu-item c/CR01 nc/CR02 n/Roasted Chicken Rice p/5.00"));
     }
 
     @Test

@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CODE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NEW_CODE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PRICE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -20,17 +21,19 @@ public class UpdateMenuItemCommandParserTest {
 
     @Test
     public void parse_validArgs_returnsCommand() {
-        UpdateMenuItemCommand expected = new UpdateMenuItemCommand("CR01", "Roasted Chicken Rice", 500);
-        assertParseSuccess(parser, " c/CR01 n/Roasted Chicken Rice p/5.00", expected);
-        assertParseSuccess(parser, " c/CR01 p/5.00 n/Roasted Chicken Rice", expected);
+        UpdateMenuItemCommand expected = new UpdateMenuItemCommand("CR01", "CR02", "Roasted Chicken Rice", 500);
+        assertParseSuccess(parser, " c/CR01 nc/CR02 n/Roasted Chicken Rice p/5.00", expected);
+        assertParseSuccess(parser, " c/CR01 p/5.00 n/Roasted Chicken Rice nc/CR02", expected);
     }
 
     @Test
     public void parse_singleField_returnsCommand() {
         assertParseSuccess(parser, " c/CR01 n/Roasted Chicken Rice",
-                new UpdateMenuItemCommand("CR01", "Roasted Chicken Rice", null));
+                new UpdateMenuItemCommand("CR01", null, "Roasted Chicken Rice", null));
         assertParseSuccess(parser, " c/CR01 p/5.00",
-                new UpdateMenuItemCommand("CR01", null, 500));
+                new UpdateMenuItemCommand("CR01", null, null, 500));
+        assertParseSuccess(parser, " c/CR01 nc/CR02",
+                new UpdateMenuItemCommand("CR01", "CR02", null, null));
     }
 
     @Test
@@ -44,6 +47,7 @@ public class UpdateMenuItemCommandParserTest {
     @Test
     public void parse_invalidValues_throwsParseException() {
         assertParseFailure(parser, " c/CR-01 n/Name", FoodItem.MESSAGE_CODE_CONSTRAINTS);
+        assertParseFailure(parser, " c/CR01 nc/CR-02", FoodItem.MESSAGE_CODE_CONSTRAINTS);
         assertParseFailure(parser, " c/CR01 n/   ", FoodItem.MESSAGE_NAME_CONSTRAINTS);
         assertParseFailure(parser, " c/CR01 p/0", AddMenuItemCommandParser.MESSAGE_PRICE_CONSTRAINTS);
     }
@@ -54,6 +58,8 @@ public class UpdateMenuItemCommandParserTest {
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
         assertParseFailure(parser, " c/CR01 p/5.00 p/6.00",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_PRICE));
+        assertParseFailure(parser, " c/CR01 nc/CR02 nc/CR03",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NEW_CODE));
         assertParseFailure(parser, " c/CR01 n/Name c/CR02",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_CODE));
     }
