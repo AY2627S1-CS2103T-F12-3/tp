@@ -12,32 +12,14 @@ public class JsonAdaptedRedeemedMilestoneRewardTest {
     private static final Milestone VALID_REWARD = new Milestone("WELCOME", "Free drink", 10);
 
     @Test
-    public void toModelType_validReward_returnsReward() throws Exception {
-        assertEquals(VALID_REWARD,
-                new JsonAdaptedRedeemedMilestoneReward(VALID_REWARD).toModelType());
-    }
-
-    @Test
-    public void constructor_validReward_roundTripsValue() throws Exception {
-        assertEquals(VALID_REWARD,
-                new JsonAdaptedRedeemedMilestoneReward(VALID_REWARD).toModelType());
-    }
-
-    @Test
     public void toModelType_nullReward_throwsIllegalValueException() {
         assertInvalidReward(null, JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS);
     }
 
     @Test
     public void toModelType_validMilestone_returnsMilestone() throws Exception {
-        Milestone reward = new Milestone("BIRTHDAY", "Birthday reward", 50);
-
-        assertEquals(reward, new JsonAdaptedRedeemedMilestoneReward(reward).toModelType());
-    }
-
-    @Test
-    public void toModelType_multipleInvalidValues_reportsRewardConstraintFirst() {
-        assertInvalidReward(null, JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS);
+        assertEquals(VALID_REWARD,
+                new JsonAdaptedRedeemedMilestoneReward(VALID_REWARD).toModelType());
     }
 
     private static void assertInvalidReward(JsonAdaptedMilestone reward, String expectedMessage) {

@@ -132,8 +132,15 @@ class JsonAdaptedPerson {
         RedeemedMilestoneRewardHistory modelRedeemedMilestoneRewardHistory =
                 new RedeemedMilestoneRewardHistory();
         for (JsonAdaptedRedeemedMilestoneReward adaptedReward : redeemedMilestoneRewardHistory) {
-            modelRedeemedMilestoneRewardHistory = modelRedeemedMilestoneRewardHistory
-                    .addRedeemedMilestoneReward(adaptedReward.toModelType());
+            if (adaptedReward == null) {
+                throw new IllegalValueException(JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS);
+            }
+            try {
+                modelRedeemedMilestoneRewardHistory = modelRedeemedMilestoneRewardHistory
+                        .addRedeemedMilestoneReward(adaptedReward.toModelType());
+            } catch (IllegalArgumentException exception) {
+                throw new IllegalValueException(RedeemedMilestoneRewardHistory.MESSAGE_DUPLICATE_MILESTONE);
+            }
         }
 
         return new Person(modelName, modelPhone, modelTags, modelScore, modelOrderHistory,
