@@ -14,10 +14,14 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.testutil.AddressBookBuilder;
 
 public class ModelManagerTest {
+    private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
+    private static final Milestone EDITED_FREE_DRINK = new Milestone("FREE500", "Free drink and snack", 600);
+    private static final Milestone FREE_DESSERT = new Milestone("DESSERT500", "Free dessert", 500);
 
     private ModelManager modelManager = new ModelManager();
 
@@ -67,6 +71,40 @@ public class ModelManagerTest {
     public void hasPerson_personInAddressBook_returnsTrue() {
         modelManager.addPerson(ALICE);
         assertTrue(modelManager.hasPerson(ALICE));
+    }
+
+    @Test
+    public void hasMilestone_nullMilestone_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> modelManager.hasMilestone(null));
+    }
+
+    @Test
+    public void hasMilestone_milestoneNotInAddressBook_returnsFalse() {
+        assertFalse(modelManager.hasMilestone(FREE_DRINK));
+    }
+
+    @Test
+    public void hasMilestone_milestoneInAddressBook_returnsTrue() {
+        modelManager.addMilestone(FREE_DRINK);
+        assertTrue(modelManager.hasMilestone(FREE_DRINK));
+    }
+
+    @Test
+    public void milestoneOperations_addSetDelete_updatesSortedList() {
+        modelManager.addMilestone(FREE_DRINK);
+        modelManager.addMilestone(FREE_DESSERT);
+        assertEquals(List.of(FREE_DESSERT, FREE_DRINK), modelManager.getMilestoneList());
+
+        modelManager.setMilestone(FREE_DRINK, EDITED_FREE_DRINK);
+        assertEquals(List.of(FREE_DESSERT, EDITED_FREE_DRINK), modelManager.getMilestoneList());
+
+        modelManager.deleteMilestone(FREE_DESSERT);
+        assertEquals(List.of(EDITED_FREE_DRINK), modelManager.getMilestoneList());
+    }
+
+    @Test
+    public void getMilestoneList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> modelManager.getMilestoneList().add(FREE_DRINK));
     }
 
     @Test

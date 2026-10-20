@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
 /**
@@ -62,6 +63,29 @@ public interface Model {
     void setPerson(Person target, Person editedPerson);
 
     /**
+     * Returns true if a milestone with the same code as {@code milestone} exists in the address book.
+     */
+    boolean hasMilestone(Milestone milestone);
+
+    /**
+     * Deletes the given milestone.
+     * The milestone must exist in the address book.
+     */
+    void deleteMilestone(Milestone target);
+
+    /**
+     * Adds the given milestone.
+     * Its code must not already exist in the address book.
+     */
+    void addMilestone(Milestone milestone);
+
+    /**
+     * Replaces the given milestone {@code target} with {@code editedMilestone}.
+     * {@code target} must exist in the address book, and both milestones must have the same code.
+     */
+    void setMilestone(Milestone target, Milestone editedMilestone);
+
+    /**
      * Selects {@code person} for display. The person must be equal to a person in the address book.
      * The selected person acts as a snapshot of the person's state and is not updated when the person's data changes.
      *
@@ -83,6 +107,9 @@ public interface Model {
 
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();
+
+    /** Returns an unmodifiable view of the milestone list. */
+    ObservableList<Milestone> getMilestoneList();
 
     /**
      * Updates the filter of the filtered person list to filter by the given {@code predicate}.
