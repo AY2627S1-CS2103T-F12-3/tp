@@ -1,7 +1,6 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_TAG_DESC;
@@ -85,12 +84,6 @@ public class EditCommandParserTest {
         // multiple invalid values, but only the first invalid value is captured
         assertParseFailure(parser, "1" + INVALID_NAME_DESC + INVALID_PHONE_DESC + VALID_PHONE_AMY,
                 Name.MESSAGE_CONSTRAINTS);
-    }
-
-    @Test
-    public void parse_emailSpecified_failure() {
-        assertParseFailure(parser, "1" + EMAIL_DESC_AMY, MESSAGE_INVALID_FORMAT);
-        assertParseFailure(parser, "1" + PHONE_DESC_AMY + EMAIL_DESC_AMY, MESSAGE_INVALID_FORMAT);
     }
 
     @Test

@@ -19,8 +19,11 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.menu.Menu;
+import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.util.SampleDataUtil;
 import seedu.address.storage.JsonAddressBookStorage;
+import seedu.address.storage.JsonMenuStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.Storage;
 import seedu.address.storage.StorageManager;
@@ -37,6 +40,7 @@ public class MainApp extends Application {
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
     private static final Path ADDRESS_BOOK_FILE_PATH = Paths.get("data", "memberlist.json");
+    private static final Path MENU_FILE_PATH = Paths.get("data", "menu.json");
 
     protected Ui ui;
     protected Logic logic;
@@ -51,7 +55,8 @@ public class MainApp extends Application {
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(USER_PREFS_FILE_PATH);
         UserPrefs userPrefs = initPrefs(userPrefsStorage);
         JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(ADDRESS_BOOK_FILE_PATH);
-        storage = new StorageManager(addressBookStorage, userPrefsStorage);
+        JsonMenuStorage menuStorage = new JsonMenuStorage(MENU_FILE_PATH);
+        storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage);
 
         model = initModelManager(storage, userPrefs);
 
@@ -61,11 +66,18 @@ public class MainApp extends Application {
     }
 
     /**
-     * Returns a {@code ModelManager} with the data from {@code storage}'s address book and {@code userPrefs}. <br>
+     * Initializes the model with member data, menu data, and user preferences.
+     */
+    private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
+        return new ModelManager(initMembers(storage), userPrefs, initMenu(storage));
+    }
+
+    /**
+     * Loads the saved address book.
      * The data from the sample address book will be used instead if {@code storage}'s address book is not found,
      * or an empty address book will be used instead if errors occur when reading {@code storage}'s address book.
      */
-    private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
+    private ReadOnlyAddressBook initMembers(Storage storage) {
         logger.info("Using data file : " + storage.getAddressBookFilePath());
 
         Optional<ReadOnlyAddressBook> addressBookOptional;
@@ -83,7 +95,21 @@ public class MainApp extends Application {
             initialData = new AddressBook();
         }
 
-        return new ModelManager(initialData, userPrefs);
+        return initialData;
+    }
+
+    /**
+     * Loads the saved menu, or starts with an empty menu if the file is missing or cannot be loaded.
+     */
+    protected ReadOnlyMenu initMenu(Storage storage) {
+        logger.info("Using menu file : " + storage.getMenuFilePath());
+        try {
+            return storage.readMenu().orElseGet(Menu::new);
+        } catch (DataLoadingException e) {
+            logger.warning("Menu file at " + storage.getMenuFilePath() + " could not be loaded."
+                    + " Will be starting with an empty menu.");
+            return new Menu();
+        }
     }
 
     /**

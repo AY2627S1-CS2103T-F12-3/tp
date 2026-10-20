@@ -2,6 +2,7 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.nio.file.Path;
@@ -14,6 +15,8 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.menu.FoodItem;
+import seedu.address.model.menu.Menu;
 
 public class StorageManagerTest {
 
@@ -26,7 +29,8 @@ public class StorageManagerTest {
     public void setUp() {
         JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(getTempFilePath("ab"));
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(getTempFilePath("prefs"));
-        storageManager = new StorageManager(addressBookStorage, userPrefsStorage);
+        JsonMenuStorage menuStorage = new JsonMenuStorage(getTempFilePath("menu.json"));
+        storageManager = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage);
     }
 
     private Path getTempFilePath(String fileName) {
@@ -63,6 +67,25 @@ public class StorageManagerTest {
     @Test
     public void getAddressBookFilePath() {
         assertNotNull(storageManager.getAddressBookFilePath());
+    }
+
+    @Test
+    public void menuReadSave() throws Exception {
+        Menu original = new Menu();
+        original.addFoodItem(new FoodItem("CR01", "Chicken Rice", 450));
+        storageManager.saveMenu(original);
+
+        assertEquals(original, new Menu(storageManager.readMenu().orElseThrow()));
+    }
+
+    @Test
+    public void readMenu_missingFile_returnsEmpty() throws Exception {
+        assertTrue(storageManager.readMenu().isEmpty());
+    }
+
+    @Test
+    public void getMenuFilePath_returnsConfiguredPath() {
+        assertEquals(getTempFilePath("menu.json"), storageManager.getMenuFilePath());
     }
 
 }

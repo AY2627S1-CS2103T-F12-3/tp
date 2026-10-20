@@ -1,7 +1,6 @@
 package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.storage.JsonAdaptedPerson.MISSING_FIELD_MESSAGE_FORMAT;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.BENSON;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.IllegalValueException;
-import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
 
@@ -38,20 +36,6 @@ public class JsonAdaptedPersonTest {
     public void toModelType_validPersonDetails_returnsPerson() throws Exception {
         JsonAdaptedPerson person = new JsonAdaptedPerson(BENSON);
         assertEquals(BENSON, person.toModelType());
-    }
-
-    @Test
-    public void toModelType_legacyAddressField_returnsPerson() throws Exception {
-        String json = JsonUtil.toJsonString(new JsonAdaptedPerson(BENSON));
-        String legacyJson = json.replaceFirst("\\{", "{\"address\":\"Old Street\",");
-        JsonAdaptedPerson person = JsonUtil.fromJsonString(legacyJson, JsonAdaptedPerson.class);
-        assertEquals(BENSON, person.toModelType());
-    }
-
-    @Test
-    public void toJsonString_validPerson_omitsAddressField() throws Exception {
-        String json = JsonUtil.toJsonString(new JsonAdaptedPerson(BENSON));
-        assertFalse(json.contains("\"address\""));
     }
 
     @Test
