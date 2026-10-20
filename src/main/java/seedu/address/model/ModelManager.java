@@ -12,6 +12,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.model.menu.FoodItem;
+import seedu.address.model.menu.Menu;
+import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.person.Person;
 
 /**
@@ -21,6 +24,7 @@ public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
     private final AddressBook addressBook;
+    private final Menu menu;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private Person selectedPerson;
@@ -29,11 +33,19 @@ public class ModelManager implements Model {
      * Initializes a ModelManager with the given addressBook and userPrefs.
      */
     public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs) {
-        requireAllNonNull(addressBook, userPrefs);
+        this(addressBook, userPrefs, new Menu());
+    }
+
+    /**
+     * Initializes a ModelManager with the given address book, user preferences, and menu.
+     */
+    public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs, ReadOnlyMenu menu) {
+        requireAllNonNull(addressBook, userPrefs, menu);
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
         this.addressBook = new AddressBook(addressBook);
+        this.menu = new Menu(menu);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
     }
@@ -148,7 +160,22 @@ public class ModelManager implements Model {
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
                 && filteredPersons.equals(otherModelManager.filteredPersons)
-                && Objects.equals(selectedPerson, otherModelManager.selectedPerson);
+                && Objects.equals(selectedPerson, otherModelManager.selectedPerson)
+                && menu.equals(otherModelManager.menu);
     }
 
+    @Override
+    public ReadOnlyMenu getMenu() {
+        return menu::getFoodItemList;
+    }
+
+    @Override
+    public boolean hasFoodItem(FoodItem foodItem) {
+        return menu.hasFoodItem(foodItem);
+    }
+
+    @Override
+    public void addFoodItem(FoodItem foodItem) {
+        menu.addFoodItem(foodItem);
+    }
 }

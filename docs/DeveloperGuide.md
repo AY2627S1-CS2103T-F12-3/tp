@@ -123,10 +123,12 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores each person's name, phone, tags, score, and order history. A `Person` has no email or address field; editing
-  its details preserves its existing score and order history.
+* stores each person's name, phone, tags, score, and order history. Editing a person's details preserves
+  their existing score and order history.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
+* stores a separate `Menu` in `ModelManager`, alongside `AddressBook` and `UserPrefs`. `Model#getMenu()` exposes a
+  `ReadOnlyMenu` with an unmodifiable observable item list; `hasFoodItem` and `addFoodItem` provide menu operations.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
@@ -143,13 +145,13 @@ The `Model` component,
 <img src="images/StorageClassDiagram.png" width="550" />
 
 The `Storage` component,
-* can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
-* is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
+* saves customer records, menu items, and user preferences in separate JSON files and reads them back.
+* is implemented by `StorageManager`, which delegates file access to `JsonAddressBookStorage`, `JsonMenuStorage`,
+  and `JsonUserPrefsStorage` (one class per data file).
 
 `JsonAdaptedPerson` stores name, phone, tags, score, and order history. Each stored order includes its item name,
-quantity, and recorded time. The JSON mapper ignores unknown properties, so legacy
-`email` and `address` properties are ignored when loading older files and omitted when saving. A missing score defaults
-to zero.
+quantity, and recorded time. Unknown JSON properties are ignored when loading and omitted when saving.
+A missing score defaults to zero.
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
 ### Common classes
@@ -161,6 +163,59 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 ## **Implementation**
 
 This section describes some noteworthy details on how certain features are implemented.
+
+### Adding a menu item
+
+The `add-menu-item c/CODE n/NAME p/PRICE` command adds a `FoodItem` to the menu owned by `ModelManager`.
+The menu is separate from customer records and existing order histories. `add-order` still accepts an item name;
+it does not look up the new menu's codes or prices.
+
+#### Command flow
+
+1. `AddressBookParser` routes the command to `AddMenuItemCommandParser`.
+1. The parser checks the required prefixes, rejects duplicates and unexpected preamble text, and validates the code,
+   name, and price. Tabs are normalized to spaces for `ArgumentTokenizer`. Unsupported single-letter prefixes and
+   control characters other than tabs are rejected before tokenization.
+1. The dollar price is converted to integer cents with `BigDecimal#movePointRight(2)` and `intValueExact()`.
+   Prices must be positive, have at most two decimal places, and fit in an `int`; no rounding is performed.
+1. `AddMenuItemCommand#execute(Model)` checks `Model#hasFoodItem` before calling `Model#addFoodItem`.
+   `FoodItem#isSameFoodItem` compares case-sensitive codes, while `equals` compares all three fields.
+   Reusing a code throws `CommandException`, leaving the menu unchanged.
+1. After execution succeeds, `LogicManager` saves the address book and then the menu in its existing save block.
+   It returns the command's success feedback only after both saves succeed. `ParseException` and command execution
+   failures stop before saving; `IOException` during saving is reported as `CommandException`.
+
+#### Data and persistence
+
+`FoodItem` is immutable and holds `code`, `name`, and `priceInCents`. `Menu` uses `UniqueFoodItemList` to enforce
+unique case-sensitive codes and preserve insertion order. The three-argument `ModelManager` constructor copies a
+loaded `ReadOnlyMenu`; the existing two-argument constructor initializes an empty menu for other callers.
+
+| Class | Responsibility |
+|---|---|
+| `JsonAdaptedFoodItem` | Converts one item and validates its fields. JSON codes and names must be strings; cents must be an integer in the Java `int` range, then pass the positive-price constraint. |
+| `JsonSerializableMenu` | Converts the `foodItems` list, rejecting missing lists, null items, invalid items, and duplicate codes. |
+| `JsonMenuStorage` | Reads/writes menu JSON at a configured path. Missing files return `Optional.empty()`; read or validation errors become `DataLoadingException`. |
+| `StorageManager` | Delegates `getMenuFilePath`, `readMenu`, and `saveMenu` to `JsonMenuStorage`. |
+
+`MainApp` configures `data/menu.json` relative to the launch directory. Its `initMenu` method loads the saved menu,
+or logs a warning and supplies an empty menu if loading fails. A missing file also starts empty, with no sample
+menu. Loading alone leaves an invalid file untouched; the next successfully executed command can overwrite it,
+matching the existing address-book fallback policy.
+
+Both data files are saved after every successfully executed command, including read-only commands. A save error
+does not roll back changes already made in memory. The address-book file is written first, so it may already be
+saved if the menu write fails; the two writes are not a transaction. A later successful command attempts both
+saves again through the same flow.
+
+#### Testing
+
+`AddMenuItemCommandTest` isolates command behavior with model stubs. `AddMenuItemCommandParserTest` covers prefix
+validation, price boundaries, exact cent conversion, control characters, long inputs, and deterministic generated
+inputs. `AddressBookParserTest` checks routing. `ModelManagerTest` checks menu copying and its read-only view.
+The JSON adapter, serializable menu, and menu storage test classes cover invalid data and round trips.
+`MainAppTest` checks startup fallback and saving/reloading across model initialization; `LogicManagerTest` covers
+automatic saving and menu-save errors.
 
 ### \[Proposed\] Undo/redo feature
 
@@ -360,6 +415,31 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
+**Use case: Add a menu item**
+
+**MSS**
+
+1. User requests to add a menu item, providing its code, name, and price.
+2. App adds the item, saves the data, and shows a confirmation.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Required details are missing or invalid, or the code already exists.
+
+    * 1a1. App shows an error and leaves the menu unchanged.
+
+      Use case resumes at step 1.
+
+* 2a. Saving fails after the item has been added in memory.
+
+    * 2a1. App shows a save error. The item remains in memory.
+    * 2a2. User resolves the file-access problem and requests another command.
+    * 2a3. App executes that command and attempts to save both data files again.
+
+      Use case ends if saving succeeds; otherwise, extension 2a repeats.
+
 **Use case: Log an order for a member**
 
 **MSS**
@@ -488,7 +568,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Member**: A customer enrolled in the stall's *rewards program*, uniquely identified by their *Singapore phone number*.
 * **Membership points**: A non-negative whole number representing a member's standing in the rewards program, used to determine eligibility for *milestone rewards*.
 * **Rewards program**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
-* **Menu item**: A dish or drink sold by the stall, recorded with a name and price.
+* **Menu item**: A dish or drink sold by the stall, recorded with a unique case-sensitive code, name, and price.
 * **Milestone reward**: A prize a member becomes eligible for upon reaching a set number of membership points. Each milestone reward can be claimed at most once per member.
 * **Order**: A record of a single item, its quantity, and the time it was recorded, stored in a member's order history.
 * **Order history**: All orders recorded for a member. Also referred to as *purchase history*.
@@ -586,7 +666,35 @@ testers are expected to do more *exploratory* testing.
       `delete-order 1 o/0`, `delete-order 1 o/x`.<br>
       Expected: The command-format error is shown, and no order is deleted.
 
+### Adding a menu item
+
+Use a disposable app home folder for these tests. Start with no `data/menu.json`, so the test codes are unused.
+
+1. Test case: `add-menu-item c/CR01 n/Chicken Rice p/4.50`<br>
+   Expected: `New menu item added: Chicken Rice`. `data/menu.json` contains the item with `priceInCents` of `450`.
+1. Close and reopen the app, then enter `add-menu-item c/CR01 n/Different Dish p/5.00`.<br>
+   Expected: `A menu item with this code already exists.` The original item's name and price remain unchanged.
+1. Test case: `add-menu-item p/0.01 c/cr01 n/Coffee`<br>
+   Expected: The item is added at one cent. The lowercase code is distinct from `CR01`.
+1. Test case: `add-menu-item c/CR02 n/Dish`<br>
+   Expected: The usage message is shown for the missing price. No item is added.
+1. Test cases: `add-menu-item c/CR02 n/Dish p/0`, `add-menu-item c/CR02 n/Dish p/4.501`,
+   `add-menu-item c/CR02 n/Dish p/21474836.48`.<br>
+   Expected: The price constraint is shown, no item is added, and saved files are unchanged.
+1. Test case: `add-menu-item c/CR02 n/Dish n/Other p/4.50`<br>
+   Expected: A duplicate-prefix error is shown and the menu remains unchanged.
+1. Test case: `add-menu-item c/CR02 n/Dish x/extra p/4.50`<br>
+   Expected: The command-format error is shown and the menu remains unchanged.
+
 ### Saving data
+
+1. Missing or invalid menu files, using a disposable app home folder
+
+   1. With the app closed, move `data/menu.json` outside the `data` folder. Start the app.<br>
+      Expected: The menu starts empty. Enter `list`; a new `data/menu.json` with an empty `foodItems` list is saved.
+   1. Close the app and replace `data/menu.json` with malformed JSON or `{"foodItems":[null]}`. Restart.<br>
+      Expected: A loading warning is logged and the menu starts empty. The invalid file is unchanged until a
+      command executes successfully. Running `list` replaces it with valid empty-menu JSON.
 
 1. Dealing with missing/corrupted data files
 

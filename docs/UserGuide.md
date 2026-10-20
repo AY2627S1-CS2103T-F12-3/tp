@@ -30,6 +30,8 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `add n/John Doe p/98765432` : Adds a contact named `John Doe` to the Address Book.
 
+   * `add-menu-item c/CR01 n/Chicken Rice p/4.50` : Adds Chicken Rice to the menu at $4.50.
+
    * `add-order 1 o/Chicken Rice q/2` : Records an order of two Chicken Rice for the 1st contact shown.
 
    * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
@@ -114,6 +116,42 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
 Examples:
 *  `edit 1 p/91234567` Edits the phone number of the 1st person to be `91234567`.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+
+### Adding a menu item: `add-menu-item`
+
+Adds a food item with a unique code, name, and price to the menu. The item is saved for future sessions.
+
+Format: `add-menu-item c/CODE n/NAME p/PRICE`
+
+* Provide all three prefixes exactly once. They may appear in any order, separated by spaces or tabs.
+* `CODE` must contain one or more letters (`A`–`Z`, `a`–`z`) or digits (`0`–`9`), without spaces or punctuation.
+* Codes are case-sensitive: `CR01` and `cr01` identify different items. A code already in the menu cannot be reused,
+  even if the new name or price differs. Different codes may have the same item name.
+* `NAME` must not be blank. Spaces, punctuation, and non-English characters are accepted.
+* Single-letter prefixes such as `c/`, `n/`, and `p/` are interpreted as arguments when preceded by a space or tab;
+  avoid these tokens inside names. Unsupported single-letter prefixes such as `x/` are rejected.
+* `PRICE` is in dollars, from `0.01` to `21474836.47`, inclusive. Use digits with up to two decimal places;
+  `4`, `4.5`, and `4.50` are accepted. Enter `0.50` for fifty cents, without a currency symbol.
+* Missing fields, repeated prefixes, invalid values, and control characters such as newlines are rejected.
+
+Examples:
+
+* `add-menu-item c/CR01 n/Chicken Rice p/4.50`
+* `add-menu-item p/1.20 n/Coffee c/CF01`
+
+The first example shows `New menu item added: Chicken Rice` after saving succeeds. The customer list stays as it is;
+`list` displays customers, not the menu. Menu items are stored separately, and `clear` does not delete them.
+
+Common errors:
+
+| Input | Result and recovery |
+|---|---|
+| Reusing `c/CR01` after adding that code | `A menu item with this code already exists.` Choose a different code. |
+| `add-menu-item c/CR02 n/Dish` | The command format is shown. Supply the missing `p/PRICE`. |
+| `add-menu-item c/CR02 n/Dish p/4.501` | The price constraint is shown. Use at most two decimal places. |
+| `add-menu-item c/CR02 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
+
+These validation failures leave the existing menu unchanged and do not save either data file.
 
 ### Recording an order: `add-order`
 
@@ -208,17 +246,30 @@ Format: `exit`
 
 ### Saving the data
 
-AddressBook automatically saves data after every command. You do not need to save manually.
+The app automatically saves customer records and the menu after every command that executes successfully.
+You do not need to save manually. The menu is loaded again at startup.
+
+If a save fails, an error is shown instead of the normal success feedback. Changes already made remain in memory;
+after fixing the file-access problem, run a command such as `list` to attempt saving again before closing the app.
 
 ### Editing the data file
 
-AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+Customer records are saved in `data/memberlist.json`, and menu items in `data/menu.json`. These paths are relative
+to the directory from which you launch the app. With the quick-start instructions above, this is the JAR's folder.
+Advanced users can edit these files while the app is closed.
 
-Persons no longer have email or address fields. Older data files containing `email` or `address` can still be loaded;
-those fields are ignored and omitted the next time the data is saved.
+Customer records contain a name, phone number, tags, score, and order history.
+Unknown properties in older data files are ignored and omitted the next time the data is saved.
+
+In `menu.json`, each entry in `foodItems` has a string `code`, a string `name`, and a positive integer
+`priceInCents`. For example, the command price `p/4.50` is saved as `"priceInCents": 450`.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
+If the customer file is invalid, the app starts with an empty address book. If the menu file is missing or invalid,
+the app starts with an empty menu. A missing customer file instead loads sample contacts. Loading does not replace
+an invalid file, but the next successfully executed command attempts to save both files and can overwrite the
+invalid data. Back up both files before editing them, and restore a valid backup before running commands if you
+need to recover existing records.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -231,7 +282,8 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous AddressBook home folder.
+**A**: Install the app on the other computer. With both apps closed, copy `data/memberlist.json` and `data/menu.json`
+from the old home folder into the new home folder's `data` directory.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -247,6 +299,7 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
+**Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/CR01 n/Chicken Rice p/4.50`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`

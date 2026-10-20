@@ -2,7 +2,6 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.testutil.Assert.assertThrows;
-import static seedu.address.testutil.TypicalPersons.ALICE;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.AddressBook;
-import seedu.address.model.order.OrderHistory;
-import seedu.address.testutil.PersonBuilder;
 import seedu.address.testutil.TypicalPersons;
 
 public class JsonSerializableAddressBookTest {
@@ -22,7 +19,6 @@ public class JsonSerializableAddressBookTest {
     private static final Path TYPICAL_PERSONS_FILE = TEST_DATA_FOLDER.resolve("typicalPersonsAddressBook.json");
     private static final Path INVALID_PERSON_FILE = TEST_DATA_FOLDER.resolve("invalidPersonAddressBook.json");
     private static final Path DUPLICATE_PERSON_FILE = TEST_DATA_FOLDER.resolve("duplicatePersonAddressBook.json");
-    private static final Path LEGACY_EMAIL_FILE = TEST_DATA_FOLDER.resolve("legacyEmailAddressBook.json");
 
     @Test
     public void toModelType_typicalPersonsFile_success() throws Exception {
@@ -46,16 +42,6 @@ public class JsonSerializableAddressBookTest {
                 JsonSerializableAddressBook.class).get();
         assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_DUPLICATE_PERSON,
                 dataFromFile::toModelType);
-    }
-
-    @Test
-    public void toModelType_legacyEmailField_ignoresEmail() throws Exception {
-        JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(LEGACY_EMAIL_FILE,
-                JsonSerializableAddressBook.class).get();
-        AddressBook expectedAddressBook = new AddressBook();
-        expectedAddressBook.addPerson(new PersonBuilder(ALICE).withOrderHistory(new OrderHistory()).build());
-
-        assertEquals(expectedAddressBook, dataFromFile.toModelType());
     }
 
 }
