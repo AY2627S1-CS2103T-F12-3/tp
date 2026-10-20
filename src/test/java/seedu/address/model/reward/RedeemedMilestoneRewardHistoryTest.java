@@ -53,6 +53,31 @@ public class RedeemedMilestoneRewardHistoryTest {
     }
 
     @Test
+    public void contains_existingMilestone_returnsTrue() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD);
+
+        assertTrue(history.contains(FIRST_REWARD));
+    }
+
+    @Test
+    public void contains_equalMilestone_returnsTrue() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD);
+        Milestone equalMilestone = new Milestone("FIRST", "Free drink", 10);
+
+        assertTrue(history.contains(equalMilestone));
+    }
+
+    @Test
+    public void contains_absentMilestone_returnsFalse() {
+        RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
+                .addRedeemedMilestoneReward(FIRST_REWARD);
+
+        assertFalse(history.contains(SECOND_REWARD));
+    }
+
+    @Test
     public void addRedeemedMilestoneReward_nullReward_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () ->
                 new RedeemedMilestoneRewardHistory()

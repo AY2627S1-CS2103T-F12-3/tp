@@ -63,6 +63,16 @@ public class RedeemedMilestoneRewardHistory {
         return new RedeemedMilestoneRewardHistory(updatedRewards);
     }
 
+    /**
+     * Returns true if this history contains a milestone equal to {@code milestone}.
+     *
+     * @param milestone the milestone to search for
+     * @return true if the history contains the given milestone
+     */
+    public boolean contains(Milestone milestone) {
+        return redeemedMilestoneRewards.contains(milestone);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
