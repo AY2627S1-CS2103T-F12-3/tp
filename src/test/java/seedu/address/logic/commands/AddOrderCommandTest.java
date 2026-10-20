@@ -18,6 +18,7 @@ import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Score;
 
 public class AddOrderCommandTest {
     private static final String VALID_ITEM_CODE = "3A";
@@ -79,6 +80,37 @@ public class AddOrderCommandTest {
                 new AddOrderCommand(INDEX_FIRST_PERSON, "3a", VALID_QUANTITY).execute(model));
 
         assertEquals(AddOrderCommand.MESSAGE_ITEM_NOT_IN_MENU, exception.getMessage());
+    }
+
+    @Test
+    public void execute_orderWouldExceedScoreLimit_throwsCommandExceptionWithoutChangingPerson() {
+        Model model = modelWithMenuItem();
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person nearLimit = new Person(original.getName(), original.getPhone(), original.getTags(),
+                new Score(999999950), original.getOrderHistory());
+        model.setPerson(original, nearLimit);
+
+        CommandException exception = assertThrows(CommandException.class, () ->
+                new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY).execute(model));
+
+        assertEquals(AddOrderCommand.MESSAGE_SCORE_TOO_LARGE, exception.getMessage());
+        assertEquals(nearLimit, model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()));
+    }
+
+    @Test
+    public void execute_orderReachesScoreLimit_addsOrder() throws Exception {
+        Model model = modelWithMenuItem();
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person nearLimit = new Person(original.getName(), original.getPhone(), original.getTags(),
+                new Score(999999903), original.getOrderHistory());
+        model.setPerson(original, nearLimit);
+
+        new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY).execute(model);
+
+        Person updated = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        assertEquals(999999999, updated.getScore().value);
+        assertEquals(nearLimit.getOrderHistory().getOrders().size() + 1,
+                updated.getOrderHistory().getOrders().size());
     }
 
     @Test

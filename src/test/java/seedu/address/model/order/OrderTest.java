@@ -77,6 +77,23 @@ public class OrderTest {
     }
 
     @Test
+    public void equals_andHashCode_compareAllStoredFields() {
+        Order order = new Order("PC01", "Pancake", 1, 45, VALID_RECORDED_AT);
+        Order sameOrder = new Order("PC01", "Pancake", 1, 45, VALID_RECORDED_AT);
+
+        assertTrue(order.equals(order));
+        assertEquals(order, sameOrder);
+        assertEquals(order.hashCode(), sameOrder.hashCode());
+        assertFalse(order.equals(null));
+        assertFalse(order.equals("Pancake"));
+        assertFalse(order.equals(new Order("PC02", "Pancake", 1, 45, VALID_RECORDED_AT)));
+        assertFalse(order.equals(new Order("PC01", "Waffle", 1, 45, VALID_RECORDED_AT)));
+        assertFalse(order.equals(new Order("PC01", "Pancake", 2, 45, VALID_RECORDED_AT)));
+        assertFalse(order.equals(new Order("PC01", "Pancake", 1, 46, VALID_RECORDED_AT)));
+        assertFalse(order.equals(new Order("PC01", "Pancake", 1, 45, VALID_RECORDED_AT.plusSeconds(1))));
+    }
+
+    @Test
     public void constructor_nullItemCode_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new Order(null, "Pancake", 1));
     }
