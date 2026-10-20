@@ -95,11 +95,11 @@ public class RedeemedMilestoneRewardHistoryTest {
     }
 
     @Test
-    public void deleteRedeemedMilestoneReward_validIndex_returnsNewHistoryAndPreservesOriginal() {
+    public void deleteRedeemedMilestoneReward_validMilestone_returnsNewHistoryAndPreservesOriginal() {
         RedeemedMilestoneRewardHistory original = new RedeemedMilestoneRewardHistory()
                 .addRedeemedMilestoneReward(FIRST_REWARD)
                 .addRedeemedMilestoneReward(SECOND_REWARD);
-        RedeemedMilestoneRewardHistory updated = original.deleteRedeemedMilestoneReward(0);
+        RedeemedMilestoneRewardHistory updated = original.deleteRedeemedMilestoneReward(FIRST_REWARD);
 
         assertEquals(List.of(FIRST_REWARD, SECOND_REWARD), original.getRedeemedMilestoneRewards());
         assertEquals(List.of(SECOND_REWARD), updated.getRedeemedMilestoneRewards());
@@ -107,11 +107,11 @@ public class RedeemedMilestoneRewardHistoryTest {
     }
 
     @Test
-    public void deleteRedeemedMilestoneReward_invalidIndex_throwsAndPreservesHistory() {
+    public void deleteRedeemedMilestoneReward_absentMilestone_throwsAndPreservesHistory() {
         RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
                 .addRedeemedMilestoneReward(FIRST_REWARD);
 
-        assertThrows(IndexOutOfBoundsException.class, () -> history.deleteRedeemedMilestoneReward(1));
+        assertThrows(IllegalArgumentException.class, () -> history.deleteRedeemedMilestoneReward(SECOND_REWARD));
         assertEquals(List.of(FIRST_REWARD), history.getRedeemedMilestoneRewards());
     }
 
