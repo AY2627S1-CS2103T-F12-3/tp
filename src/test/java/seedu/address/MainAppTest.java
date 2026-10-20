@@ -99,20 +99,32 @@ public class MainAppTest {
     }
 
     @Test
-    public void milestone_saveAndReload_retainsMilestoneAfterRestart() throws Exception {
+    public void milestoneCommands_saveAndReload_persistChangesAfterRestart() throws Exception {
         StorageManager storage = createStorage();
         MainApp app = new MainApp();
         ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage),
                 app.initMilestoneCatalog(storage));
-        Milestone milestone = new Milestone("FREE500", "Free drink", 500);
-        model.addMilestone(milestone);
-        new LogicManager(model, storage).execute("list");
+        new LogicManager(model, storage).execute("add-milestone c/FREE500 r/Free drink s/500");
 
-        ModelManager reloaded = new ModelManager(storage.readAddressBook().orElseThrow(),
-                new UserPrefs(), app.initMenu(storage), app.initMilestoneCatalog(storage));
+        ModelManager reloaded = reloadModel(storage);
+        assertEquals(List.of(new Milestone("FREE500", "Free drink", 500)), reloaded.getMilestoneList());
 
-        assertEquals(List.of(milestone), reloaded.getMilestoneList());
-        assertEquals(model, reloaded);
+        new LogicManager(reloaded, storage).execute("edit-milestone 1 r/Free drink and snack s/750");
+
+        reloaded = reloadModel(storage);
+        assertEquals(List.of(new Milestone("FREE500", "Free drink and snack", 750)),
+                reloaded.getMilestoneList());
+
+        new LogicManager(reloaded, storage).execute("delete-milestone 1");
+
+        reloaded = reloadModel(storage);
+        assertTrue(reloaded.getMilestoneList().isEmpty());
+    }
+
+    private ModelManager reloadModel(StorageManager storage) throws Exception {
+        MainApp app = new MainApp();
+        return new ModelManager(storage.readAddressBook().orElseThrow(), new UserPrefs(), app.initMenu(storage),
+                app.initMilestoneCatalog(storage));
     }
 
     private StorageManager createStorage() {
