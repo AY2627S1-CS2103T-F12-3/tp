@@ -6,9 +6,10 @@ import static seedu.address.testutil.Assert.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.milestone.Milestone;
 
 public class JsonAdaptedRedeemedMilestoneRewardTest {
-    private static final String VALID_REWARD = "Free drink (20% off)!";
+    private static final Milestone VALID_REWARD = new Milestone("WELCOME", "Free drink", 10);
 
     @Test
     public void toModelType_validReward_returnsReward() throws Exception {
@@ -28,18 +29,8 @@ public class JsonAdaptedRedeemedMilestoneRewardTest {
     }
 
     @Test
-    public void toModelType_emptyReward_throwsIllegalValueException() {
-        assertInvalidReward("", JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS);
-    }
-
-    @Test
-    public void toModelType_blankReward_throwsIllegalValueException() {
-        assertInvalidReward("   ", JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS);
-    }
-
-    @Test
-    public void toModelType_rewardWithSpecialCharacters_returnsReward() throws Exception {
-        String reward = "Birthday reward: 50% off / free delivery";
+    public void toModelType_validMilestone_returnsMilestone() throws Exception {
+        Milestone reward = new Milestone("BIRTHDAY", "Birthday reward", 50);
 
         assertEquals(reward, new JsonAdaptedRedeemedMilestoneReward(reward).toModelType());
     }
@@ -49,7 +40,7 @@ public class JsonAdaptedRedeemedMilestoneRewardTest {
         assertInvalidReward(null, JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS);
     }
 
-    private static void assertInvalidReward(String reward, String expectedMessage) {
+    private static void assertInvalidReward(JsonAdaptedMilestone reward, String expectedMessage) {
         JsonAdaptedRedeemedMilestoneReward adaptedReward =
                 new JsonAdaptedRedeemedMilestoneReward(reward);
 

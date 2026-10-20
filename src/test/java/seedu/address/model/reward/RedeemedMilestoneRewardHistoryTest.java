@@ -10,9 +10,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.milestone.Milestone;
+
 public class RedeemedMilestoneRewardHistoryTest {
-    private static final String FIRST_REWARD = "Free drink";
-    private static final String SECOND_REWARD = "Free dessert";
+    private static final Milestone FIRST_REWARD = new Milestone("FIRST", "Free drink", 10);
+    private static final Milestone SECOND_REWARD = new Milestone("SECOND", "Free dessert", 20);
 
     @Test
     public void constructor_emptyHistory_hasNoMilestoneRewards() {
@@ -42,7 +44,7 @@ public class RedeemedMilestoneRewardHistoryTest {
     public void getRedeemedMilestoneRewards_mutateReturnedList_preservesHistory() {
         RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
                 .addRedeemedMilestoneReward(FIRST_REWARD);
-        List<String> returnedRewards = history.getRedeemedMilestoneRewards();
+        List<Milestone> returnedRewards = history.getRedeemedMilestoneRewards();
 
         returnedRewards.clear();
 

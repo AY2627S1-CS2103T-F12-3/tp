@@ -22,7 +22,11 @@
       "quantity" : 1,
       "recordedAt" : "2026-01-03T00:00:00Z"
     } ],
-    "redeemedMilestoneRewardHistory" : [ "Free drink" ]
+    "redeemedMilestoneRewardHistory" : [ {
+      "code" : "WELCOME",
+      "rewardDescription" : "Free drink",
+      "requiredScore" : 10
+    } ]
   }, {
     "name" : "Carl Kurz",
     "phone" : "95352563",

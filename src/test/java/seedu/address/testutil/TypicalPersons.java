@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import seedu.address.model.AddressBook;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.order.Order;
 import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Person;
@@ -53,7 +54,7 @@ public class TypicalPersons {
             )
             .withRedeemedMilestoneRewardHistory(
                     new RedeemedMilestoneRewardHistory()
-                            .addRedeemedMilestoneReward("Free drink"))
+                            .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10)))
             .build();
     public static final Person CARL = new PersonBuilder()
             .withName("Carl Kurz")

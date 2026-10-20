@@ -14,6 +14,7 @@ import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.order.Order;
 import seedu.address.model.order.OrderHistory;
 import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
@@ -122,7 +123,7 @@ public class PersonTest {
     @Test
     public void getRedeemedMilestoneRewardHistory_existingHistory_returnsHistory() {
         RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
-                .addRedeemedMilestoneReward("Free drink");
+                .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
         Person person = new Person(ALICE.getName(), ALICE.getPhone(), ALICE.getTags(), ALICE.getScore(),
                 ALICE.getOrderHistory(), history);
 
@@ -132,7 +133,7 @@ public class PersonTest {
     @Test
     public void equals_differentRedeemedMilestoneRewardHistory_returnsFalse() {
         RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
-                .addRedeemedMilestoneReward("Free drink");
+                .addRedeemedMilestoneReward(new Milestone("WELCOME", "Free drink", 10));
         Person personWithReward = new Person(ALICE.getName(), ALICE.getPhone(), ALICE.getTags(), ALICE.getScore(),
                 ALICE.getOrderHistory(), history);
 

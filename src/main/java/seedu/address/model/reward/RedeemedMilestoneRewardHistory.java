@@ -5,13 +5,15 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import seedu.address.model.milestone.Milestone;
+
 /**
  * Represents the history of milestone rewards redeemed by a member.
  * Guarantees: The history is immutable; adding or deleting a reward returns a new
  * {@code RedeemedMilestoneRewardHistory}.
  */
 public class RedeemedMilestoneRewardHistory {
-    private final ArrayList<String> redeemedMilestoneRewards;
+    private final ArrayList<Milestone> redeemedMilestoneRewards;
 
     /**
      * Constructs an empty {@code RedeemedMilestoneRewardHistory}.
@@ -20,29 +22,29 @@ public class RedeemedMilestoneRewardHistory {
         this.redeemedMilestoneRewards = new ArrayList<>();
     }
 
-    private RedeemedMilestoneRewardHistory(List<String> redeemedMilestoneRewards) {
+    private RedeemedMilestoneRewardHistory(List<Milestone> redeemedMilestoneRewards) {
         this.redeemedMilestoneRewards = new ArrayList<>(redeemedMilestoneRewards);
     }
 
     /**
-     * Returns a copy of all the redeemed milestone rewards.
+     * Returns a copy of all the redeemed milestones.
      *
-     * @return a list of redeemed milestone rewards in the history
+     * @return a list of redeemed milestones in the history
      */
-    public List<String> getRedeemedMilestoneRewards() {
+    public List<Milestone> getRedeemedMilestoneRewards() {
         return new ArrayList<>(redeemedMilestoneRewards);
     }
 
     /**
-     * Returns a new history containing the given redeemed milestone reward.
+     * Returns a new history containing the given redeemed milestone.
      * This history is not modified.
      *
-     * @param redeemedMilestoneReward the redeemed milestone reward to add
-     * @return a new history containing the reward
+     * @param redeemedMilestoneReward the redeemed milestone to add
+     * @return a new history containing the milestone
      * @throws NullPointerException if {@code redeemedMilestoneReward} is null
      */
-    public RedeemedMilestoneRewardHistory addRedeemedMilestoneReward(String redeemedMilestoneReward) {
-        ArrayList<String> updatedRewards = new ArrayList<>(redeemedMilestoneRewards);
+    public RedeemedMilestoneRewardHistory addRedeemedMilestoneReward(Milestone redeemedMilestoneReward) {
+        ArrayList<Milestone> updatedRewards = new ArrayList<>(redeemedMilestoneRewards);
         updatedRewards.add(requireNonNull(redeemedMilestoneReward));
         return new RedeemedMilestoneRewardHistory(updatedRewards);
     }
@@ -56,7 +58,7 @@ public class RedeemedMilestoneRewardHistory {
      * @throws IndexOutOfBoundsException if {@code zeroBasedIndex} is outside this history
      */
     public RedeemedMilestoneRewardHistory deleteRedeemedMilestoneReward(int zeroBasedIndex) {
-        ArrayList<String> updatedRewards = new ArrayList<>(redeemedMilestoneRewards);
+        ArrayList<Milestone> updatedRewards = new ArrayList<>(redeemedMilestoneRewards);
         updatedRewards.remove(zeroBasedIndex);
         return new RedeemedMilestoneRewardHistory(updatedRewards);
     }

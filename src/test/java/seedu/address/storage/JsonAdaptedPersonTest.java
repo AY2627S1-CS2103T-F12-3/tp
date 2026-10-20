@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.JsonUtil;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
 
@@ -50,9 +51,10 @@ public class JsonAdaptedPersonTest {
         JsonAdaptedPerson person = new JsonAdaptedPerson(
                 VALID_NAME, VALID_PHONE, VALID_TAGS, VALID_SCORE,
                 VALID_ORDER_HISTORY,
-                List.of(new JsonAdaptedRedeemedMilestoneReward("Free drink")));
+                List.of(new JsonAdaptedRedeemedMilestoneReward(
+                        new Milestone("WELCOME", "Free drink", 10))));
 
-        assertEquals(List.of("Free drink"),
+        assertEquals(List.of(new Milestone("WELCOME", "Free drink", 10)),
                 person.toModelType().getRedeemedMilestoneRewardHistory().getRedeemedMilestoneRewards());
     }
 
