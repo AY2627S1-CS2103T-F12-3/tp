@@ -5,10 +5,12 @@
     "phone" : "94351253",
     "tags" : [ "friends" ],
     "orderHistory" : [ {
+      "itemCode" : "Chicken",
       "itemName" : "Chicken",
       "quantity" : 2,
       "recordedAt" : "2026-01-01T00:00:00Z"
     }, {
+      "itemCode" : "Potato",
       "itemName" : "Potato",
       "quantity" : 1,
       "recordedAt" : "2026-01-02T00:00:00Z"
@@ -18,6 +20,7 @@
     "phone" : "98765432",
     "tags" : [ "owesMoney", "friends" ],
     "orderHistory" : [ {
+      "itemCode" : "Potato",
       "itemName" : "Potato",
       "quantity" : 1,
       "recordedAt" : "2026-01-03T00:00:00Z"
@@ -37,10 +40,12 @@
     "phone" : "9482224",
     "tags" : [ ],
     "orderHistory" : [ {
+      "itemCode" : "Chicken",
       "itemName" : "Chicken",
       "quantity" : 2,
       "recordedAt" : "2026-01-04T00:00:00Z"
     }, {
+      "itemCode" : "Pork",
       "itemName" : "Pork",
       "quantity" : 9,
       "recordedAt" : "2026-01-05T00:00:00Z"
@@ -50,6 +55,7 @@
     "phone" : "9482427",
     "tags" : [ ],
     "orderHistory" : [ {
+      "itemCode" : "Chicken",
       "itemName" : "Chicken",
       "quantity" : 9,
       "recordedAt" : "2026-01-06T00:00:00Z"

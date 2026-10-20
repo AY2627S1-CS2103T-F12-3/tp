@@ -37,8 +37,8 @@ public class TypicalPersons {
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Chicken", 2, ALICE_CHICKEN_ORDER_TIME))
-                            .addOrder(new Order("Potato", 1, ALICE_POTATO_ORDER_TIME))
+                            .addOrder(new Order("Chicken", "Chicken", 2, ALICE_CHICKEN_ORDER_TIME))
+                            .addOrder(new Order("Potato", "Potato", 1, ALICE_POTATO_ORDER_TIME))
             )
             .build();
     public static final Person BENSON = new PersonBuilder()
@@ -48,7 +48,7 @@ public class TypicalPersons {
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Potato", 1, BENSON_POTATO_ORDER_TIME))
+                            .addOrder(new Order("Potato", "Potato", 1, BENSON_POTATO_ORDER_TIME))
             )
             .build();
     public static final Person CARL = new PersonBuilder()
@@ -70,8 +70,8 @@ public class TypicalPersons {
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Chicken", 2, ELLE_CHICKEN_ORDER_TIME))
-                            .addOrder(new Order("Pork", 9, ELLE_PORK_ORDER_TIME))
+                            .addOrder(new Order("Chicken", "Chicken", 2, ELLE_CHICKEN_ORDER_TIME))
+                            .addOrder(new Order("Pork", "Pork", 9, ELLE_PORK_ORDER_TIME))
             )
             .build();
     public static final Person FIONA = new PersonBuilder()
@@ -80,7 +80,7 @@ public class TypicalPersons {
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Chicken", 9, FIONA_CHICKEN_ORDER_TIME))
+                            .addOrder(new Order("Chicken", "Chicken", 9, FIONA_CHICKEN_ORDER_TIME))
             )
             .build();
     public static final Person GEORGE = new PersonBuilder()
@@ -95,7 +95,7 @@ public class TypicalPersons {
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("pancake", 1))
+                            .addOrder(new Order("pancake", "pancake", 1))
             )
             .build();
     public static final Person IDA = new PersonBuilder()
@@ -104,7 +104,7 @@ public class TypicalPersons {
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
-                            .addOrder(new Order("Soup", 1))
+                            .addOrder(new Order("Soup", "Soup", 1))
             )
             .build();
 
