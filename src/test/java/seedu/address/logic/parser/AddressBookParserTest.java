@@ -21,6 +21,7 @@ import seedu.address.logic.commands.AddMilestoneCommand;
 import seedu.address.logic.commands.AddOrderCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeleteMilestoneCommand;
 import seedu.address.logic.commands.DeleteOrderCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
@@ -99,6 +100,12 @@ public class AddressBookParserTest {
         EditCommand command = (EditCommand) parser.parseCommand(EditCommand.COMMAND_WORD + " "
                 + INDEX_FIRST_PERSON.getOneBased() + " " + PersonUtil.getEditPersonDescriptorDetails(descriptor));
         assertEquals(new EditCommand(INDEX_FIRST_PERSON, descriptor), command);
+    }
+
+    @Test
+    public void parseCommand_deleteMilestone() throws Exception {
+        assertEquals(new DeleteMilestoneCommand(INDEX_FIRST_PERSON),
+                parser.parseCommand(DeleteMilestoneCommand.COMMAND_WORD + " 1"));
     }
 
     @Test
