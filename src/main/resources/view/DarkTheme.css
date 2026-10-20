@@ -362,3 +362,49 @@
     -fx-background-radius: 2;
     -fx-font-size: 11;
 }
+
+.menu-panel {
+    -fx-background-color: #383838;
+    -fx-border-color: #777777;
+    -fx-border-width: 1px;
+}
+
+.menu-title {
+    -fx-background-color: #484848;
+    -fx-border-color: #777777;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 8px 10px;
+    -fx-alignment: center;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+}
+
+.menu-panel .list-view, .menu-panel .list-cell:empty {
+    -fx-background-color: #383838;
+}
+
+.menu-item {
+    -fx-padding: 10px;
+    -fx-spacing: 2px;
+    -fx-border-color: #666666;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.menu-item-code {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 11px;
+    -fx-text-fill: #bcbcbc;
+}
+
+.menu-item-name {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+}
+
+.menu-item-price {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 12px;
+    -fx-text-fill: #c0d8df;
+}
