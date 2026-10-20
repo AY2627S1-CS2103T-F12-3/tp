@@ -66,7 +66,7 @@ public class AddOrderCommand extends Command {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         }
 
-        FoodItem foodItem = model.findFoodItemByCode(itemCode)
+        FoodItem foodItem = model.getMenu().findFoodItemByCode(itemCode)
                 .orElseThrow(() -> new CommandException(MESSAGE_ITEM_NOT_IN_MENU));
         Person person = lastShownList.get(index.getZeroBased());
         Person personWithOrderAdded = createPersonWithOrder(person, foodItem);

@@ -119,11 +119,6 @@ public interface Model {
     ReadOnlyMenu getMenu();
 
     /**
-     * Finds a menu item by its case-sensitive code.
-     */
-    Optional<FoodItem> findFoodItemByCode(String code);
-
-    /**
      * Returns true if a menu item with the same code exists.
      */
     boolean hasFoodItem(FoodItem foodItem);

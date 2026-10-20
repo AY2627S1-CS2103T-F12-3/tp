@@ -48,6 +48,7 @@ public class Menu implements ReadOnlyMenu {
     /**
      * Returns true if an item with the same code as {@code foodItem} exists in the menu.
      */
+    @Override
     public boolean hasFoodItem(FoodItem foodItem) {
         return foodItems.contains(foodItem);
     }
@@ -55,6 +56,7 @@ public class Menu implements ReadOnlyMenu {
     /**
      * Finds an item by its case-sensitive code.
      */
+    @Override
     public Optional<FoodItem> findFoodItemByCode(String code) {
         requireNonNull(code);
         return getFoodItemList().stream()

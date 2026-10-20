@@ -1,5 +1,7 @@
 package seedu.address.model.menu;
 
+import java.util.Optional;
+
 import javafx.collections.ObservableList;
 
 /**
@@ -11,4 +13,10 @@ public interface ReadOnlyMenu {
      * Items have unique case-sensitive codes, and the view reflects subsequent menu changes.
      */
     ObservableList<FoodItem> getFoodItemList();
+
+    /** Returns whether an item with the same code exists in the menu. */
+    boolean hasFoodItem(FoodItem foodItem);
+
+    /** Finds an item by its case-sensitive code. */
+    Optional<FoodItem> findFoodItemByCode(String code);
 }
