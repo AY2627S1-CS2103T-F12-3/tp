@@ -14,7 +14,7 @@ import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 
 /**
- * Manages storage of address book, menu, and user preference data.
+ * Manages storage of address book, menu, milestone catalog, and user preference data.
  */
 public class StorageManager implements Storage {
 
