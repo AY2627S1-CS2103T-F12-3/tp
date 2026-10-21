@@ -214,6 +214,9 @@ public class ModelManagerTest {
         modelManager.addFoodItem(item);
 
         assertEquals(List.of(item), view.getFoodItemList());
+        assertTrue(view.hasFoodItem(item));
+        assertEquals(item, view.findFoodItemByCode("CR01").orElseThrow());
+        assertTrue(view.findFoodItemByCode("cr01").isEmpty());
         assertThrows(UnsupportedOperationException.class, () -> view.getFoodItemList().clear());
         assertEquals(List.of(item), modelManager.getMenu().getFoodItemList());
     }
