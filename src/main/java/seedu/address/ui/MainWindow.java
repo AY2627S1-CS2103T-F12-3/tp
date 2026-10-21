@@ -51,6 +51,8 @@ public class MainWindow extends UiPart<Stage> {
     private StackPane profilePanelPlaceholder;
 
     @FXML
+    private StackPane menuPanelPlaceholder;
+
     private StackPane resultDisplayPlaceholder;
 
     @FXML
@@ -126,7 +128,7 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Adds the list, profile, command box, result display, and status bar to the window.
+     * Adds the list, profile, menu, command box, result display, and status bar to the window.
      */
     void fillInnerParts() {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
@@ -140,6 +142,8 @@ public class MainWindow extends UiPart<Stage> {
 
         StatusBarFooter statusBarFooter = new StatusBarFooter(dataFilePath);
         statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
+
+        menuPanelPlaceholder.getChildren().add(new MenuPanel(logic.getFoodItemList()).getRoot());
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());

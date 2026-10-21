@@ -5,12 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.concurrent.FutureTask;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -32,12 +30,12 @@ class MilestoneTimelineTest {
 
     @BeforeAll
     static void initializeJavaFx() {
-        Platform.startup(() -> { });
+        JavaFxTestUtil.initializeJavaFx();
     }
 
     @Test
     void constructor_noMilestones_showsEmptyMessage() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             MilestoneTimeline timeline = new MilestoneTimeline(List.of());
             StackPane content = (StackPane) timeline.getContent();
 
@@ -47,7 +45,7 @@ class MilestoneTimelineTest {
 
     @Test
     void constructor_noPerson_showsRequiredPointsWithoutScoreIndicator() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             Pane content = (Pane) new MilestoneTimeline(MILESTONES).getContent();
 
             assertEquals(List.of("Points needed: 100", "Points needed: 200", "Points needed: 300"),
@@ -58,7 +56,7 @@ class MilestoneTimelineTest {
 
     @Test
     void constructor_redeemedAndUnredeemedMilestones_showsCorrectStatuses() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             RedeemedMilestoneRewardHistory history = new RedeemedMilestoneRewardHistory()
                     .addRedeemedMilestoneReward(FIRST);
             Person person = new PersonBuilder().withScore(new Score(250))
@@ -71,7 +69,7 @@ class MilestoneTimelineTest {
 
     @Test
     void scoreBelowFirstMilestone_placesIndicatorBeforeFirstMarker() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             Pane content = createTimelineForScore(50);
 
             assertTrue(getScoreY(content) < getMarkerCenterY(content, 1));
@@ -80,7 +78,7 @@ class MilestoneTimelineTest {
 
     @Test
     void scoreBetweenMilestones_placesIndicatorHalfwayBetweenMarkers() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             Pane content = createTimelineForScore(150);
             double firstY = getMarkerCenterY(content, 1);
             double secondY = getMarkerCenterY(content, 2);
@@ -91,7 +89,7 @@ class MilestoneTimelineTest {
 
     @Test
     void scoreAtMilestone_alignsIndicatorAndKeepsArrowOutsideMarker() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             Pane content = createTimelineForScore(200);
             Label marker = getMarker(content, 2);
             Polygon arrow = (Polygon) getNodeWithStyleClass(content, "milestone-score-arrow");
@@ -103,7 +101,7 @@ class MilestoneTimelineTest {
 
     @Test
     void scoreAboveLastMilestone_placesIndicatorAfterLastMarker() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             Pane content = createTimelineForScore(400);
 
             assertTrue(getScoreY(content) > getMarkerCenterY(content, 3));
@@ -150,16 +148,4 @@ class MilestoneTimelineTest {
                 .findFirst().orElseThrow();
     }
 
-    private static void runOnFxThread(Runnable action) {
-        FutureTask<Void> task = new FutureTask<>(() -> {
-            action.run();
-            return null;
-        });
-        Platform.runLater(task);
-        try {
-            task.get();
-        } catch (Exception exception) {
-            throw new AssertionError(exception);
-        }
-    }
 }
