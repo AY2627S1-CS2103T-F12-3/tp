@@ -14,6 +14,7 @@ public class PersonDetailsPanel extends VBox {
      * @param displayedIndex The member's one-based position in the current list, or zero if absent.
      */
     public PersonDetailsPanel(Person person, int displayedIndex) {
+        assert displayedIndex >= 0 : "Displayed index must be non-negative";
         setSpacing(4);
         Label name = new Label(person.getName().fullName);
         name.getStyleClass().add("profile-name");

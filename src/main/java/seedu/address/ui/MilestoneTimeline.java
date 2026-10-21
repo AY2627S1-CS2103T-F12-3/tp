@@ -3,6 +3,7 @@ package seedu.address.ui;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -16,11 +17,13 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
 /** Displays equally spaced milestones on a scrollable timeline, with member progress when available. */
 public class MilestoneTimeline extends ScrollPane {
+    private static final Logger logger = LogsCenter.getLogger(MilestoneTimeline.class);
     private static final double LINE_X = 94;
     private static final double LINE_START_Y = 22;
     private static final double FIRST_MILESTONE_Y = 92;
@@ -79,6 +82,7 @@ public class MilestoneTimeline extends ScrollPane {
 
     /** Centers the empty message when no milestones are available. */
     private void showEmptyMessage() {
+        logger.fine("No milestones configured, unable to display milestones");
         Label emptyMessage = new Label("No milestones yet");
         emptyMessage.getStyleClass().add("milestone-empty");
         setFitToHeight(true);
@@ -225,6 +229,7 @@ public class MilestoneTimeline extends ScrollPane {
 
     /** Returns the score's vertical position relative to the milestone thresholds. */
     private double calculateScoreY(int score, List<Milestone> milestones) {
+        assert !milestones.isEmpty() : "Score position requires at least one milestone";
         if (score < milestones.get(0).getRequiredScore()) {
             return FIRST_MILESTONE_Y - MILESTONE_SPACING / 3;
         }
@@ -242,6 +247,9 @@ public class MilestoneTimeline extends ScrollPane {
 
     /** Interpolates the score's vertical position between two milestone thresholds. */
     private double interpolateScoreY(int score, Milestone previous, Milestone next, int nextIndex) {
+        assert nextIndex > 0 : "The next milestone must have a preceding milestone";
+        assert previous.getRequiredScore() <= score && score <= next.getRequiredScore()
+                : "Score must fall between the ordered milestone thresholds";
         long scoreRange = (long) next.getRequiredScore() - previous.getRequiredScore();
         if (scoreRange == 0) {
             return calculateMilestoneY(nextIndex);
