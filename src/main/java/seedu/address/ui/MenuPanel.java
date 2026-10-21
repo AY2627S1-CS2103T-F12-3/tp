@@ -27,17 +27,27 @@ public class MenuPanel extends UiPart<Region> {
     }
 
     /** Custom list cell that displays the code, name, and price of a food item. */
-    private static class MenuItemListViewCell extends ListCell<FoodItem> {
+    static class MenuItemListViewCell extends ListCell<FoodItem> {
         @Override
         protected void updateItem(FoodItem foodItem, boolean empty) {
             super.updateItem(foodItem, empty);
 
             if (empty || foodItem == null) {
-                setGraphic(null);
-                setText(null);
+                createEmptyRow();
                 return;
             }
 
+            createFilledRow(foodItem);
+        }
+
+        /** Clears the cell when it does not represent a menu item. */
+        private void createEmptyRow() {
+            setGraphic(null);
+            setText(null);
+        }
+
+        /** Creates the cell content for a populated menu item. */
+        private void createFilledRow(FoodItem foodItem) {
             Label code = new Label(foodItem.getCode());
             code.getStyleClass().add("menu-item-code");
 
