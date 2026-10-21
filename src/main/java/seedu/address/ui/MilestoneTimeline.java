@@ -23,10 +23,10 @@ public class MilestoneTimeline extends ScrollPane {
     private static final double LINE_X = 94;
     private static final double LINE_START_Y = 22;
     private static final double FIRST_MILESTONE_Y = 92;
-    private static final double MILESTONE_SPACING = 79.2;
+    private static final double MILESTONE_SPACING = 87.2;
     private static final double END_PADDING = 100;
-    private static final double REWARD_X = 110;
-    private static final double MILESTONE_NUMBER_SIZE = 42;
+    private static final double REWARD_X = 118;
+    private static final double MILESTONE_NUMBER_SIZE = 34;
     private static final double SCORE_INDICATOR_SHIFT_X = -6;
 
     private final Pane timeline = new Pane();
