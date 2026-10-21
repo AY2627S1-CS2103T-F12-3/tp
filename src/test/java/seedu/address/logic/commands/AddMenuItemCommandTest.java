@@ -99,6 +99,11 @@ public class AddMenuItemCommandTest {
         }
 
         @Override
+        public void setFoodItem(FoodItem target, FoodItem editedFoodItem) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public ReadOnlyUserPrefs getUserPrefs() {
             throw new AssertionError("This method should not be called.");
         }

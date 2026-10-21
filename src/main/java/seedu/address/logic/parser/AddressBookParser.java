@@ -24,6 +24,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.ListMilestonesCommand;
+import seedu.address.logic.commands.UpdateMenuItemCommand;
 import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -76,6 +77,7 @@ public class AddressBookParser {
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
             case AddOrderCommand.COMMAND_WORD -> new AddOrderCommandParser().parse(arguments);
             case UpdateScoreCommand.COMMAND_WORD -> new UpdateScoreCommandParser().parse(arguments);
+            case UpdateMenuItemCommand.COMMAND_WORD -> new UpdateMenuItemCommandParser().parse(arguments);
             default -> {
                 logger.finer("This user input caused a ParseException: " + userInput);
                 throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
