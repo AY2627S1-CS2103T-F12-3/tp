@@ -32,6 +32,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.ListMilestonesCommand;
+import seedu.address.logic.commands.UpdateMenuItemCommand;
 import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.menu.FoodItem;
@@ -57,6 +58,12 @@ public class AddressBookParserTest {
     public void parseCommand_addMenuItemMissingArguments_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddMenuItemCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(AddMenuItemCommand.COMMAND_WORD));
+    }
+
+    @Test
+    public void parseCommand_updateMenuItem() throws Exception {
+        assertEquals(new UpdateMenuItemCommand("CR01", "CR02", "Roasted Chicken Rice", 500),
+                parser.parseCommand("update-menu-item CR01 c/CR02 n/Roasted Chicken Rice p/5.00"));
     }
 
     @Test
