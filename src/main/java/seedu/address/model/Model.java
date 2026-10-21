@@ -128,6 +128,12 @@ public interface Model {
      */
     void addFoodItem(FoodItem foodItem);
 
+    /**
+     * Replaces the given menu item with an edited menu item.
+     * The target must exist, and the edited item's code must not belong to another item.
+     */
+    void setFoodItem(FoodItem target, FoodItem editedFoodItem);
+
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();
 
