@@ -77,7 +77,7 @@ public class AddMenuItemCommandParser implements Parser<AddMenuItemCommand> {
         return ArgumentTokenizer.tokenize(normalizedArgs, PREFIX_CODE, PREFIX_NAME, PREFIX_PRICE);
     }
 
-    private static int parsePrice(String price) throws ParseException {
+    static int parsePrice(String price) throws ParseException {
         if (!price.matches(PRICE_VALIDATION_REGEX)) {
             throw new ParseException(MESSAGE_PRICE_CONSTRAINTS);
         }
