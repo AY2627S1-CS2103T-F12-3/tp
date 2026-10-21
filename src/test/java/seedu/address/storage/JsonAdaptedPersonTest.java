@@ -18,6 +18,7 @@ import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
@@ -56,6 +57,29 @@ public class JsonAdaptedPersonTest {
 
         assertEquals(List.of(new Milestone("WELCOME", "Free drink", 10)),
                 person.toModelType().getRedeemedMilestoneRewardHistory().getRedeemedMilestoneRewards());
+    }
+
+    @Test
+    public void toModelType_nullRedeemedMilestoneReward_throwsIllegalValueException() {
+        List<JsonAdaptedRedeemedMilestoneReward> rewards = new ArrayList<>();
+        rewards.add(null);
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME, VALID_PHONE, VALID_TAGS, VALID_SCORE, VALID_ORDER_HISTORY, rewards);
+
+        assertThrows(IllegalValueException.class,
+                JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_duplicateRedeemedMilestone_throwsIllegalValueException() {
+        JsonAdaptedMilestone milestone = new JsonAdaptedMilestone(new Milestone("WELCOME", "Free drink", 10));
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME, VALID_PHONE, VALID_TAGS, VALID_SCORE, VALID_ORDER_HISTORY,
+                List.of(new JsonAdaptedRedeemedMilestoneReward(milestone),
+                        new JsonAdaptedRedeemedMilestoneReward(milestone)));
+
+        assertThrows(IllegalValueException.class,
+                RedeemedMilestoneRewardHistory.MESSAGE_DUPLICATE_MILESTONE, person::toModelType);
     }
 
     @Test

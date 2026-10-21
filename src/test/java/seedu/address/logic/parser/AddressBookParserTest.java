@@ -114,11 +114,11 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_addOrder() throws Exception {
         AddOrderCommand command = (AddOrderCommand) parser.parseCommand(AddOrderCommand.COMMAND_WORD + " "
-                + INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ORDER + "Chicken Rice " + PREFIX_QUANTITY + "2");
+                + INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ORDER + "CR01 " + PREFIX_QUANTITY + "2");
 
         assertEquals(INDEX_FIRST_PERSON, command.index);
-        assertEquals("Chicken Rice", command.order.itemName);
-        assertEquals(2, command.order.quantity);
+        assertEquals("CR01", command.itemCode);
+        assertEquals(2, command.quantity);
     }
 
     @Test
@@ -130,12 +130,12 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_addOrderInvalidItem_throwsParseException() {
         String input = AddOrderCommand.COMMAND_WORD + " 1 " + PREFIX_ORDER + "Chicken-Rice " + PREFIX_QUANTITY + "2";
-        assertThrows(ParseException.class, Order.ITEM_NAME_CONSTRAINTS, () -> parser.parseCommand(input));
+        assertThrows(ParseException.class, Order.ITEM_CODE_CONSTRAINTS, () -> parser.parseCommand(input));
     }
 
     @Test
     public void parseCommand_addOrderInvalidQuantity_throwsParseException() {
-        String input = AddOrderCommand.COMMAND_WORD + " 1 " + PREFIX_ORDER + "Chicken Rice " + PREFIX_QUANTITY + "abc";
+        String input = AddOrderCommand.COMMAND_WORD + " 1 " + PREFIX_ORDER + "CR01 " + PREFIX_QUANTITY + "abc";
         assertThrows(ParseException.class, Order.QUANTITY_CONSTRAINTS, () -> parser.parseCommand(input));
     }
 

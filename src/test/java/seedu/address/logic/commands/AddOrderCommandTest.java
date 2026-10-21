@@ -11,114 +11,134 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
-import seedu.address.logic.parser.ParserUtil;
-import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.menu.FoodItem;
+import seedu.address.model.menu.Menu;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Score;
 
 public class AddOrderCommandTest {
-
-    private static final String VALID_ITEM_NAME = "Chicken Rice";
+    private static final String VALID_ITEM_CODE = "3A";
     private static final int VALID_QUANTITY = 2;
 
     @Test
     public void constructor_nullIndex_throwsNullPointerException() {
-        Order order = new Order(VALID_ITEM_NAME, 1);
-
-        assertThrows(NullPointerException.class, () -> new AddOrderCommand(null, order));
+        assertThrows(NullPointerException.class, () -> new AddOrderCommand(null, VALID_ITEM_CODE, 1));
     }
 
     @Test
-    public void constructor_nullOrder_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new AddOrderCommand(INDEX_FIRST_PERSON, null));
+    public void constructor_nullItemCode_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new AddOrderCommand(INDEX_FIRST_PERSON, null, 1));
     }
 
     @Test
-    public void execute_validOrder_addsOrderToPersonHistory() throws Exception {
-        Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    public void execute_validCode_savesCurrentMenuNameInHistory() throws Exception {
+        Model model = modelWithMenuItem();
         Person originalPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
-        Order order = new Order(VALID_ITEM_NAME, VALID_QUANTITY);
 
-        new AddOrderCommand(INDEX_FIRST_PERSON, order).execute(model);
+        new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY).execute(model);
 
         Person updatedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         assertEquals(originalPerson.getOrderHistory().getOrders().size() + 1,
                 updatedPerson.getOrderHistory().getOrders().size());
-        assertTrue(updatedPerson.getOrderHistory().getOrders().contains(order));
+        Order addedOrder = updatedPerson.getOrderHistory().getOrders()
+                .get(updatedPerson.getOrderHistory().getOrders().size() - 1);
+        assertEquals(VALID_ITEM_CODE, addedOrder.itemCode);
+        assertEquals("Nasi Lemak", addedOrder.itemName);
+        assertEquals(VALID_QUANTITY, addedOrder.quantity);
+        assertEquals(96, addedOrder.scoreGained);
+        assertEquals(originalPerson.getScore().value + 96, updatedPerson.getScore().value);
     }
 
     @Test
     public void execute_invalidPersonIndex_throwsCommandException() {
-        Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Model model = modelWithMenuItem();
         Index outOfBoundsIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
-        Order order = new Order(VALID_ITEM_NAME, 1);
 
-        assertThrows(CommandException.class, () -> new AddOrderCommand(outOfBoundsIndex, order).execute(model));
+        assertThrows(CommandException.class, () ->
+                new AddOrderCommand(outOfBoundsIndex, VALID_ITEM_CODE, 1).execute(model));
     }
 
     @Test
-    public void parseOrder_invalidItem_failure() {
-        assertThrows(ParseException.class, () -> ParserUtil.parseOrder("", String.valueOf(VALID_QUANTITY)));
+    public void execute_codeNotInMenu_throwsCommandException() {
+        Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+
+        CommandException exception = assertThrows(CommandException.class, () ->
+                new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY).execute(model));
+
+        assertEquals(AddOrderCommand.MESSAGE_ITEM_NOT_IN_MENU, exception.getMessage());
     }
 
     @Test
-    public void parseOrder_invalidQuantity_failure() {
-        assertThrows(ParseException.class, () -> ParserUtil.parseOrder(VALID_ITEM_NAME, "two"));
+    public void execute_codeWithDifferentCase_throwsCommandException() {
+        Model model = modelWithMenuItem();
+
+        CommandException exception = assertThrows(CommandException.class, () ->
+                new AddOrderCommand(INDEX_FIRST_PERSON, "3a", VALID_QUANTITY).execute(model));
+
+        assertEquals(AddOrderCommand.MESSAGE_ITEM_NOT_IN_MENU, exception.getMessage());
     }
 
     @Test
-    public void parseOrder_zeroQuantity_failure() {
-        assertThrows(ParseException.class, () -> ParserUtil.parseOrder(VALID_ITEM_NAME, "0"));
+    public void execute_orderWouldExceedScoreLimit_throwsCommandExceptionWithoutChangingPerson() {
+        Model model = modelWithMenuItem();
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person nearLimit = new Person(original.getName(), original.getPhone(), original.getTags(),
+                new Score(999999950), original.getOrderHistory(), original.getRedeemedMilestoneRewardHistory());
+        model.setPerson(original, nearLimit);
+
+        CommandException exception = assertThrows(CommandException.class, () ->
+                new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY).execute(model));
+
+        assertEquals(AddOrderCommand.MESSAGE_SCORE_TOO_LARGE, exception.getMessage());
+        assertEquals(nearLimit, model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()));
     }
 
     @Test
-    public void parseOrder_negativeQuantity_failure() {
-        assertThrows(ParseException.class, () -> ParserUtil.parseOrder(VALID_ITEM_NAME, "-1"));
-    }
+    public void execute_orderReachesScoreLimit_addsOrder() throws Exception {
+        Model model = modelWithMenuItem();
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person nearLimit = new Person(original.getName(), original.getPhone(), original.getTags(),
+                new Score(999999903), original.getOrderHistory(), original.getRedeemedMilestoneRewardHistory());
+        model.setPerson(original, nearLimit);
 
-    @Test
-    public void parseOrder_nullItemValidQuantity_failure() {
-        assertThrows(NullPointerException.class, () -> ParserUtil.parseOrder(null, String.valueOf(VALID_QUANTITY)));
-    }
+        new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY).execute(model);
 
-    @Test
-    public void parseOrder_nullItemInvalidQuantity_failure() {
-        assertThrows(NullPointerException.class, () -> ParserUtil.parseOrder(null, "two"));
-    }
-
-    @Test
-    public void parseOrder_nullQuantity_failure() {
-        assertThrows(NullPointerException.class, () -> ParserUtil.parseOrder(VALID_ITEM_NAME, null));
-    }
-
-    @Test
-    public void parseOrder_nullItemNullQuantity_failure() {
-        assertThrows(NullPointerException.class, () -> ParserUtil.parseOrder(null, null));
+        Person updated = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        assertEquals(999999999, updated.getScore().value);
+        assertEquals(nearLimit.getOrderHistory().getOrders().size() + 1,
+                updated.getOrderHistory().getOrders().size());
     }
 
     @Test
     public void equals() {
-        Order order = new Order(VALID_ITEM_NAME, VALID_QUANTITY);
-        AddOrderCommand command = new AddOrderCommand(INDEX_FIRST_PERSON, order);
+        AddOrderCommand command = new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY);
 
         assertTrue(command.equals(command));
-        assertTrue(command.equals(new AddOrderCommand(INDEX_FIRST_PERSON, order)));
+        assertTrue(command.equals(new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY)));
         assertFalse(command.equals(null));
         assertFalse(command.equals(1));
-        assertFalse(command.equals(new AddOrderCommand(Index.fromOneBased(2), order)));
-        assertFalse(command.equals(new AddOrderCommand(INDEX_FIRST_PERSON, new Order("Coffee", 1))));
+        assertFalse(command.equals(new AddOrderCommand(Index.fromOneBased(2), VALID_ITEM_CODE, VALID_QUANTITY)));
+        assertFalse(command.equals(new AddOrderCommand(INDEX_FIRST_PERSON, "3B", VALID_QUANTITY)));
+        assertFalse(command.equals(new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, 1)));
     }
 
     @Test
     public void toStringMethod() {
-        Order order = new Order(VALID_ITEM_NAME, VALID_QUANTITY);
-        AddOrderCommand command = new AddOrderCommand(INDEX_FIRST_PERSON, order);
+        AddOrderCommand command = new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, VALID_QUANTITY);
         String expected = AddOrderCommand.class.getCanonicalName()
-                + "{index=" + INDEX_FIRST_PERSON + ", order=" + order + "}";
+                + "{index=" + INDEX_FIRST_PERSON + ", itemCode=" + VALID_ITEM_CODE
+                + ", quantity=" + VALID_QUANTITY + "}";
 
         assertEquals(expected, command.toString());
+    }
+
+    private static Model modelWithMenuItem() {
+        Menu menu = new Menu();
+        menu.addFoodItem(new FoodItem(VALID_ITEM_CODE, "Nasi Lemak", 480));
+        return new ModelManager(getTypicalAddressBook(), new UserPrefs(), menu);
     }
 }
