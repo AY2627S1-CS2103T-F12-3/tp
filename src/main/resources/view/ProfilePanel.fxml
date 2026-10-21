@@ -21,6 +21,8 @@
     <padding>
       <Insets top="18" right="14" bottom="18" left="18" />
     </padding>
+    <Label fx:id="noPersonSelected" text="No member selected"
+           styleClass="no-member-selected-label" />
     <Label fx:id="name" styleClass="profile-name" wrapText="true" />
     <Label fx:id="phone" styleClass="profile-phone" />
     <Label fx:id="index" styleClass="profile-index" wrapText="true" />

@@ -10,7 +10,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import seedu.address.model.order.Order;
-import seedu.address.model.order.OrderHistory;
+import seedu.address.model.person.Person;
 
 /** Displays a member's orders with the newest order first. */
 public class RecentOrdersPanel extends UiPart<Region> {
@@ -20,24 +20,30 @@ public class RecentOrdersPanel extends UiPart<Region> {
     private VBox orders;
 
     /**
-     * Creates a recent orders panel from {@code orderHistory}.
+     * Creates a recent orders panel for {@code person}.
      *
-     * @param orderHistory The member's order history.
+     * @param person The member whose orders are shown.
      */
-    public RecentOrdersPanel(OrderHistory orderHistory) {
+    public RecentOrdersPanel(Person person) {
         super(FXML);
 
-        List<Order> recentOrders = orderHistory.getOrders();
+        List<Order> recentOrders = person.getOrderHistory().getOrders();
         if (recentOrders.isEmpty()) {
-            showNoOrdersMessage();
+            showEmptyMessage("No orders yet");
         } else {
             showRecentOrders(recentOrders);
         }
     }
 
-    /** Shows a message when the member has no orders. */
-    private void showNoOrdersMessage() {
-        Label emptyOrders = new Label("No orders yet");
+    /** Creates a recent orders panel when no member is selected. */
+    public RecentOrdersPanel() {
+        super(FXML);
+        showEmptyMessage("No member selected");
+    }
+
+    /** Shows the given message in place of an order list. */
+    private void showEmptyMessage(String message) {
+        Label emptyOrders = new Label(message);
         emptyOrders.getStyleClass().add("profile-empty-orders");
         orders.setAlignment(Pos.CENTER);
         orders.getChildren().add(emptyOrders);

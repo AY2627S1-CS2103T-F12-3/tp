@@ -1,5 +1,7 @@
 package seedu.address.ui;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 
 import javafx.geometry.Pos;
@@ -16,7 +18,7 @@ import javafx.scene.text.TextFlow;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
-/** Displays equally spaced milestones on a scrollable timeline for a member. */
+/** Displays equally spaced milestones on a scrollable timeline, with member progress when available. */
 public class MilestoneTimeline extends ScrollPane {
     private static final double LINE_X = 94;
     private static final double LINE_START_Y = 22;
@@ -28,14 +30,27 @@ public class MilestoneTimeline extends ScrollPane {
     private static final double SCORE_INDICATOR_SHIFT_X = -6;
 
     private final Pane timeline = new Pane();
+    /** Null when the timeline is shown without a selected member. */
+    private final Person selectedPerson;
 
-    /** Creates a timeline showing the member's progress through the ordered milestones. */
+    /** Creates a timeline showing the selected member's progress through the ordered milestones. */
     public MilestoneTimeline(Person person, List<Milestone> milestones) {
+        selectedPerson = requireNonNull(person);
+        initializeTimeline(milestones);
+    }
+
+    /** Creates a timeline of the ordered milestones without member progress. */
+    public MilestoneTimeline(List<Milestone> milestones) {
+        selectedPerson = null;
+        initializeTimeline(milestones);
+    }
+
+    private void initializeTimeline(List<Milestone> milestones) {
         configureScrolling();
         if (milestones.isEmpty()) {
             showEmptyMessage();
         } else {
-            showMilestones(person, milestones);
+            showMilestones(milestones);
         }
     }
 
@@ -55,17 +70,19 @@ public class MilestoneTimeline extends ScrollPane {
         setContent(new StackPane(emptyMessage));
     }
 
-    private void showMilestones(Person person, List<Milestone> milestones) {
+    private void showMilestones(List<Milestone> milestones) {
         double timelineHeight = calculateMilestoneY(milestones.size() - 1) + END_PADDING;
         timeline.setPrefHeight(timelineHeight);
         addTimelineLine(timelineHeight);
-        addMilestoneRows(person, milestones);
-        addScoreIndicator(person.getScore().value, milestones);
+        addMilestoneRows(milestones);
+        if (selectedPerson != null) {
+            addScoreIndicator(selectedPerson.getScore().value, milestones);
+        }
     }
 
-    private void addMilestoneRows(Person person, List<Milestone> milestones) {
+    private void addMilestoneRows(List<Milestone> milestones) {
         for (int i = 0; i < milestones.size(); i++) {
-            addMilestoneRow(person, milestones.get(i), i);
+            addMilestoneRow(milestones.get(i), i);
         }
     }
 
@@ -80,9 +97,10 @@ public class MilestoneTimeline extends ScrollPane {
         timeline.getChildren().addAll(line, start, arrow);
     }
 
-    private void addMilestoneRow(Person person, Milestone milestone, int index) {
+    private void addMilestoneRow(Milestone milestone, int index) {
         double y = calculateMilestoneY(index);
-        timeline.getChildren().addAll(createMilestoneNumber(index, y), createMilestoneDetails(person, milestone, y));
+        timeline.getChildren().addAll(createMilestoneNumber(index, y),
+                createMilestoneDetails(milestone, y));
     }
 
     private Label createMilestoneNumber(int index, double y) {
@@ -96,9 +114,9 @@ public class MilestoneTimeline extends ScrollPane {
         return number;
     }
 
-    private VBox createMilestoneDetails(Person person, Milestone milestone, double y) {
+    private VBox createMilestoneDetails(Milestone milestone, double y) {
         TextFlow title = createMilestoneTitle(milestone);
-        Label status = createMilestoneStatus(person, milestone, title);
+        Label status = createMilestoneStatus(milestone, title);
         VBox details = new VBox(4, title, status);
         details.setLayoutX(REWARD_X);
         details.setLayoutY(y - 23);
@@ -115,19 +133,22 @@ public class MilestoneTimeline extends ScrollPane {
         return title;
     }
 
-    private Label createMilestoneStatus(Person person, Milestone milestone, TextFlow title) {
-        Label status = new Label(determineStatusText(person, milestone));
+    private Label createMilestoneStatus(Milestone milestone, TextFlow title) {
+        Label status = new Label(determineStatusText(milestone));
         status.getStyleClass().add("milestone-status");
         status.setWrapText(true);
         status.prefWidthProperty().bind(title.prefWidthProperty());
         return status;
     }
 
-    private String determineStatusText(Person person, Milestone milestone) {
-        if (person.getRedeemedMilestoneRewardHistory().contains(milestone)) {
+    private String determineStatusText(Milestone milestone) {
+        if (selectedPerson == null) {
+            return "Points needed: " + milestone.getRequiredScore();
+        }
+        if (selectedPerson.getRedeemedMilestoneRewardHistory().contains(milestone)) {
             return "Redeemed";
         }
-        long scoreAway = (long) milestone.getRequiredScore() - person.getScore().value;
+        long scoreAway = (long) milestone.getRequiredScore() - selectedPerson.getScore().value;
         return scoreAway <= 0 ? "Unredeemed" : scoreAway + " more points needed";
     }
 

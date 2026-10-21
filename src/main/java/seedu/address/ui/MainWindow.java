@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCombination;
@@ -36,6 +35,7 @@ public class MainWindow extends UiPart<Stage> {
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
+    private ProfilePanel profilePanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
 
@@ -50,9 +50,6 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane profilePanelPlaceholder;
-
-    @FXML
-    private Label noMemberSelectedLabel;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -125,6 +122,9 @@ public class MainWindow extends UiPart<Stage> {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
+        profilePanel = new ProfilePanel(logic.getMilestoneList());
+        profilePanelPlaceholder.getChildren().add(profilePanel.getRoot());
+
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
 
@@ -140,12 +140,11 @@ public class MainWindow extends UiPart<Stage> {
     /** Shows the selected person's profile, or the empty state when no person is selected. */
     private void showSelectedPerson() {
         if (logic.getSelectedPerson().isEmpty()) {
-            profilePanelPlaceholder.getChildren().setAll(noMemberSelectedLabel);
+            profilePanel.showNoPerson();
         } else {
             Person person = logic.getSelectedPerson().get();
             int displayedIndex = logic.getFilteredPersonList().indexOf(person) + 1;
-            profilePanelPlaceholder.getChildren().setAll(
-                    new ProfilePanel(person, displayedIndex, logic.getMilestoneList()).getRoot());
+            profilePanel.showPerson(person, displayedIndex);
         }
     }
 

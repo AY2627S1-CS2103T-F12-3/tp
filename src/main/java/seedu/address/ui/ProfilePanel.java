@@ -9,9 +9,13 @@ import javafx.scene.layout.StackPane;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
-/** Displays the selected person's details and milestones beside their recent orders. */
+/** Displays the selected member's profile, or the milestone catalog when no member is selected. */
 public class ProfilePanel extends UiPart<Region> {
     private static final String FXML = "ProfilePanel.fxml";
+    private final List<Milestone> milestones;
+
+    @FXML
+    private Label noPersonSelected;
 
     @FXML
     private Label name;
@@ -29,18 +33,41 @@ public class ProfilePanel extends UiPart<Region> {
     private StackPane recentOrdersPlaceholder;
 
     /**
-     * Creates a profile panel for {@code person}.
+     * Creates a profile panel backed by the ordered milestone catalog.
      *
-     * @param person The person to display.
-     * @param displayedIndex The person's one-based index in the displayed list, or zero if absent.
      * @param milestones The ordered milestone catalog.
      */
-    public ProfilePanel(Person person, int displayedIndex, List<Milestone> milestones) {
+    public ProfilePanel(List<Milestone> milestones) {
         super(FXML);
+        this.milestones = milestones;
+        showNoPerson();
+    }
+
+    /** Shows the given member's profile. */
+    void showPerson(Person person, int displayedIndex) {
         name.setText(person.getName().fullName);
         phone.setText(person.getPhone().value);
         index.setText(displayedIndex == 0 ? "Not in current list" : "List index: " + displayedIndex);
-        milestonesPlaceholder.getChildren().add(new MilestoneTimeline(person, milestones));
-        recentOrdersPlaceholder.getChildren().add(new RecentOrdersPanel(person.getOrderHistory()).getRoot());
+        milestonesPlaceholder.getChildren().setAll(new MilestoneTimeline(person, milestones));
+        recentOrdersPlaceholder.getChildren().setAll(new RecentOrdersPanel(person).getRoot());
+        showPersonDetails(true);
+    }
+
+    /** Shows the milestone catalog without member progress. */
+    void showNoPerson() {
+        milestonesPlaceholder.getChildren().setAll(new MilestoneTimeline(milestones));
+        recentOrdersPlaceholder.getChildren().setAll(new RecentOrdersPanel().getRoot());
+        showPersonDetails(false);
+    }
+
+    private void showPersonDetails(boolean isSelected) {
+        noPersonSelected.setVisible(!isSelected);
+        noPersonSelected.setManaged(!isSelected);
+        name.setVisible(isSelected);
+        name.setManaged(isSelected);
+        phone.setVisible(isSelected);
+        phone.setManaged(isSelected);
+        index.setVisible(isSelected);
+        index.setManaged(isSelected);
     }
 }
