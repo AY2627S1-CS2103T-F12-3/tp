@@ -14,5 +14,7 @@ public class CliSyntax {
     public static final Prefix PREFIX_SCORE_CHANGE = new Prefix("s/");
     public static final Prefix PREFIX_CODE = new Prefix("c/");
     public static final Prefix PREFIX_PRICE = new Prefix("p/");
+    public static final Prefix PREFIX_REWARD = new Prefix("r/");
+    public static final Prefix PREFIX_REQUIRED_SCORE = new Prefix("s/");
 
 }
