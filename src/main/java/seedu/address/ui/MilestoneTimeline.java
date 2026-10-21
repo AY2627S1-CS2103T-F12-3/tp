@@ -14,6 +14,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
@@ -28,6 +29,9 @@ public class MilestoneTimeline extends ScrollPane {
     private static final double REWARD_X = 118;
     private static final double MILESTONE_NUMBER_SIZE = 34;
     private static final double SCORE_INDICATOR_SHIFT_X = -6;
+    private static final double SCORE_LABEL_WIDTH = 58;
+    private static final double SCORE_ARROW_WIDTH = 8;
+    private static final double SCORE_ARROW_HALF_HEIGHT = 5;
 
     private final Pane timeline = new Pane();
     /** Null when the timeline is shown without a selected member. */
@@ -176,35 +180,47 @@ public class MilestoneTimeline extends ScrollPane {
     /** Adds the selected member's score label and pointer beside the timeline. */
     private void addScoreIndicator(int score, List<Milestone> milestones) {
         double y = calculateScoreY(score, milestones);
-        timeline.getChildren().addAll(createScoreLabel(score, y), createScorePointer(y), createScoreArrow(y));
+        double arrowTipX = calculateScoreArrowTipX(y, milestones);
+        timeline.getChildren().addAll(createScoreLabel(score, y),
+                createScorePointer(y, arrowTipX), createScoreArrow(y, arrowTipX));
     }
 
-    /** Creates the score label vertically centered at {@code y}. */
+    /** Creates a wrapping score label inside the timeline's left edge, centered at {@code y}. */
     private Label createScoreLabel(int score, double y) {
         Label scoreLabel = new Label("Score: " + score);
         scoreLabel.getStyleClass().add("milestone-score");
         scoreLabel.setAlignment(Pos.CENTER_RIGHT);
+        scoreLabel.setTextAlignment(TextAlignment.RIGHT);
+        scoreLabel.setWrapText(true);
         scoreLabel.layoutYProperty().bind(scoreLabel.heightProperty().multiply(-0.5).add(y));
-        scoreLabel.setPrefWidth(LINE_X - 28);
-        scoreLabel.setTranslateX(SCORE_INDICATOR_SHIFT_X);
+        scoreLabel.setPrefWidth(SCORE_LABEL_WIDTH);
         return scoreLabel;
     }
 
     /** Creates the horizontal line connecting the score label to its arrow. */
-    private Line createScorePointer(double y) {
-        Line pointer = new Line(LINE_X - 24, y, LINE_X - 5, y);
+    private Line createScorePointer(double y, double arrowTipX) {
+        Line pointer = new Line(SCORE_LABEL_WIDTH, y, arrowTipX - 1, y);
         pointer.getStyleClass().add("milestone-score-pointer");
-        pointer.setTranslateX(SCORE_INDICATOR_SHIFT_X);
         return pointer;
     }
 
     /** Creates the arrow pointing from the score label toward the timeline. */
-    private Polygon createScoreArrow(double y) {
-        Polygon arrow = new Polygon(LINE_X - 12, y - 5, LINE_X - 4, y,
-                LINE_X - 12, y + 5);
+    private Polygon createScoreArrow(double y, double arrowTipX) {
+        Polygon arrow = new Polygon(arrowTipX - SCORE_ARROW_WIDTH, y - SCORE_ARROW_HALF_HEIGHT,
+                arrowTipX, y, arrowTipX - SCORE_ARROW_WIDTH, y + SCORE_ARROW_HALF_HEIGHT);
         arrow.getStyleClass().add("milestone-score-arrow");
-        arrow.setTranslateX(SCORE_INDICATOR_SHIFT_X);
         return arrow;
+    }
+
+    /** Moves the arrow tip outside a numbered marker when the score is near that marker. */
+    private double calculateScoreArrowTipX(double y, List<Milestone> milestones) {
+        double markerRadius = MILESTONE_NUMBER_SIZE / 2;
+        for (int i = 0; i < milestones.size(); i++) {
+            if (Math.abs(y - calculateMilestoneY(i)) <= markerRadius + SCORE_ARROW_HALF_HEIGHT) {
+                return LINE_X - markerRadius - 1;
+            }
+        }
+        return LINE_X - 4 + SCORE_INDICATOR_SHIFT_X;
     }
 
     /** Returns the score's vertical position relative to the milestone thresholds. */

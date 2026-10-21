@@ -88,6 +88,7 @@
     -fx-font-family: "Segoe UI";
     -fx-font-size: 11px;
     -fx-text-fill: #d6e0e3;
+    -fx-padding: 0 3px 0 0;
 }
 
 .milestone-empty {
