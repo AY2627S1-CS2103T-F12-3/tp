@@ -32,6 +32,8 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `add-menu-item c/12A n/Dessert p/3.50` : Adds Dessert to the menu at $3.50.
 
+   * `update-menu-item 12A c/12B p/4.00` : Updates Dessert's code and price.
+
    * `add-milestone c/FREE500 r/Free drink s/500` : Adds a milestone reward that requires 500 points.
 
    * `list-milestones` : Lists all milestone rewards with their current indexes.
@@ -158,6 +160,37 @@ Common errors:
 | `add-menu-item c/13 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
 
 These validation failures leave the existing menu unchanged and do not save either data file.
+
+### Updating a menu item: `update-menu-item`
+
+Updates an existing menu item using its current code. The item is saved for future sessions.
+
+Format: `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`
+
+* `CURRENT_CODE` identifies the existing menu item. It must contain one or more letters (`A`–`Z`, `a`–`z`) or
+  digits (`0`–`9`), without spaces or punctuation.
+* `c/NEW_CODE` changes the item's code. The new code must be alphanumeric and must not already exist in the menu.
+* `n/NAME` changes the item's name. The name must not be blank.
+* `p/PRICE` changes the item's price. Prices use the same dollar format as `add-menu-item`.
+* At least one of `c/NEW_CODE`, `n/NAME`, or `p/PRICE` must be provided. They may appear in any order.
+* Fields that are not provided retain their existing values.
+
+Examples:
+
+* `update-menu-item 12A n/Chocolate Cake` changes only the name.
+* `update-menu-item 12A p/4.00` changes only the price.
+* `update-menu-item 12A c/12B n/Chocolate Cake p/4.00` changes the code, name, and price.
+
+Common errors:
+
+| Input | Result and recovery |
+|---|---|
+| `update-menu-item UNKNOWN n/Dish` | `A menu item with this code does not exist.` Enter the current code of an existing item. |
+| `update-menu-item 12A c/3A` | `A menu item with the new code already exists.` Choose a code that is not already in the menu. |
+| `update-menu-item 12A` | The command format is shown. Supply at least one field to update. |
+| `update-menu-item 12A p/4.001` | The price constraint is shown. Use at most two decimal places. |
+
+Validation failures leave the existing menu item unchanged.
 
 ### Listing milestone rewards: `list-milestones`
 
@@ -409,6 +442,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
+**Update menu item** | `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `update-menu-item 12A c/12B p/4.00`
 **Add milestone** | `add-milestone c/CODE r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone c/FREE500 r/Free drink s/500`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
