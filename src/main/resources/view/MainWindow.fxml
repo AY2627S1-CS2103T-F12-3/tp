@@ -51,8 +51,9 @@
 
         <GridPane VBox.vgrow="ALWAYS">
           <columnConstraints>
-            <ColumnConstraints percentWidth="33.333" />
-            <ColumnConstraints percentWidth="66.667" />
+            <ColumnConstraints percentWidth="25" />
+            <ColumnConstraints percentWidth="55" />
+            <ColumnConstraints percentWidth="20" />
           </columnConstraints>
           <rowConstraints>
             <RowConstraints vgrow="ALWAYS" />
@@ -68,6 +69,8 @@
             <Label fx:id="noMemberSelectedLabel" text="No member selected"
                    styleClass="no-member-selected-label" />
           </StackPane>
+          <StackPane fx:id="menuPanelPlaceholder" styleClass="empty-profile-panel"
+                     minWidth="0" GridPane.columnIndex="2" />
         </GridPane>
 
         <StackPane fx:id="statusbarPlaceholder" VBox.vgrow="NEVER" />
