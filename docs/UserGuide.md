@@ -32,6 +32,12 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `add-menu-item c/12A n/Dessert p/3.50` : Adds Dessert to the menu at $3.50.
 
+   * `update-menu-item 12A c/12B p/4.00` : Updates Dessert's code and price.
+
+   * `add-milestone c/FREE500 r/Free drink s/500` : Adds a milestone reward that requires 500 points.
+
+   * `list-milestones` : Lists all milestone rewards with their current indexes.
+
    * `add-order 1 o/1 q/2` : Records an order of two Chicken Rice for the 1st contact shown.
 
    * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
@@ -154,6 +160,121 @@ Common errors:
 | `add-menu-item c/13 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
 
 These validation failures leave the existing menu unchanged and do not save either data file.
+
+### Updating a menu item: `update-menu-item`
+
+Updates an existing menu item using its current code. The item is saved for future sessions.
+
+Format: `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`
+
+* `CURRENT_CODE` identifies the existing menu item. It must contain one or more letters (`A`–`Z`, `a`–`z`) or
+  digits (`0`–`9`), without spaces or punctuation.
+* `c/NEW_CODE` changes the item's code. The new code must be alphanumeric and must not already exist in the menu.
+* `n/NAME` changes the item's name. The name must not be blank.
+* `p/PRICE` changes the item's price. Prices use the same dollar format as `add-menu-item`.
+* At least one of `c/NEW_CODE`, `n/NAME`, or `p/PRICE` must be provided. They may appear in any order.
+* Fields that are not provided retain their existing values.
+
+Examples:
+
+* `update-menu-item 12A n/Chocolate Cake` changes only the name.
+* `update-menu-item 12A p/4.00` changes only the price.
+* `update-menu-item 12A c/12B n/Chocolate Cake p/4.00` changes the code, name, and price.
+
+Common errors:
+
+| Input | Result and recovery |
+|---|---|
+| `update-menu-item UNKNOWN n/Dish` | `A menu item with this code does not exist.` Enter the current code of an existing item. |
+| `update-menu-item 12A c/3A` | `A menu item with the new code already exists.` Choose a code that is not already in the menu. |
+| `update-menu-item 12A` | The command format is shown. Supply at least one field to update. |
+| `update-menu-item 12A p/4.001` | The price constraint is shown. Use at most two decimal places. |
+
+Validation failures leave the existing menu item unchanged.
+
+### Listing milestone rewards: `list-milestones`
+
+Lists all milestone rewards with the index used by `edit-milestone` and `delete-milestone`.
+
+Format: `list-milestones`
+
+Milestones are ordered by required score from lowest to highest, then by code. Each entry shows its index, code,
+reward description, and required score. If the catalog is empty, the command displays `No milestones found.`
+
+Example output:
+
+```text
+2 milestone(s) listed!
+1. [FREE500] Free drink (Required score: 500)
+2. [VOUCHER1000] $10 voucher (Required score: 1000)
+```
+
+### Adding a milestone reward: `add-milestone`
+
+Adds a milestone reward with a unique code, reward description, and required score to the milestone catalog.
+
+Format: `add-milestone c/CODE r/REWARD s/REQUIRED_SCORE`
+
+* Provide all three prefixes exactly once. They may appear in any order, separated by spaces or tabs.
+* `CODE` must contain one or more ASCII letters or digits, without spaces or punctuation. Codes are
+  case-insensitive and saved in uppercase, so `free500` and `FREE500` identify the same milestone.
+* `REWARD` must not be blank. Spaces, punctuation, and non-English characters are accepted.
+* `REQUIRED_SCORE` must be a positive whole number from `1` to `2147483647`. Do not include a leading `+` sign.
+* Single-letter prefixes such as `c/`, `r/`, and `s/` are interpreted as arguments when preceded by a space or tab;
+  avoid these tokens inside reward descriptions. Unsupported prefixes and control characters are rejected.
+
+Examples:
+
+* `add-milestone c/FREE500 r/Free drink s/500`
+* `add-milestone s/1000 c/VOUCHER1000 r/$10 voucher`
+
+A successful command displays all saved milestone fields, for example
+`New milestone added: [FREE500] Free drink (Required score: 500)`.
+
+### Editing a milestone reward: `edit-milestone`
+
+Edits the reward description or required score of an existing milestone.
+
+Format: `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`
+
+* `INDEX` is the positive index number shown in the current milestone list.
+* Provide at least one of `r/REWARD` or `s/REQUIRED_SCORE`. Existing values for omitted fields are preserved.
+* A milestone code is its stable identity and cannot be edited. To use a different code, delete the old milestone and
+  add a new one.
+* Milestones are ordered by required score from lowest to highest, then by code. Changing a required score can move
+  the milestone to a different index.
+* Entering values that are already stored is accepted and leaves the milestone unchanged.
+
+Examples:
+
+* `edit-milestone 1 r/Free drink and snack`
+* `edit-milestone 2 s/1200 r/$15 voucher`
+
+### Deleting a milestone reward: `delete-milestone`
+
+Deletes a milestone from the catalog.
+
+Format: `delete-milestone INDEX`
+
+* `INDEX` is the positive index number shown in the current milestone list.
+* Use the latest displayed list because adding or editing a milestone can change the sorted order.
+* Deleting a milestone does not change any member's score. Reward-claim records are managed separately.
+
+Example: `delete-milestone 1`
+
+Common milestone-command errors:
+
+| Input | Result and recovery |
+|---|---|
+| Reusing `c/FREE500` in a different letter case | `A milestone with this code already exists.` Choose another code. |
+| `add-milestone c/FREE500 r/Free drink` | The command format is shown. Supply `s/REQUIRED_SCORE`. |
+| `add-milestone c/FREE500 r/Free drink s/+500` | The required-score constraint is shown. Remove the `+` sign. |
+| `edit-milestone 1` | At least one editable field must be provided. |
+| `edit-milestone 1 c/NEWCODE` | The command format is shown because milestone codes cannot be edited. |
+| `delete-milestone 999` | The milestone-index error is shown. Use an index in the displayed milestone list. |
+
+Failed milestone commands leave the milestone catalog unchanged. Successful commands are saved in
+`data/milestones.json`; `clear` removes customers but does not remove milestone rewards.
 
 ### Recording an order: `add-order`
 
@@ -365,11 +486,16 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
+**Update menu item** | `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `update-menu-item 12A c/12B p/4.00`
+**Add milestone** | `add-milestone c/CODE r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone c/FREE500 r/Free drink s/500`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete milestone** | `delete-milestone INDEX`<br> e.g., `delete-milestone 1`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
+**Edit milestone** | `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`<br> e.g., `edit-milestone 1 s/600`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
+**List milestones** | `list-milestones`
 **Update score** | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
 **Redeem milestone** | `redeem INDEX m/MILESTONE_INDEX`<br> e.g., `redeem 1 m/2`
 **Cancel redeemed milestone** | `cancel-redeem INDEX m/MILESTONE_INDEX`<br> e.g., `cancel-redeem 1 m/2`

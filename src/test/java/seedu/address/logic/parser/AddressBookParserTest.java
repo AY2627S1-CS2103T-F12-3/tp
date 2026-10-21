@@ -18,21 +18,28 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddMenuItemCommand;
+import seedu.address.logic.commands.AddMilestoneCommand;
 import seedu.address.logic.commands.AddOrderCommand;
 import seedu.address.logic.commands.CancelRedeemCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeleteMilestoneCommand;
 import seedu.address.logic.commands.DeleteOrderCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.logic.commands.EditMilestoneCommand;
+import seedu.address.logic.commands.EditMilestoneCommand.EditMilestoneDescriptor;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.ListMilestonesCommand;
 import seedu.address.logic.commands.RedeemMilestoneCommand;
+import seedu.address.logic.commands.UpdateMenuItemCommand;
 import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.menu.FoodItem;
+import seedu.address.model.milestone.Milestone;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
@@ -54,6 +61,27 @@ public class AddressBookParserTest {
     public void parseCommand_addMenuItemMissingArguments_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddMenuItemCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(AddMenuItemCommand.COMMAND_WORD));
+    }
+
+    @Test
+    public void parseCommand_updateMenuItem() throws Exception {
+        assertEquals(new UpdateMenuItemCommand("CR01", "CR02", "Roasted Chicken Rice", 500),
+                parser.parseCommand("update-menu-item CR01 c/CR02 n/Roasted Chicken Rice p/5.00"));
+    }
+
+    @Test
+    public void parseCommand_addMilestone() throws Exception {
+        assertEquals(new AddMilestoneCommand(new Milestone("FREE500", "Free drink", 500)),
+                parser.parseCommand(AddMilestoneCommand.COMMAND_WORD
+                        + " c/FREE500 r/Free drink s/500"));
+    }
+
+    @Test
+    public void parseCommand_addMilestoneMissingArguments_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                AddMilestoneCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expectedMessage, () ->
+                parser.parseCommand(AddMilestoneCommand.COMMAND_WORD));
     }
 
     @Test
@@ -86,6 +114,23 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_deleteMilestone() throws Exception {
+        assertEquals(new DeleteMilestoneCommand(INDEX_FIRST_PERSON),
+                parser.parseCommand(DeleteMilestoneCommand.COMMAND_WORD + " 1"));
+    }
+
+    @Test
+    public void parseCommand_editMilestone() throws Exception {
+        EditMilestoneDescriptor descriptor = new EditMilestoneDescriptor();
+        descriptor.setRewardDescription("Free drink and snack");
+        descriptor.setRequiredScore(600);
+
+        assertEquals(new EditMilestoneCommand(INDEX_FIRST_PERSON, descriptor),
+                parser.parseCommand(EditMilestoneCommand.COMMAND_WORD
+                        + " 1 r/Free drink and snack s/600"));
+    }
+
+    @Test
     public void parseCommand_exit() throws Exception {
         assertTrue(parser.parseCommand(ExitCommand.COMMAND_WORD) instanceof ExitCommand);
         assertTrue(parser.parseCommand(ExitCommand.COMMAND_WORD + " 3") instanceof ExitCommand);
@@ -109,6 +154,12 @@ public class AddressBookParserTest {
     public void parseCommand_list() throws Exception {
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD) instanceof ListCommand);
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + " 3") instanceof ListCommand);
+    }
+
+    @Test
+    public void parseCommand_listMilestones() throws Exception {
+        assertTrue(parser.parseCommand(ListMilestonesCommand.COMMAND_WORD) instanceof ListMilestonesCommand);
+        assertTrue(parser.parseCommand(ListMilestonesCommand.COMMAND_WORD + " 3") instanceof ListMilestonesCommand);
     }
 
     @Test
