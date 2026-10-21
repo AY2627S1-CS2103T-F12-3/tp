@@ -58,16 +58,20 @@ public class RedeemedMilestoneRewardHistory {
     }
 
     /**
-     * Returns a new history without the redeemed reward at the given zero-based index.
+     * Returns a new history without the redeemed milestone with the same code as {@code milestone}.
      * This history is not modified.
      *
-     * @param zeroBasedIndex the zero-based index of the reward to delete
-     * @return a new history without the specified redeemed reward
-     * @throws IndexOutOfBoundsException if {@code zeroBasedIndex} is outside this history
+     * @param milestone the redeemed milestone to delete
+     * @return a new history without the specified redeemed milestone
+     * @throws IllegalArgumentException if the milestone is not in this history
      */
-    public RedeemedMilestoneRewardHistory deleteRedeemedMilestoneReward(int zeroBasedIndex) {
+    public RedeemedMilestoneRewardHistory deleteRedeemedMilestoneReward(Milestone milestone) {
+        requireNonNull(milestone);
         ArrayList<Milestone> updatedRewards = new ArrayList<>(redeemedMilestoneRewards);
-        updatedRewards.remove(zeroBasedIndex);
+        boolean wasRemoved = updatedRewards.removeIf(redeemedMilestone -> redeemedMilestone.isSameMilestone(milestone));
+        if (!wasRemoved) {
+            throw new IllegalArgumentException("Milestone is not in the redeemed history.");
+        }
         return new RedeemedMilestoneRewardHistory(updatedRewards);
     }
 

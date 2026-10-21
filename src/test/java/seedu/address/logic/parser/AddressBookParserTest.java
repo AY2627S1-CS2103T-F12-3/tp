@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_MILESTONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ORDER;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_QUANTITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SCORE_CHANGE;
@@ -19,6 +20,7 @@ import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddMenuItemCommand;
 import seedu.address.logic.commands.AddMilestoneCommand;
 import seedu.address.logic.commands.AddOrderCommand;
+import seedu.address.logic.commands.CancelRedeemCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.DeleteMilestoneCommand;
@@ -32,6 +34,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.ListMilestonesCommand;
+import seedu.address.logic.commands.RedeemMilestoneCommand;
 import seedu.address.logic.commands.UpdateMenuItemCommand;
 import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -199,6 +202,62 @@ public class AddressBookParserTest {
     public void parseCommand_deleteOrderMissingArguments_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteOrderCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(DeleteOrderCommand.COMMAND_WORD));
+    }
+
+    @Test
+    public void parseCommand_redeemMilestone() throws Exception {
+        String command = RedeemMilestoneCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased()
+                + " " + PREFIX_MILESTONE + "2";
+        RedeemMilestoneCommand parsedCommand = (RedeemMilestoneCommand) parser.parseCommand(command);
+
+        assertEquals(INDEX_FIRST_PERSON, parsedCommand.personIndex);
+        assertEquals(2, parsedCommand.milestoneIndex.getOneBased());
+    }
+
+    @Test
+    public void parseCommand_redeemMilestoneMissingArguments_throwsParseException() {
+        String command = RedeemMilestoneCommand.COMMAND_WORD;
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                RedeemMilestoneCommand.MESSAGE_USAGE);
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
+    }
+
+    @Test
+    public void parseCommand_redeemMilestoneInvalidIndex_throwsParseException() {
+        String command = RedeemMilestoneCommand.COMMAND_WORD + " 1 " + PREFIX_MILESTONE + "abc";
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                RedeemMilestoneCommand.MESSAGE_USAGE);
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
+    }
+
+    @Test
+    public void parseCommand_cancelRedeem() throws Exception {
+        String command = CancelRedeemCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased()
+                + " " + PREFIX_MILESTONE + "2";
+        CancelRedeemCommand parsedCommand = (CancelRedeemCommand) parser.parseCommand(command);
+
+        assertEquals(INDEX_FIRST_PERSON, parsedCommand.personIndex);
+        assertEquals(2, parsedCommand.milestoneIndex.getOneBased());
+    }
+
+    @Test
+    public void parseCommand_cancelRedeemMissingArguments_throwsParseException() {
+        String command = CancelRedeemCommand.COMMAND_WORD;
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                CancelRedeemCommand.MESSAGE_USAGE);
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
+    }
+
+    @Test
+    public void parseCommand_cancelRedeemInvalidIndex_throwsParseException() {
+        String command = CancelRedeemCommand.COMMAND_WORD + " 1 " + PREFIX_MILESTONE + "abc";
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                CancelRedeemCommand.MESSAGE_USAGE);
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(command));
     }
 
     @Test
