@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -21,11 +20,8 @@
     <padding>
       <Insets top="18" right="14" bottom="18" left="18" />
     </padding>
-    <Label fx:id="noPersonSelected" text="No member selected"
-           styleClass="no-member-selected-label" />
-    <Label fx:id="name" styleClass="profile-name" wrapText="true" />
-    <Label fx:id="phone" styleClass="profile-phone" />
-    <Label fx:id="index" styleClass="profile-index" wrapText="true" />
+    <StackPane fx:id="personDetailsPlaceholder" minWidth="0"
+               minHeight="100" prefHeight="100" maxHeight="100" />
     <StackPane fx:id="milestonesPlaceholder" minHeight="160" maxHeight="Infinity" VBox.vgrow="ALWAYS">
       <VBox.margin>
         <Insets top="20" />
