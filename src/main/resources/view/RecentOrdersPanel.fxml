@@ -12,6 +12,7 @@
     <Label text="#" styleClass="profile-order-index" />
     <Label text="Order" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
     <Label text="Qty" styleClass="profile-order-quantity" />
+    <Label text="Points" styleClass="profile-order-points" />
   </HBox>
   <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
               styleClass="profile-order-scroll">

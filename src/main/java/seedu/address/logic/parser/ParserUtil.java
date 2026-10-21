@@ -1,7 +1,6 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,6 +9,7 @@ import java.util.Set;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.menu.FoodItem;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
@@ -21,6 +21,9 @@ import seedu.address.model.tag.Tag;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
+    public static final String MESSAGE_INVALID_REQUIRED_SCORE =
+            "Required score must be a positive whole number no greater than 2147483647.";
+    private static final String REQUIRED_SCORE_VALIDATION_REGEX = "[0-9]+";
 
     /**
      * Parses {@code oneBasedIndex} into an {@code Index} and returns it. Leading and trailing whitespaces will be
@@ -33,6 +36,30 @@ public class ParserUtil {
             throw new ParseException(MESSAGE_INVALID_INDEX);
         }
         return Index.fromOneBased(Integer.parseInt(trimmedIndex));
+    }
+
+    /**
+     * Parses {@code requiredScore} into a positive integer.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the specified score is not a positive integer within the supported range.
+     */
+    public static int parseRequiredScore(String requiredScore) throws ParseException {
+        requireNonNull(requiredScore);
+        String trimmedRequiredScore = requiredScore.trim();
+        if (!trimmedRequiredScore.matches(REQUIRED_SCORE_VALIDATION_REGEX)) {
+            throw new ParseException(MESSAGE_INVALID_REQUIRED_SCORE);
+        }
+
+        try {
+            int parsedRequiredScore = Integer.parseInt(trimmedRequiredScore);
+            if (parsedRequiredScore <= 0) {
+                throw new ParseException(MESSAGE_INVALID_REQUIRED_SCORE);
+            }
+            return parsedRequiredScore;
+        } catch (NumberFormatException e) {
+            throw new ParseException(MESSAGE_INVALID_REQUIRED_SCORE, e);
+        }
     }
 
     /**
@@ -96,18 +123,26 @@ public class ParserUtil {
     }
 
     /**
-     * Parses {@code itemName} and {@code quantity} into an {@code Order}.
+     * Parses and validates an item code.
      *
-     * @throws ParseException if the item name or quantity is invalid.
+     * @throws ParseException if the item code is invalid.
      */
-    public static Order parseOrder(String itemName, String quantity) throws ParseException {
-        requireAllNonNull(itemName, quantity);
-
-        String trimmedItemName = itemName.trim();
-        if (!Order.isValidItemName(trimmedItemName)) {
-            throw new ParseException(Order.ITEM_NAME_CONSTRAINTS);
+    public static String parseOrderCode(String itemCode) throws ParseException {
+        requireNonNull(itemCode);
+        String trimmedItemCode = itemCode.trim();
+        if (!FoodItem.isValidCode(trimmedItemCode)) {
+            throw new ParseException(Order.ITEM_CODE_CONSTRAINTS);
         }
+        return trimmedItemCode;
+    }
 
+    /**
+     * Parses and validates an order quantity.
+     *
+     * @throws ParseException if the quantity is invalid.
+     */
+    public static int parseOrderQuantity(String quantity) throws ParseException {
+        requireNonNull(quantity);
         int numericQuantity;
         try {
             numericQuantity = Integer.parseInt(quantity.trim());
@@ -119,7 +154,7 @@ public class ParserUtil {
             throw new ParseException(Order.QUANTITY_CONSTRAINTS);
         }
 
-        return new Order(trimmedItemName, numericQuantity);
+        return numericQuantity;
     }
 
 }

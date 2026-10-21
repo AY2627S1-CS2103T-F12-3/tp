@@ -134,6 +134,11 @@ public class AddCommandTest {
         }
 
         @Override
+        public void setFoodItem(FoodItem target, FoodItem editedFoodItem) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public void setAddressBook(ReadOnlyAddressBook newData) {
             throw new AssertionError("This method should not be called.");
         }

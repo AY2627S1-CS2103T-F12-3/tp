@@ -216,7 +216,22 @@ public class ModelManager implements Model {
 
     @Override
     public ReadOnlyMenu getMenu() {
-        return menu::getFoodItemList;
+        return new ReadOnlyMenu() {
+            @Override
+            public ObservableList<FoodItem> getFoodItemList() {
+                return menu.getFoodItemList();
+            }
+
+            @Override
+            public boolean hasFoodItem(FoodItem foodItem) {
+                return menu.hasFoodItem(foodItem);
+            }
+
+            @Override
+            public Optional<FoodItem> findFoodItemByCode(String code) {
+                return menu.findFoodItemByCode(code);
+            }
+        };
     }
 
     @Override
@@ -232,5 +247,11 @@ public class ModelManager implements Model {
     @Override
     public void deleteFoodItem(FoodItem target) {
         menu.removeFoodItem(target);
+    }
+
+    @Override
+    public void setFoodItem(FoodItem target, FoodItem editedFoodItem) {
+        requireAllNonNull(target, editedFoodItem);
+        menu.setFoodItem(target, editedFoodItem);
     }
 }

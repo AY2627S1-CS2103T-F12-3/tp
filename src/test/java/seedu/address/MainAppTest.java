@@ -19,6 +19,7 @@ import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.MilestoneCatalog;
+import seedu.address.model.util.SampleDataUtil;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonMenuStorage;
 import seedu.address.storage.JsonMilestoneCatalogStorage;
@@ -30,9 +31,10 @@ public class MainAppTest {
     public Path testFolder;
 
     @Test
-    public void initMenu_missingFile_returnsEmptyMenu() {
+    public void initMenu_missingFile_returnsSampleMenu() {
         StorageManager storage = createStorage();
-        assertTrue(new MainApp().initMenu(storage).getFoodItemList().isEmpty());
+        assertEquals(SampleDataUtil.getSampleMenu().getFoodItemList(),
+                new MainApp().initMenu(storage).getFoodItemList());
         assertFalse(Files.exists(storage.getMenuFilePath()));
     }
 
@@ -50,7 +52,7 @@ public class MainAppTest {
     public void initMenu_validFile_loadsSavedMenu() throws Exception {
         StorageManager storage = createStorage();
         Menu saved = new Menu();
-        saved.addFoodItem(new FoodItem("CR01", "Chicken Rice", 450));
+        saved.addFoodItem(new FoodItem("3A", "Nasi Lemak", 480));
         storage.saveMenu(saved);
 
         assertEquals(saved, new Menu(new MainApp().initMenu(storage)));
@@ -89,30 +91,44 @@ public class MainAppTest {
         MainApp app = new MainApp();
         ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage),
                 app.initMilestoneCatalog(storage));
-        new LogicManager(model, storage).execute("add-menu-item c/CR01 n/Chicken Rice p/4.50");
+        new LogicManager(model, storage).execute("add-menu-item c/12A n/Dessert p/3.50");
 
         ModelManager reloaded = new ModelManager(storage.readAddressBook().orElseThrow(),
                 new UserPrefs(), new MainApp().initMenu(storage), new MainApp().initMilestoneCatalog(storage));
 
-        assertEquals(List.of(new FoodItem("CR01", "Chicken Rice", 450)), reloaded.getMenu().getFoodItemList());
+        Menu expectedMenu = new Menu(SampleDataUtil.getSampleMenu());
+        expectedMenu.addFoodItem(new FoodItem("12A", "Dessert", 350));
+        assertEquals(expectedMenu.getFoodItemList(), reloaded.getMenu().getFoodItemList());
         assertEquals(model, reloaded);
     }
 
     @Test
-    public void milestone_saveAndReload_retainsMilestoneAfterRestart() throws Exception {
+    public void milestoneCommands_saveAndReload_persistChangesAfterRestart() throws Exception {
         StorageManager storage = createStorage();
         MainApp app = new MainApp();
         ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage),
                 app.initMilestoneCatalog(storage));
-        Milestone milestone = new Milestone("FREE500", "Free drink", 500);
-        model.addMilestone(milestone);
-        new LogicManager(model, storage).execute("list");
+        new LogicManager(model, storage).execute("add-milestone c/FREE500 r/Free drink s/500");
 
-        ModelManager reloaded = new ModelManager(storage.readAddressBook().orElseThrow(),
-                new UserPrefs(), app.initMenu(storage), app.initMilestoneCatalog(storage));
+        ModelManager reloaded = reloadModel(storage);
+        assertEquals(List.of(new Milestone("FREE500", "Free drink", 500)), reloaded.getMilestoneList());
 
-        assertEquals(List.of(milestone), reloaded.getMilestoneList());
-        assertEquals(model, reloaded);
+        new LogicManager(reloaded, storage).execute("edit-milestone 1 r/Free drink and snack s/750");
+
+        reloaded = reloadModel(storage);
+        assertEquals(List.of(new Milestone("FREE500", "Free drink and snack", 750)),
+                reloaded.getMilestoneList());
+
+        new LogicManager(reloaded, storage).execute("delete-milestone 1");
+
+        reloaded = reloadModel(storage);
+        assertTrue(reloaded.getMilestoneList().isEmpty());
+    }
+
+    private ModelManager reloadModel(StorageManager storage) throws Exception {
+        MainApp app = new MainApp();
+        return new ModelManager(storage.readAddressBook().orElseThrow(), new UserPrefs(), app.initMenu(storage),
+                app.initMilestoneCatalog(storage));
     }
 
     @Test

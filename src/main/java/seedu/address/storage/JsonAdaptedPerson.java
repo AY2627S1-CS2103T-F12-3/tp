@@ -15,6 +15,7 @@ import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Score;
+import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -29,6 +30,7 @@ class JsonAdaptedPerson {
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final String score;
     private final List<JsonAdaptedOrder> orderHistory = new ArrayList<>();
+    private final List<JsonAdaptedRedeemedMilestoneReward> redeemedMilestoneRewardHistory = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
@@ -38,7 +40,9 @@ class JsonAdaptedPerson {
             @JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
             @JsonProperty("score") String score,
-            @JsonProperty("orderHistory") List<JsonAdaptedOrder> orderHistory) {
+            @JsonProperty("orderHistory") List<JsonAdaptedOrder> orderHistory,
+            @JsonProperty("redeemedMilestoneRewardHistory")
+            List<JsonAdaptedRedeemedMilestoneReward> redeemedMilestoneRewardHistory) {
         this.name = name;
         this.phone = phone;
         if (tags != null) {
@@ -48,6 +52,18 @@ class JsonAdaptedPerson {
         if (orderHistory != null) {
             this.orderHistory.addAll(orderHistory);
         }
+        if (redeemedMilestoneRewardHistory != null) {
+            this.redeemedMilestoneRewardHistory.addAll(redeemedMilestoneRewardHistory);
+        }
+    }
+
+    /**
+     * Constructs a {@code JsonAdaptedPerson} without redeemed milestone rewards.
+     * This supports address book data created before redeemed rewards were added.
+     */
+    public JsonAdaptedPerson(String name, String phone, List<JsonAdaptedTag> tags, String score,
+                             List<JsonAdaptedOrder> orderHistory) {
+        this(name, phone, tags, score, orderHistory, new ArrayList<>());
     }
 
     /**
@@ -62,6 +78,10 @@ class JsonAdaptedPerson {
         score = source.getScore().toString();
         orderHistory.addAll(source.getOrderHistory().getOrders().stream()
                 .map(JsonAdaptedOrder::new)
+                .collect(Collectors.toList()));
+        redeemedMilestoneRewardHistory.addAll(source.getRedeemedMilestoneRewardHistory()
+                .getRedeemedMilestoneRewards().stream()
+                .map(JsonAdaptedRedeemedMilestoneReward::new)
                 .collect(Collectors.toList()));
     }
 
@@ -109,7 +129,21 @@ class JsonAdaptedPerson {
         for (JsonAdaptedOrder adaptedOrder : orderHistory) {
             modelOrderHistory = modelOrderHistory.addOrder(adaptedOrder.toModelType());
         }
+        RedeemedMilestoneRewardHistory modelRedeemedMilestoneRewardHistory =
+                new RedeemedMilestoneRewardHistory();
+        for (JsonAdaptedRedeemedMilestoneReward adaptedReward : redeemedMilestoneRewardHistory) {
+            if (adaptedReward == null) {
+                throw new IllegalValueException(JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS);
+            }
+            try {
+                modelRedeemedMilestoneRewardHistory = modelRedeemedMilestoneRewardHistory
+                        .addRedeemedMilestoneReward(adaptedReward.toModelType());
+            } catch (IllegalArgumentException exception) {
+                throw new IllegalValueException(RedeemedMilestoneRewardHistory.MESSAGE_DUPLICATE_MILESTONE);
+            }
+        }
 
-        return new Person(modelName, modelPhone, modelTags, modelScore, modelOrderHistory);
+        return new Person(modelName, modelPhone, modelTags, modelScore, modelOrderHistory,
+                modelRedeemedMilestoneRewardHistory);
     }
 }

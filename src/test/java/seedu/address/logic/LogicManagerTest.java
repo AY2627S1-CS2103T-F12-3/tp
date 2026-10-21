@@ -133,6 +133,25 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void getFoodItemList_modelUpdated_updatesReturnedList() {
+        ObservableList<FoodItem> foodItems = logic.getFoodItemList();
+        FoodItem chickenRice = new FoodItem("CR01", "Chicken Rice", 450);
+
+        assertTrue(foodItems.isEmpty());
+
+        model.addFoodItem(chickenRice);
+
+        assertEquals(List.of(chickenRice), foodItems);
+    }
+
+    @Test
+    public void getFoodItemList_modifyList_throwsUnsupportedOperationException() {
+        FoodItem chickenRice = new FoodItem("CR01", "Chicken Rice", 450);
+
+        assertThrows(UnsupportedOperationException.class, () -> logic.getFoodItemList().add(chickenRice));
+    }
+
+    @Test
     public void execute_menuCommand_savesMenu() throws Exception {
         logic.execute("add-menu-item c/CR01 n/Chicken Rice p/4.50");
         JsonMenuStorage saved = new JsonMenuStorage(temporaryFolder.resolve("menu.json"));

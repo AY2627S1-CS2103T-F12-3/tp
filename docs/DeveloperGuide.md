@@ -153,8 +153,10 @@ The `Storage` component,
 * is implemented by `StorageManager`, which delegates file access to `JsonAddressBookStorage`, `JsonMenuStorage`,
   `JsonMilestoneCatalogStorage`, and `JsonUserPrefsStorage` (one class per data file).
 
-`JsonAdaptedPerson` stores name, phone, tags, score, and order history. Each stored order includes its item name,
-quantity, and recorded time. Unknown JSON properties are ignored when loading and omitted when saving.
+`JsonAdaptedPerson` stores name, phone, tags, score, and order history. Each stored order includes its item code,
+the item name captured when the order was recorded, quantity, recorded time, and `scoreGained`. Unknown JSON
+properties are ignored when loading and omitted when saving. Older order records require both `itemCode` and
+`itemName` before loading; missing `scoreGained` defaults to zero, while negative values are rejected.
 A missing score defaults to zero.
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
@@ -171,8 +173,14 @@ This section describes some noteworthy details on how certain features are imple
 ### Adding a menu item
 
 The `add-menu-item c/CODE n/NAME p/PRICE` command adds a `FoodItem` to the menu owned by `ModelManager`.
-The menu is separate from customer records and existing order histories. `add-order` still accepts an item name;
-it does not look up the new menu's codes or prices.
+The menu is separate from customer records and order histories. `add-order` accepts a menu code and checks for an
+exact case-sensitive match in the menu before adding the order. The command copies the matched item's current name
+into the new order, alongside its code, quantity, and recorded time. `RecentOrdersPanel` displays the saved name and
+points gained, so later menu edits do not change past orders. The command calculates `scoreGained` as
+`floor(priceInCents × quantity / 10)` ($1 earns 10 points), saves it with the order, and adds it to the member's
+score. The calculation and addition use `long` intermediates before validating the score's nine-digit limit.
+`delete-order` selects an order by its history index and subtracts its saved `scoreGained`; it rejects a deletion
+that would make the member's score negative. The saved value means a menu price change cannot alter past earnings.
 
 #### Command flow
 
@@ -203,8 +211,9 @@ loaded `ReadOnlyMenu`; the existing two-argument constructor initializes an empt
 | `StorageManager` | Delegates `getMenuFilePath`, `readMenu`, and `saveMenu` to `JsonMenuStorage`. |
 
 `MainApp` configures `data/menu.json` relative to the launch directory. Its `initMenu` method loads the saved menu,
-or logs a warning and supplies an empty menu if loading fails. A missing file also starts empty, with no sample
-menu. Loading alone leaves an invalid file untouched; the next successfully executed command can overwrite it,
+uses `SampleDataUtil.getSampleMenu()` if the file is missing, or logs a warning and supplies an empty menu if loading
+fails. Sample menu codes match the sample members' order histories. Loading alone leaves an invalid file untouched;
+the next successfully executed command can overwrite it,
 matching the existing address-book fallback policy.
 
 All three domain data files are saved after every successfully executed command, including read-only commands. A
@@ -221,7 +230,7 @@ The JSON adapter, serializable menu, and menu storage test classes cover invalid
 `MainAppTest` checks startup fallback and saving/reloading across model initialization; `LogicManagerTest` covers
 automatic saving and menu-save errors.
 
-### Milestone catalog data source
+### Milestone catalog and management commands
 
 Milestone rewards are stored in a `MilestoneCatalog` rather than in `AddressBook`. This keeps global loyalty-program
 configuration separate from customer records: an address book owns people, while one milestone catalog defines the
@@ -241,9 +250,30 @@ stable by delegating them to its catalog.
 the next successfully executed command saves the model. Legacy `milestones` properties in `memberlist.json` are
 ignored, so the address-book file remains responsible only for customer data.
 
-The milestone model tests cover validation, sorting, uniqueness, mutation, and read-only views. The JSON adapter,
-serializable catalog, storage, `MainApp`, and `LogicManager` tests cover invalid data, round trips, startup fallback,
-and automatic saving.
+The `list-milestones`, `add-milestone`, `edit-milestone`, and `delete-milestone` commands expose catalog access and
+mutation through the CLI. `ListMilestonesCommand` formats `Model#getMilestoneList()` as a numbered list, making the
+indexes used by edit and delete discoverable. `AddressBookParser` routes each mutating command to its dedicated
+parser. The milestone parsers share strict tokenization that normalizes tabs, rejects unsupported single-letter
+prefixes, and rejects control characters other than tabs.
+
+`AddMilestoneCommandParser` requires a code, reward description, and required score in any order.
+`EditMilestoneCommandParser` requires a displayed index and at least one editable field; its
+`EditMilestoneDescriptor` is defensively copied by `EditMilestoneCommand`. Codes are excluded from the descriptor
+because they are stable identities. `DeleteMilestoneCommandParser` accepts only a displayed index. Required scores
+are parsed as unsigned decimal digits in the positive Java `int` range, so inputs such as `+500`, `0`, and values
+above `2147483647` are rejected.
+
+Edit and delete commands resolve their one-based index against `Model#getMilestoneList()` during execution, then pass
+the selected `Milestone` to the model. The catalog uses its case-insensitive code internally and maintains ascending
+required-score order with code as the tie-breaker. Editing a required score can therefore change the milestone's
+displayed index. None of these commands reads or modifies a person's score or reward-claim records.
+
+The milestone model tests cover validation, sorting, uniqueness, mutation, and read-only views. Command and parser
+tests cover numbered listing, empty catalogs, successful mutations, duplicate codes, defensive descriptor copying,
+reordered edits, index boundaries, arbitrary prefix order, duplicate and unsupported prefixes, control characters,
+and required-score boundaries.
+`AddressBookParserTest` checks command routing. The JSON adapter, serializable catalog, storage, `MainApp`, and
+`LogicManager` tests cover invalid data, round trips, startup fallback, and automatic saving.
 
 ### Deleting a menu item
 
@@ -488,8 +518,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User requests to log an order for a member, specifying the member's index in the displayed list, item name, and quantity.
-2.  App adds the order to that member's order history and shows a confirmation.
+1.  User requests to log an order for a member, specifying the member's index in the displayed list, menu item code, and quantity.
+2.  App records the current menu item name and calculated points earned, adds the order to that member's order
+    history, increases the member's score, and shows a confirmation.
 
     Use case ends.
 
@@ -501,23 +532,29 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
-* 1b. The item name is blank or contains characters other than letters, digits, and spaces.
+* 1b. The item code is blank or contains characters other than letters and digits.
 
     * 1b1. App shows an error message and does not add an order.
 
       Use case ends.
 
-* 1c. The quantity is not a positive whole number.
+* 1c. The item code is not in the menu.
 
     * 1c1. App shows an error message and does not add an order.
 
       Use case ends.
 
-* 1c. The given quantity is not a positive integer.
+* 1d. The quantity is not a positive whole number.
 
-    * 1c1. App shows an error message.
+    * 1d1. App shows an error message and does not add an order.
 
-      Use case resumes at step 1.
+      Use case ends.
+
+* 1e. The earned points would increase the member's score beyond `999999999`.
+
+    * 1e1. App shows an error message and does not add an order or change the score.
+
+      Use case ends.
 
 **Use case: Delete an order from a member's order history**
 
@@ -525,7 +562,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 1.  User requests to delete an order, specifying the member's index in the displayed list and the order's index in
     that member's order history.
-2.  App deletes the order and shows a confirmation.
+2.  App deletes the order, subtracts its saved points earned from the member's score, and shows a confirmation.
 
     Use case ends.
 
@@ -540,6 +577,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 1b. The order index is invalid or does not refer to an order in that member's order history.
 
     * 1b1. App shows an error message and does not delete an order.
+
+      Use case ends.
+
+* 1c. Subtracting the order's saved points would make the member's score negative.
+
+    * 1c1. App shows an error message and does not delete the order or change the score.
 
       Use case ends.
 
@@ -614,7 +657,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Rewards program**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
 * **Menu item**: A dish or drink sold by the stall, recorded with a unique case-sensitive code, name, and price.
 * **Milestone reward**: A prize a member becomes eligible for upon reaching a set number of membership points. Each milestone reward can be claimed at most once per member.
-* **Order**: A record of a single item, its quantity, and the time it was recorded, stored in a member's order history.
+* **Order**: A record of a menu item's code and name, quantity, time recorded, and points earned, stored in a
+  member's order history.
 * **Order history**: All orders recorded for a member. Also referred to as *purchase history*.
 * **Pre-order**: An order recorded in advance for later collection. It is *pending* until marked *completed*.
 * **Reversible command**: A command that changes stored data and can therefore be undone (e.g. `add-order`). Commands that only read or display data (e.g. `find`) or close the app (`exit`) are not reversible.
@@ -672,18 +716,24 @@ testers are expected to do more *exploratory* testing.
 
 1. Recording an order for a person in the displayed list
 
-   1. Prerequisites: Use `list` to show at least one person.
+   1. Prerequisites: Use `list` to show at least one person. The sample menu contains `1` (Chicken Rice),
+      `3A` (Nasi Lemak), and `3B` (Nasi Lemak + Chicken).
 
-   1. Test case: `add-order 1 o/Chicken Rice q/2`<br>
-      Expected: The status message confirms the order was added to the first person's order history. The full person list is shown.
+   1. Test case: `add-order 1 o/1 q/2`<br>
+      Expected: The status message confirms the order was added to the first person's order history. Their score
+      increases by 90 points. The full person list is shown.
 
-   1. Close and reopen the app, then enter `add-order 1 o/Coffee q/1`.<br>
-      Expected: The status message shows both the earlier Chicken Rice order and the new Coffee order in the first person's order history.
+   1. Close and reopen the app, then enter `add-order 1 o/3B q/1`.<br>
+      Expected: The status message shows both the earlier Chicken Rice order and the new Nasi Lemak + Chicken order
+      in the first person's order history. The new order adds 65 points to their score.
 
    1. Test case: `add-order 1 o/Chicken-Rice q/2`<br>
-      Expected: The item-name constraint is shown, and no order is added.
+      Expected: The item-code constraint is shown, and no order is added.
 
-   1. Test case: `add-order 1 o/Chicken Rice q/0`<br>
+   1. Test case: `add-order 1 o/UNKNOWN q/2`<br>
+      Expected: The unknown-menu-code error is shown, and no order is added.
+
+   1. Test case: `add-order 1 o/1 q/0`<br>
       Expected: The quantity constraint is shown, and no order is added.
 
 ### Deleting an order
@@ -691,11 +741,11 @@ testers are expected to do more *exploratory* testing.
 1. Deleting an order from a person in the displayed list
 
    1. Prerequisites: Use `list` to show at least one person with an order history. If needed, enter
-      `add-order 1 o/Chicken Rice q/2` and `add-order 1 o/Coffee q/1` first.
+      `add-order 1 o/1 q/2` and `add-order 1 o/3B q/1` first; both codes are in the sample menu.
 
    1. Test case: `delete-order 1 o/2`<br>
       Expected: The status message confirms that the second order was deleted. The first order remains, and the full
-      person list is shown.
+      person list is shown. The person's score decreases by the deleted order's saved `scoreGained`.
 
    1. Close and reopen the app after the successful deletion.<br>
       Expected: The deleted order remains absent from the person's order history.
@@ -712,22 +762,22 @@ testers are expected to do more *exploratory* testing.
 
 ### Adding a menu item
 
-Use a disposable app home folder for these tests. Start with no `data/menu.json`, so the test codes are unused.
+Use a disposable app home folder for these tests. Start with no `data/menu.json`; the sample menu loads.
 
-1. Test case: `add-menu-item c/CR01 n/Chicken Rice p/4.50`<br>
-   Expected: `New menu item added: Chicken Rice`. `data/menu.json` contains the item with `priceInCents` of `450`.
-1. Close and reopen the app, then enter `add-menu-item c/CR01 n/Different Dish p/5.00`.<br>
+1. Test case: `add-menu-item c/12A n/Dessert p/3.50`<br>
+   Expected: `New menu item added: Dessert`. `data/menu.json` contains the item with `priceInCents` of `350`.
+1. Close and reopen the app, then enter `add-menu-item c/12A n/Different Dish p/5.00`.<br>
    Expected: `A menu item with this code already exists.` The original item's name and price remain unchanged.
-1. Test case: `add-menu-item p/0.01 c/cr01 n/Coffee`<br>
-   Expected: The item is added at one cent. The lowercase code is distinct from `CR01`.
-1. Test case: `add-menu-item c/CR02 n/Dish`<br>
+1. Test case: `add-menu-item p/0.01 c/12a n/Coffee`<br>
+   Expected: The item is added at one cent. The lowercase code is distinct from `12A`.
+1. Test case: `add-menu-item c/13 n/Dish`<br>
    Expected: The usage message is shown for the missing price. No item is added.
-1. Test cases: `add-menu-item c/CR02 n/Dish p/0`, `add-menu-item c/CR02 n/Dish p/4.501`,
-   `add-menu-item c/CR02 n/Dish p/21474836.48`.<br>
+1. Test cases: `add-menu-item c/13 n/Dish p/0`, `add-menu-item c/13 n/Dish p/4.501`,
+   `add-menu-item c/13 n/Dish p/21474836.48`.<br>
    Expected: The price constraint is shown, no item is added, and saved files are unchanged.
-1. Test case: `add-menu-item c/CR02 n/Dish n/Other p/4.50`<br>
+1. Test case: `add-menu-item c/13 n/Dish n/Other p/4.50`<br>
    Expected: A duplicate-prefix error is shown and the menu remains unchanged.
-1. Test case: `add-menu-item c/CR02 n/Dish x/extra p/4.50`<br>
+1. Test case: `add-menu-item c/13 n/Dish x/extra p/4.50`<br>
    Expected: The command-format error is shown and the menu remains unchanged.
 
 ### Deleting a menu item
@@ -739,16 +789,48 @@ Use a disposable app home folder for these tests. Start with no `data/menu.json`
 1. Close and reopen the app, then run `delete-menu-item c/DEL01` again.<br>
    Expected: `No menu item with this code exists.` The remaining menu is unchanged.
 1. Run `delete-menu-item c/del01`.<br>
-   Expected: The remaining test item is deleted, leaving an empty menu.
+   Expected: The remaining test item is deleted. The sample menu items remain unchanged.
 1. Try `delete-menu-item`, `delete-menu-item c/`, and `delete-menu-item c/DEL01 c/DEL02`.<br>
    Expected: An input error is shown, and no data is changed or saved.
+
+### Managing milestone rewards
+
+Use a disposable app home folder for these tests. Start with no `data/milestones.json`, so the milestone codes are
+unused. The milestone list is sorted by required score, then by code.
+
+1. Test case: `list-milestones` before adding a milestone<br>
+   Expected: `No milestones found.`
+1. Test case: `add-milestone c/FREE500 r/Free drink s/500`<br>
+   Expected: `New milestone added: [FREE500] Free drink (Required score: 500)` and `data/milestones.json` contains the
+   milestone.
+1. Test case: `add-milestone s/1000 c/VOUCHER1000 r/$10 voucher`<br>
+   Expected: The milestone is added even though the prefixes are in a different order.
+1. Test case: `list-milestones`<br>
+   Expected: Both milestones are shown with numbered indexes. `FREE500` appears first because its required score is
+   lower.
+1. Test case: `add-milestone c/free500 r/Different reward s/700`<br>
+   Expected: The duplicate-code error is shown because codes are case-insensitive. The original milestone remains.
+1. Test cases: `add-milestone c/INVALID r/Reward s/+500`, `add-milestone c/INVALID r/Reward s/0`, and
+   `add-milestone c/INVALID r/Reward s/2147483648`.<br>
+   Expected: The required-score constraint is shown and no milestone is added.
+1. Test case: `edit-milestone 1 r/Free drink and snack s/1500`<br>
+   Expected: The milestone retains code `FREE500`, both editable fields change, and it moves after `VOUCHER1000` in
+   the sorted list.
+1. Test case: `edit-milestone 1 c/NEWCODE`<br>
+   Expected: The command-format error is shown because codes cannot be edited.
+1. Test case: `delete-milestone 1`<br>
+   Expected: The milestone currently shown at index 1 is deleted without changing member scores.
+1. Test cases: `edit-milestone 999 r/Reward` and `delete-milestone 999`.<br>
+   Expected: The milestone-index error is shown and the catalog remains unchanged.
+1. Close and reopen the app.<br>
+   Expected: Added and edited milestones remain, and deleted milestones remain absent.
 
 ### Saving data
 
 1. Missing or invalid menu files, using a disposable app home folder
 
    1. With the app closed, move `data/menu.json` outside the `data` folder. Start the app.<br>
-      Expected: The menu starts empty. Enter `list`; a new `data/menu.json` with an empty `foodItems` list is saved.
+      Expected: The sample menu loads. Enter `list`; a new `data/menu.json` with the sample items is saved.
    1. Close the app and replace `data/menu.json` with malformed JSON or `{"foodItems":[null]}`. Restart.<br>
       Expected: A loading warning is logged and the menu starts empty. The invalid file is unchanged until a
       command executes successfully. Running `list` replaces it with valid empty-menu JSON.
