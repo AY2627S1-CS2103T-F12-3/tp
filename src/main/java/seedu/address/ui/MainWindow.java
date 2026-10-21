@@ -20,8 +20,7 @@ import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Person;
 
 /**
- * The Main Window. Provides the basic application layout containing
- * a menu bar and space where other JavaFX elements can be placed.
+ * Provides the main application layout and refreshes the profile after commands run.
  */
 public class MainWindow extends UiPart<Stage> {
 
@@ -58,8 +57,11 @@ public class MainWindow extends UiPart<Stage> {
     private StackPane statusbarPlaceholder;
 
     /**
-     * Creates a {@code MainWindow} with the given {@code Stage}, {@code Logic},
-     * and the data file path to show in the status bar.
+     * Creates the main window and configures its initial size and keyboard shortcuts.
+     *
+     * @param primaryStage The stage that hosts the window.
+     * @param logic The application logic used by the window's controls.
+     * @param dataFilePath The data file path displayed in the status bar.
      */
     public MainWindow(Stage primaryStage, Logic logic, Path dataFilePath) {
         super(FXML, primaryStage);
@@ -77,17 +79,25 @@ public class MainWindow extends UiPart<Stage> {
         helpWindow = new HelpWindow();
     }
 
+    /**
+     * Returns the stage that hosts this window.
+     *
+     * @return The primary stage.
+     */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
+    /** Assigns keyboard shortcuts to the window's menu items. */
     private void setAccelerators() {
         setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
     }
 
     /**
-     * Sets the accelerator of a MenuItem.
-     * @param keyCombination the KeyCombination value of the accelerator
+     * Sets a menu item's accelerator and handles it when a text control has focus.
+     *
+     * @param menuItem The menu item to activate with the shortcut.
+     * @param keyCombination The shortcut assigned to the menu item.
      */
     private void setAccelerator(MenuItem menuItem, KeyCombination keyCombination) {
         menuItem.setAccelerator(keyCombination);
@@ -116,7 +126,7 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Fills up all the placeholders of this window.
+     * Adds the list, profile, command box, result display, and status bar to the window.
      */
     void fillInnerParts() {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
@@ -137,7 +147,7 @@ public class MainWindow extends UiPart<Stage> {
         showSelectedPerson();
     }
 
-    /** Shows the selected person's profile, or the empty state when no person is selected. */
+    /** Refreshes the profile from the current selection and its position in the filtered list. */
     private void showSelectedPerson() {
         if (logic.getSelectedPerson().isEmpty()) {
             profilePanel.showNoPerson();
@@ -149,7 +159,9 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Sets the default size based on {@code guiSettings}.
+     * Sets the window size and saved position from {@code guiSettings}.
+     *
+     * @param guiSettings The persisted window dimensions and optional position.
      */
     private void setWindowDefaultSize(GuiSettings guiSettings) {
         primaryStage.setHeight(guiSettings.getWindowHeight());
@@ -172,6 +184,7 @@ public class MainWindow extends UiPart<Stage> {
         }
     }
 
+    /** Shows the main application stage. */
     void show() {
         primaryStage.show();
     }
@@ -188,12 +201,23 @@ public class MainWindow extends UiPart<Stage> {
         primaryStage.hide();
     }
 
+    /**
+     * Returns the person list panel so its selection can be controlled.
+     *
+     * @return The person list panel.
+     */
     public PersonListPanel getPersonListPanel() {
         return personListPanel;
     }
 
     /**
-     * Executes the command and returns the result.
+     * Executes a command, refreshes the profile, and displays its feedback.
+     * The profile is also refreshed when the command fails.
+     *
+     * @param commandText The command entered by the user.
+     * @return The result of the executed command.
+     * @throws CommandException If the command cannot be completed.
+     * @throws ParseException If the command text cannot be parsed.
      *
      * @see seedu.address.logic.Logic#execute(String)
      */

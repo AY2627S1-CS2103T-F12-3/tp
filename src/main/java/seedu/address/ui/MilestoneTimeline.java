@@ -33,18 +33,28 @@ public class MilestoneTimeline extends ScrollPane {
     /** Null when the timeline is shown without a selected member. */
     private final Person selectedPerson;
 
-    /** Creates a timeline showing the selected member's progress through the ordered milestones. */
+    /**
+     * Creates a timeline showing the selected member's progress through the ordered milestones.
+     *
+     * @param person The member whose progress is shown.
+     * @param milestones The ordered milestones to display.
+     */
     public MilestoneTimeline(Person person, List<Milestone> milestones) {
         selectedPerson = requireNonNull(person);
         initializeTimeline(milestones);
     }
 
-    /** Creates a timeline of the ordered milestones without member progress. */
+    /**
+     * Creates a timeline of the ordered milestones without member progress.
+     *
+     * @param milestones The ordered milestones to display.
+     */
     public MilestoneTimeline(List<Milestone> milestones) {
         selectedPerson = null;
         initializeTimeline(milestones);
     }
 
+    /** Configures the timeline and displays either its milestones or its empty state. */
     private void initializeTimeline(List<Milestone> milestones) {
         configureScrolling();
         if (milestones.isEmpty()) {
@@ -54,6 +64,7 @@ public class MilestoneTimeline extends ScrollPane {
         }
     }
 
+    /** Makes the timeline scroll vertically within its available space. */
     private void configureScrolling() {
         getStyleClass().add("milestone-scroll");
         setFitToWidth(true);
@@ -62,6 +73,7 @@ public class MilestoneTimeline extends ScrollPane {
         setContent(timeline);
     }
 
+    /** Centers the empty message when no milestones are available. */
     private void showEmptyMessage() {
         Label emptyMessage = new Label("No milestones yet");
         emptyMessage.getStyleClass().add("milestone-empty");
@@ -70,6 +82,7 @@ public class MilestoneTimeline extends ScrollPane {
         setContent(new StackPane(emptyMessage));
     }
 
+    /** Draws the timeline, milestone rows, and selected member's score when available. */
     private void showMilestones(List<Milestone> milestones) {
         double timelineHeight = calculateMilestoneY(milestones.size() - 1) + END_PADDING;
         timeline.setPrefHeight(timelineHeight);
@@ -80,12 +93,14 @@ public class MilestoneTimeline extends ScrollPane {
         }
     }
 
+    /** Adds a numbered row for each milestone in catalog order. */
     private void addMilestoneRows(List<Milestone> milestones) {
         for (int i = 0; i < milestones.size(); i++) {
             addMilestoneRow(milestones.get(i), i);
         }
     }
 
+    /** Adds the vertical line, its starting dot, and its ending arrow. */
     private void addTimelineLine(double height) {
         Line line = new Line(LINE_X, LINE_START_Y, LINE_X, height - 20);
         line.getStyleClass().add("milestone-line");
@@ -97,12 +112,14 @@ public class MilestoneTimeline extends ScrollPane {
         timeline.getChildren().addAll(line, start, arrow);
     }
 
+    /** Adds one milestone's number, reward, and status at its timeline position. */
     private void addMilestoneRow(Milestone milestone, int index) {
         double y = calculateMilestoneY(index);
         timeline.getChildren().addAll(createMilestoneNumber(index, y),
                 createMilestoneDetails(milestone, y));
     }
 
+    /** Creates a numbered marker centered on the timeline line at {@code y}. */
     private Label createMilestoneNumber(int index, double y) {
         Label number = new Label(Integer.toString(index + 1));
         number.getStyleClass().add("milestone-number");
@@ -114,6 +131,7 @@ public class MilestoneTimeline extends ScrollPane {
         return number;
     }
 
+    /** Creates the reward title and status beside a milestone marker. */
     private VBox createMilestoneDetails(Milestone milestone, double y) {
         TextFlow title = createMilestoneTitle(milestone);
         Label status = createMilestoneStatus(milestone, title);
@@ -123,6 +141,7 @@ public class MilestoneTimeline extends ScrollPane {
         return details;
     }
 
+    /** Creates a wrapping reward title containing its description and code. */
     private TextFlow createMilestoneTitle(Milestone milestone) {
         Text description = new Text(milestone.getRewardDescription());
         description.getStyleClass().add("milestone-reward");
@@ -133,6 +152,7 @@ public class MilestoneTimeline extends ScrollPane {
         return title;
     }
 
+    /** Creates a status label that wraps to the same width as the title. */
     private Label createMilestoneStatus(Milestone milestone, TextFlow title) {
         Label status = new Label(determineStatusText(milestone));
         status.getStyleClass().add("milestone-status");
@@ -141,6 +161,7 @@ public class MilestoneTimeline extends ScrollPane {
         return status;
     }
 
+    /** Returns the milestone's required points or the selected member's redemption status. */
     private String determineStatusText(Milestone milestone) {
         if (selectedPerson == null) {
             return "Points needed: " + milestone.getRequiredScore();
@@ -152,11 +173,13 @@ public class MilestoneTimeline extends ScrollPane {
         return scoreAway <= 0 ? "Unredeemed" : scoreAway + " more points needed";
     }
 
+    /** Adds the selected member's score label and pointer beside the timeline. */
     private void addScoreIndicator(int score, List<Milestone> milestones) {
         double y = calculateScoreY(score, milestones);
         timeline.getChildren().addAll(createScoreLabel(score, y), createScorePointer(y), createScoreArrow(y));
     }
 
+    /** Creates the score label vertically centered at {@code y}. */
     private Label createScoreLabel(int score, double y) {
         Label scoreLabel = new Label("Score: " + score);
         scoreLabel.getStyleClass().add("milestone-score");
@@ -167,6 +190,7 @@ public class MilestoneTimeline extends ScrollPane {
         return scoreLabel;
     }
 
+    /** Creates the horizontal line connecting the score label to its arrow. */
     private Line createScorePointer(double y) {
         Line pointer = new Line(LINE_X - 24, y, LINE_X - 5, y);
         pointer.getStyleClass().add("milestone-score-pointer");
@@ -174,6 +198,7 @@ public class MilestoneTimeline extends ScrollPane {
         return pointer;
     }
 
+    /** Creates the arrow pointing from the score label toward the timeline. */
     private Polygon createScoreArrow(double y) {
         Polygon arrow = new Polygon(LINE_X - 12, y - 5, LINE_X - 4, y,
                 LINE_X - 12, y + 5);
@@ -182,6 +207,7 @@ public class MilestoneTimeline extends ScrollPane {
         return arrow;
     }
 
+    /** Returns the score's vertical position relative to the milestone thresholds. */
     private double calculateScoreY(int score, List<Milestone> milestones) {
         if (score < milestones.get(0).getRequiredScore()) {
             return FIRST_MILESTONE_Y - MILESTONE_SPACING / 3;
@@ -198,6 +224,7 @@ public class MilestoneTimeline extends ScrollPane {
         return calculateMilestoneY(lastIndex) + MILESTONE_SPACING / 2;
     }
 
+    /** Interpolates the score's vertical position between two milestone thresholds. */
     private double interpolateScoreY(int score, Milestone previous, Milestone next, int nextIndex) {
         long scoreRange = (long) next.getRequiredScore() - previous.getRequiredScore();
         if (scoreRange == 0) {
@@ -207,6 +234,7 @@ public class MilestoneTimeline extends ScrollPane {
         return calculateMilestoneY(nextIndex - 1) + progress * MILESTONE_SPACING;
     }
 
+    /** Returns the center position for the milestone at {@code index}. */
     private double calculateMilestoneY(int index) {
         return FIRST_MILESTONE_Y + index * MILESTONE_SPACING;
     }

@@ -8,7 +8,7 @@ import javafx.scene.layout.StackPane;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
-/** Displays the selected member's profile, or the milestone catalog when no member is selected. */
+/** Coordinates the person details, milestone timeline, and recent orders in one profile view. */
 public class ProfilePanel extends UiPart<Region> {
     private static final String FXML = "ProfilePanel.fxml";
     private final List<Milestone> milestones;
@@ -23,7 +23,7 @@ public class ProfilePanel extends UiPart<Region> {
     private StackPane recentOrdersPlaceholder;
 
     /**
-     * Creates a profile panel backed by the ordered milestone catalog.
+     * Creates a profile panel with no member selected and the given milestone catalog.
      *
      * @param milestones The ordered milestone catalog.
      */
@@ -33,14 +33,19 @@ public class ProfilePanel extends UiPart<Region> {
         showNoPerson();
     }
 
-    /** Shows the given member's profile. */
+    /**
+     * Replaces all three profile sections with the selected member's information.
+     *
+     * @param person The member to display.
+     * @param displayedIndex The member's one-based position in the current list, or zero if absent.
+     */
     void showPerson(Person person, int displayedIndex) {
         personDetailsPlaceholder.getChildren().setAll(new PersonDetailsPanel(person, displayedIndex));
         milestonesPlaceholder.getChildren().setAll(new MilestoneTimeline(person, milestones));
         recentOrdersPlaceholder.getChildren().setAll(new RecentOrdersPanel(person).getRoot());
     }
 
-    /** Shows the milestone catalog without member progress. */
+    /** Shows the empty person and order states alongside milestones without member progress. */
     void showNoPerson() {
         personDetailsPlaceholder.getChildren().setAll(new PersonDetailsPanel());
         milestonesPlaceholder.getChildren().setAll(new MilestoneTimeline(milestones));

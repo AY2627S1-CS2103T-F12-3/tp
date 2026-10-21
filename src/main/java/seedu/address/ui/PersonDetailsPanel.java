@@ -4,10 +4,15 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import seedu.address.model.person.Person;
 
-/** Displays a member's details, or a message when no member is selected. */
+/** Displays a member's name, phone number, and list position, or the unselected message. */
 public class PersonDetailsPanel extends VBox {
 
-    /** Creates a panel showing the selected member's details. */
+    /**
+     * Creates a panel showing the selected member's details.
+     *
+     * @param person The member whose details are displayed.
+     * @param displayedIndex The member's one-based position in the current list, or zero if absent.
+     */
     public PersonDetailsPanel(Person person, int displayedIndex) {
         setSpacing(4);
         Label name = new Label(person.getName().fullName);
@@ -25,7 +30,7 @@ public class PersonDetailsPanel extends VBox {
         getChildren().addAll(name, phone, index);
     }
 
-    /** Creates a panel for the unselected state. */
+    /** Creates a panel that says no member is selected. */
     public PersonDetailsPanel() {
         Label message = new Label("No member selected");
         message.getStyleClass().add("no-member-selected-label");
