@@ -131,6 +131,23 @@ public class MainAppTest {
                 app.initMilestoneCatalog(storage));
     }
 
+    @Test
+    public void deleteMenuItem_saveAndReload_preservesDeletion() throws Exception {
+        StorageManager storage = createStorage();
+        ModelManager model = new ModelManager();
+        LogicManager logic = new LogicManager(model, storage);
+        logic.execute("add-menu-item c/CR01 n/Chicken Rice p/4.50");
+        logic.execute("add-menu-item c/CF01 n/Coffee p/1.50");
+        logic.execute("delete-menu-item c/CR01");
+
+        ModelManager reloaded = new ModelManager(storage.readAddressBook().orElseThrow(),
+                new UserPrefs(), new MainApp().initMenu(storage), new MainApp().initMilestoneCatalog(storage));
+        assertEquals(List.of(new FoodItem("CF01", "Coffee", 150)), reloaded.getMenu().getFoodItemList());
+
+        new LogicManager(reloaded, storage).execute("add-menu-item c/CR01 n/New Dish p/5.00");
+        assertEquals(2, storage.readMenu().orElseThrow().getFoodItemList().size());
+    }
+
     private StorageManager createStorage() {
         return new StorageManager(new JsonAddressBookStorage(testFolder.resolve("members.json")),
                 new JsonUserPrefsStorage(testFolder.resolve("preferences.json")),

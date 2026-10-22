@@ -161,6 +161,20 @@ Common errors:
 
 These validation failures leave the existing menu unchanged and do not save either data file.
 
+### Deleting a menu item: `delete-menu-item`
+
+Deletes the menu item with the specified code and saves the updated menu.
+
+Format: `delete-menu-item c/CODE`
+
+* Provide `c/` exactly once, with a nonblank alphanumeric code. Extra arguments are rejected.
+* Codes are case-sensitive. Deleting `CR01` leaves an item with code `cr01` unchanged.
+* If the code does not exist, the app shows `No menu item with this code exists.` and leaves the menu unchanged.
+* Successful deletion shows, for example, `Deleted menu item: CR01 (Chicken Rice)`.
+* Customer records, existing order histories, and milestone rewards are unchanged. The deleted code can be reused.
+
+Example: `delete-menu-item c/CR01`
+
 ### Updating a menu item: `update-menu-item`
 
 Updates an existing menu item using its current code. The item is saved for future sessions.
@@ -485,6 +499,7 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
+**Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
 **Update menu item** | `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `update-menu-item 12A c/12B p/4.00`
 **Add milestone** | `add-milestone c/CODE r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone c/FREE500 r/Free drink s/500`

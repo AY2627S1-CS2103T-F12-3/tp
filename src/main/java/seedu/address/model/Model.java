@@ -129,6 +129,11 @@ public interface Model {
     void addFoodItem(FoodItem foodItem);
 
     /**
+     * Deletes the food item equal to {@code target}, which must exist in the menu.
+     */
+    void deleteFoodItem(FoodItem target);
+
+    /**
      * Replaces the given menu item with an edited menu item.
      * The target must exist, and the edited item's code must not belong to another item.
      */

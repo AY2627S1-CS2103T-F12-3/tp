@@ -16,6 +16,7 @@ import seedu.address.logic.commands.CancelRedeemCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeleteMenuItemCommand;
 import seedu.address.logic.commands.DeleteMilestoneCommand;
 import seedu.address.logic.commands.DeleteOrderCommand;
 import seedu.address.logic.commands.EditCommand;
@@ -69,6 +70,7 @@ public class AddressBookParser {
             case EditCommand.COMMAND_WORD -> new EditCommandParser().parse(arguments);
             case EditMilestoneCommand.COMMAND_WORD -> new EditMilestoneCommandParser().parse(arguments);
             case DeleteCommand.COMMAND_WORD -> new DeleteCommandParser().parse(arguments);
+            case DeleteMenuItemCommand.COMMAND_WORD -> new DeleteMenuItemCommandParser().parse(arguments);
             case DeleteMilestoneCommand.COMMAND_WORD -> new DeleteMilestoneCommandParser().parse(arguments);
             case DeleteOrderCommand.COMMAND_WORD -> new DeleteOrderCommandParser().parse(arguments);
             case ClearCommand.COMMAND_WORD -> new ClearCommand();

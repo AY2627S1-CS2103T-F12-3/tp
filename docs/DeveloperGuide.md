@@ -278,6 +278,22 @@ and required-score boundaries.
 `AddressBookParserTest` checks command routing. The JSON adapter, serializable catalog, storage, `MainApp`, and
 `LogicManager` tests cover invalid data, round trips, startup fallback, and automatic saving.
 
+### Deleting a menu item
+
+`AddressBookParser` routes `delete-menu-item c/CODE` to `DeleteMenuItemCommandParser`. The parser requires one
+`c/` prefix, rejects preamble text, repeated prefixes, invalid codes, extra arguments, and control characters other
+than tabs. It preserves the code's case and constructs `DeleteMenuItemCommand`.
+
+The command finds the exact code through `Model#getMenu()`. A missing code produces `CommandException` before
+any mutation. For an existing code, the command passes the actual stored `FoodItem` to `Model#deleteFoodItem`,
+which delegates to `Menu#removeFoodItem`. This matters because removal uses full item equality, not only code
+identity. The existing `LogicManager` save block persists successful deletions without command-specific changes.
+Customer records, order histories, and milestones are unaffected.
+
+`DeleteMenuItemCommandTest` checks deletion, case sensitivity, failure without mutation, and unchanged customer
+and milestone data using the real model. Parser tests cover syntax errors and whitespace, and `MainAppTest`
+checks that deletion survives saving and reloading and that the deleted code can be reused.
+
 ### Redeemed milestone reward history
 
 `RedeemedMilestoneRewardHistory` owns the redeemed milestone rewards belonging to one person. It returns defensive
@@ -849,6 +865,19 @@ Use a disposable app home folder for these tests. Start with no `data/menu.json`
    Expected: A duplicate-prefix error is shown and the menu remains unchanged.
 1. Test case: `add-menu-item c/13 n/Dish x/extra p/4.50`<br>
    Expected: The command-format error is shown and the menu remains unchanged.
+
+### Deleting a menu item
+
+1. In a disposable app home folder, add `add-menu-item c/DEL01 n/Test Dish p/4.50` and
+   `add-menu-item c/del01 n/Other Dish p/5.00`.
+1. Run `delete-menu-item c/DEL01`.<br>
+   Expected: `Deleted menu item: DEL01 (Test Dish)`. The `del01` item remains in `data/menu.json`.
+1. Close and reopen the app, then run `delete-menu-item c/DEL01` again.<br>
+   Expected: `No menu item with this code exists.` The remaining menu is unchanged.
+1. Run `delete-menu-item c/del01`.<br>
+   Expected: The remaining test item is deleted. The sample menu items remain unchanged.
+1. Try `delete-menu-item`, `delete-menu-item c/`, and `delete-menu-item c/DEL01 c/DEL02`.<br>
+   Expected: An input error is shown, and no data is changed or saved.
 
 ### Managing milestone rewards
 

@@ -84,6 +84,11 @@ public class AddMenuItemCommandTest {
      */
     private class ModelStub implements Model {
         @Override
+        public void deleteFoodItem(FoodItem target) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public ReadOnlyMenu getMenu() {
             throw new AssertionError("This method should not be called.");
         }

@@ -245,6 +245,11 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void deleteFoodItem(FoodItem target) {
+        menu.removeFoodItem(target);
+    }
+
+    @Override
     public void setFoodItem(FoodItem target, FoodItem editedFoodItem) {
         requireAllNonNull(target, editedFoodItem);
         menu.setFoodItem(target, editedFoodItem);
