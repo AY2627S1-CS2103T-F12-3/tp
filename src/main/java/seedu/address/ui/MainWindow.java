@@ -53,6 +53,7 @@ public class MainWindow extends UiPart<Stage> {
     @FXML
     private StackPane menuPanelPlaceholder;
 
+    @FXML
     private StackPane resultDisplayPlaceholder;
 
     @FXML

@@ -174,7 +174,7 @@ public class MilestoneTimeline extends ScrollPane {
         if (selectedPerson == null) {
             return "Points needed: " + milestone.getRequiredScore();
         }
-        if (selectedPerson.getRedeemedMilestoneRewardHistory().contains(milestone)) {
+        if (selectedPerson.hasRedeemed(milestone)) {
             return "Redeemed";
         }
         long scoreAway = (long) milestone.getRequiredScore() - selectedPerson.getScore().value;
