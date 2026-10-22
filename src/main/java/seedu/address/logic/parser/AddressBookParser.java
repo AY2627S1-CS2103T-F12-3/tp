@@ -12,6 +12,7 @@ import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddMenuItemCommand;
 import seedu.address.logic.commands.AddMilestoneCommand;
 import seedu.address.logic.commands.AddOrderCommand;
+import seedu.address.logic.commands.CancelRedeemCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.DeleteCommand;
@@ -25,6 +26,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.ListMilestonesCommand;
+import seedu.address.logic.commands.RedeemMilestoneCommand;
 import seedu.address.logic.commands.UpdateMenuItemCommand;
 import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -79,6 +81,8 @@ public class AddressBookParser {
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
             case AddOrderCommand.COMMAND_WORD -> new AddOrderCommandParser().parse(arguments);
             case UpdateScoreCommand.COMMAND_WORD -> new UpdateScoreCommandParser().parse(arguments);
+            case RedeemMilestoneCommand.COMMAND_WORD -> new RedeemMilestoneCommandParser().parse(arguments);
+            case CancelRedeemCommand.COMMAND_WORD -> new CancelRedeemCommandParser().parse(arguments);
             case UpdateMenuItemCommand.COMMAND_WORD -> new UpdateMenuItemCommandParser().parse(arguments);
             default -> {
                 logger.finer("This user input caused a ParseException: " + userInput);

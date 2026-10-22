@@ -4,11 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.concurrent.FutureTask;
-
 import org.junit.jupiter.api.Test;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -18,12 +15,12 @@ import seedu.address.model.menu.FoodItem;
 class MenuPanelTest {
     @org.junit.jupiter.api.BeforeAll
     static void initializeJavaFx() {
-        Platform.startup(() -> { });
+        JavaFxTestUtil.initializeJavaFx();
     }
 
     @Test
     void constructor_loadsMenuPanel() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             MenuPanel menuPanel = new MenuPanel(FXCollections.observableArrayList());
             VBox root = (VBox) menuPanel.getRoot();
 
@@ -35,7 +32,7 @@ class MenuPanelTest {
 
     @Test
     void menuItemCell_nonEmptyItem_displaysCodeNameAndPrice() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             MenuPanel.MenuItemListViewCell cell = new MenuPanel.MenuItemListViewCell();
             cell.updateItem(new FoodItem("CR01", "Chicken Rice", 405), false);
             VBox item = (VBox) cell.getGraphic();
@@ -48,7 +45,7 @@ class MenuPanelTest {
 
     @Test
     void menuItemCell_emptyItem_clearsGraphicAndText() {
-        runOnFxThread(() -> {
+        JavaFxTestUtil.runOnFxThread(() -> {
             MenuPanel.MenuItemListViewCell cell = new MenuPanel.MenuItemListViewCell();
             cell.updateItem(null, true);
 
@@ -72,16 +69,4 @@ class MenuPanelTest {
         assertEquals("$123456.78", MenuPanel.formatPrice(12_345_678));
     }
 
-    private static void runOnFxThread(Runnable action) {
-        FutureTask<Void> task = new FutureTask<>(() -> {
-            action.run();
-            return null;
-        });
-        Platform.runLater(task);
-        try {
-            task.get();
-        } catch (Exception exception) {
-            throw new AssertionError(exception);
-        }
-    }
 }

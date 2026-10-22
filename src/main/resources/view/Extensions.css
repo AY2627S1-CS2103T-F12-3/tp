@@ -29,7 +29,7 @@
     -fx-text-fill: white;
 }
 
-.profile-phone, .profile-score {
+.profile-phone {
     -fx-font-family: "Segoe UI";
     -fx-font-size: 13px;
     -fx-text-fill: white;
@@ -41,19 +41,61 @@
     -fx-text-fill: #bcbcbc;
 }
 
-.profile-scale-line, .profile-scale-tick {
-    -fx-stroke: #aeb9be;
+.milestone-scroll, .milestone-scroll > .viewport {
+    -fx-background-color: #2c2c2c;
+}
+
+.milestone-line, .milestone-score-pointer {
+    -fx-stroke: #d6e0e3;
     -fx-stroke-width: 2px;
 }
 
-.profile-scale-label {
-    -fx-font-family: "Segoe UI";
-    -fx-font-size: 11px;
-    -fx-text-fill: #bcbcbc;
+.milestone-endpoint, .milestone-arrow, .milestone-score-arrow {
+    -fx-fill: #d6e0e3;
 }
 
-.profile-score-marker {
-    -fx-fill: #aeb9be;
+.milestone-number {
+    -fx-background-color: #2c2c2c;
+    -fx-background-radius: 17px;
+    -fx-border-color: #d6e0e3;
+    -fx-border-width: 2px;
+    -fx-border-radius: 17px;
+    -fx-opacity: 1;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 19px;
+    -fx-text-fill: white;
+}
+
+.milestone-reward {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 13px;
+    -fx-fill: white;
+}
+
+.milestone-code {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+    -fx-fill: #d6e0e3;
+}
+
+.milestone-status {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+    -fx-text-fill: #d6e0e3;
+}
+
+.milestone-score {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 11px;
+    -fx-text-fill: #d6e0e3;
+    -fx-padding: 0 3px 0 0;
+}
+
+.milestone-empty {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-text-fill: #d6e0e3;
+    -fx-padding: 16px 4px;
 }
 
 .profile-orders {

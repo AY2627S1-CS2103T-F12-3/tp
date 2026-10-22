@@ -125,6 +125,8 @@ The `Model` component,
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
 * stores each person's name, phone, tags, score, and order history. Editing a person's details preserves
   their existing score and order history.
+* stores each person's redeemed milestone rewards in a `RedeemedMilestoneRewardHistory`. The history is immutable:
+  adding or deleting a reward returns a new history, and membership checks compare milestone codes.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * stores a separate `Menu` in `ModelManager`, alongside `AddressBook` and `UserPrefs`. `Model#getMenu()` exposes a
@@ -153,9 +155,10 @@ The `Storage` component,
 * is implemented by `StorageManager`, which delegates file access to `JsonAddressBookStorage`, `JsonMenuStorage`,
   `JsonMilestoneCatalogStorage`, and `JsonUserPrefsStorage` (one class per data file).
 
-`JsonAdaptedPerson` stores name, phone, tags, score, and order history. Each stored order includes its item code,
-the item name captured when the order was recorded, quantity, recorded time, and `scoreGained`. Unknown JSON
-properties are ignored when loading and omitted when saving. Older order records require both `itemCode` and
+`JsonAdaptedPerson` stores name, phone, tags, score, order history and redeemed milestone reward history. Each stored order includes its item code,
+the item name captured when the order was recorded, quantity, recorded time, and `scoreGained`. While redeemed milestone reward history stores milestone,
+which consist of its code, reward description and the score needed to redeem the reward.
+Unknown JSON properties are ignored when loading and omitted when saving. Older order records require both `itemCode` and
 `itemName` before loading; missing `scoreGained` defaults to zero, while negative values are rejected.
 A missing score defaults to zero.
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
@@ -290,6 +293,33 @@ Customer records, order histories, and milestones are unaffected.
 `DeleteMenuItemCommandTest` checks deletion, case sensitivity, failure without mutation, and unchanged customer
 and milestone data using the real model. Parser tests cover syntax errors and whitespace, and `MainAppTest`
 checks that deletion survives saving and reloading and that the deleted code can be reused.
+
+### Redeemed milestone reward history
+
+`RedeemedMilestoneRewardHistory` owns the redeemed milestone rewards belonging to one person. It returns defensive
+copies when exposing the list and treats add/delete operations as immutable transformations:
+
+| Operation | Responsibility |
+|---|---|
+| `addRedeemedMilestoneReward(Milestone)` | Returns a new history containing the milestone, rejecting duplicate codes. |
+| `contains(Milestone)` | Checks whether a milestone with the same code has been redeemed. |
+| `deleteRedeemedMilestoneReward(Milestone)` | Returns a new history without the milestone with the same code. |
+
+`RedeemMilestoneCommand` validates the person and current milestone indexes, checks score eligibility and duplicate
+redemption, then replaces the person with a copy containing the new history. `CancelRedeemCommand` validates the
+person and current milestone indexes, checks that the selected milestone is present in the person's history, then
+replaces the person with a copy containing the history returned by `deleteRedeemedMilestoneReward(Milestone)`.
+
+Both commands identify the milestone through the current `MilestoneCatalog` index. Consequently, cancelling a
+historical redemption requires the current catalog to contain a milestone with the same code. Deleting the milestone
+or changing its code makes that historical redemption unavailable to `cancel-redeem` by design; changing other
+milestone details while preserving its code does not change its identity.
+
+The command parsers use the shared `m/` prefix and `ParserUtil.parseIndex`, so person and milestone arguments must be
+positive integers. `AddressBookParser` routes `redeem` and `cancel-redeem` to their respective parsers.
+
+The related tests cover command success and validation, parser syntax and duplicate prefixes, full parser routing,
+immutable history updates, duplicate redemption, absent milestones, and `toString` output.
 
 ### \[Proposed\] Undo/redo feature
 
@@ -426,6 +456,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* *`    | Food stall owner    | Delete a milestone reward                               | Customers are not offered rewards that are no longer available                                   |
 | `* *`    | Food stall owner    | View all milestone rewards                              | I can review the rewards currently available to members                                          |
 | `* *`    | Food stall owner    | Mark a milestone reward as claimed by a member          | I can prevent the same reward from being issued to that member twice                             |
+| `* *`    | Food stall owner    | Cancel a member's redeemed milestone reward             | I can correct a redemption recorded by mistake                                                   |
 | `* *`    | A new user          | Clear all sample data                                   | I can begin using the application with my actual business data                                   |
 | `* *`    | A new user          | View a list of available commands and their usage       | I can learn how to use the application quickly                                                   |
 | `* *`    | Food stall owner    | Configure the number of membership points awarded per dollar spent | I can adjust the rewards program to suit my business                                    |
@@ -616,6 +647,61 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 3b1. App shows an error message and does not apply the change.
 
       Use case resumes at step 3.
+
+**Use case: Redeem a milestone reward for a member**
+
+**MSS**
+
+1. User requests to redeem a milestone reward, specifying the member's index and current milestone index.
+2. App verifies that the member has sufficient membership points and has not redeemed the milestone before.
+3. App adds the milestone to the member's redeemed milestone reward history and shows a confirmation.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The member or milestone index is invalid.
+
+    * 1a1. App shows an error message and does not change the member.
+
+      Use case ends.
+
+* 2a. The member has insufficient membership points or has already redeemed the milestone.
+
+    * 2a1. App shows an error message and does not change the member.
+
+      Use case ends.
+
+**Use case: Cancel a redeemed milestone reward for a member**
+
+**MSS**
+
+1. User requests to cancel a redeemed milestone reward, specifying the member's index and current milestone index.
+2. App verifies that the current milestone has the same code as a milestone in the member's redemption history.
+3. App removes that milestone from the member's redeemed milestone reward history and shows a confirmation.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The member or current milestone index is invalid.
+
+    * 1a1. App shows an error message and does not change the member.
+
+      Use case ends.
+
+* 2a. The selected milestone was not redeemed by the member.
+
+    * 2a1. App shows `Unable to unredeem because it was not redeemed.` and does not change the member.
+
+      Use case ends.
+
+* 2b. The milestone was deleted from the catalog or its code was changed after redemption.
+
+    * 2b1. The historical redemption cannot be selected by `cancel-redeem`, because the command uses the current
+      milestone catalog index by design.
+
+      Use case ends.
 
 **Use case: Delete a member**
 
