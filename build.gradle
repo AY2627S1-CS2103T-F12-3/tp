@@ -15,6 +15,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
+run {
+    enableAssertions = true
+}
+
 repositories {
     mavenCentral()
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
