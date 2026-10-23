@@ -3,6 +3,8 @@
 skinparam arrowThickness 1.1
 skinparam arrowColor UI_COLOR_T4
 skinparam classBackgroundColor UI_COLOR
+skinparam nodesep 35
+skinparam ranksep 45
 
 package UI <<Rectangle>>{
 Class "<<interface>>\nUi" as Ui
@@ -13,8 +15,17 @@ Class HelpWindow
 Class ResultDisplay
 Class PersonListPanel
 Class PersonCard
+Class ProfilePanel
+Class PersonDetailsPanel
+Class MilestoneTimeline
+Class RecentOrdersPanel
+Class MenuPanel
 Class StatusBarFooter
 Class CommandBox
+note bottom of UiPart
+  FXML-backed UI parts extend UiPart.
+  Inheritance arrows are omitted for clarity.
+end note
 }
 
 package Model <<Rectangle>> {
@@ -33,21 +44,21 @@ UiManager -down-> "1" MainWindow
 MainWindow *-down->  "1" CommandBox
 MainWindow *-down-> "1" ResultDisplay
 MainWindow *-down-> "1" PersonListPanel
+MainWindow *-down-> "1" ProfilePanel
+MainWindow *-down-> "1" MenuPanel
 MainWindow *-down-> "1" StatusBarFooter
 MainWindow --> "0..1" HelpWindow
 
 PersonListPanel -down-> "*" PersonCard
+ProfilePanel *-down-> "1" PersonDetailsPanel
+ProfilePanel *-down-> "1" MilestoneTimeline
+ProfilePanel *-down-> "1" RecentOrdersPanel
 
-MainWindow -left-|> UiPart
-
-ResultDisplay --|> UiPart
-CommandBox --|> UiPart
-PersonListPanel --|> UiPart
-PersonCard --|> UiPart
-StatusBarFooter --|> UiPart
-HelpWindow --|> UiPart
-
-PersonCard ..> Model
+PersonCard ..down.> Model
+PersonDetailsPanel ..down.> Model
+MilestoneTimeline ..down.> Model
+RecentOrdersPanel ..down.> Model
+MenuPanel ..down.> Model
 UiManager -right-> Logic
 MainWindow -left-> Logic
 
@@ -56,5 +67,4 @@ HelpWindow -[hidden]left- CommandBox
 CommandBox -[hidden]left- ResultDisplay
 ResultDisplay -[hidden]left- StatusBarFooter
 
-MainWindow -[hidden]-|> UiPart
 @enduml
