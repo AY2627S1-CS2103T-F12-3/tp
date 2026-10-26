@@ -62,7 +62,7 @@ public class DeleteOrderCommand extends Command {
             throw new CommandException(MESSAGE_INVALID_ORDER_INDEX);
         }
 
-        int historyIndex = orders.size() - orderIndex.getZeroBased() - 1;
+        int historyIndex = toHistoryIndex(orderIndex.getZeroBased(), orders.size());
         Order orderToDelete = orders.get(historyIndex);
         Person editedPerson = createPersonWithoutOrder(person, orderToDelete, historyIndex);
 
@@ -70,6 +70,18 @@ public class DeleteOrderCommand extends Command {
         model.selectPerson(editedPerson);
 
         return new CommandResult(String.format(MESSAGE_DELETE_ORDER_SUCCESS, orderToDelete));
+    }
+
+    /**
+     * Converts a newest-first UI index into the corresponding oldest-first index used by {@link OrderHistory}.
+     * OrderHistory appends new orders, while RecentOrdersPanel displays the newest order at the top.
+     *
+     * @param displayedIndex zero-based index shown by the UI
+     * @param orderCount number of orders in the history
+     * @return the zero-based index used by OrderHistory
+     */
+    private static int toHistoryIndex(int displayedIndex, int orderCount) {
+        return orderCount - displayedIndex - 1;
     }
 
     /** Creates the updated member after removing the selected order and its earned points. */
