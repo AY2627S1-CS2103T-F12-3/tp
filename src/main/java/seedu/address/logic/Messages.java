@@ -51,7 +51,7 @@ public class Messages {
      * Formats the {@code milestone} for display to the user.
      */
     public static String format(Milestone milestone) {
-        return String.format("[%s] %s (Required score: %d)", milestone.getCode(),
+        return String.format("%s (Required score: %d)",
                 milestone.getRewardDescription(), milestone.getRequiredScore());
     }
 

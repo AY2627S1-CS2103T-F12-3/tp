@@ -5,29 +5,36 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 
 import seedu.address.commons.util.ToStringBuilder;
 
 /**
  * Represents an immutable milestone reward with an identifying code, reward description, and required score.
- * Codes are case-insensitive and alphanumeric; reward descriptions are not blank; required scores are positive.
+ * Codes are case-insensitive and nonblank; reward descriptions are not blank; required scores are positive.
  * Codes are normalized to uppercase when milestones are created.
  */
 public final class Milestone {
-    public static final String MESSAGE_CODE_CONSTRAINTS = "Milestone codes must be alphanumeric.";
+    public static final String MESSAGE_CODE_CONSTRAINTS = "Milestone codes must not be blank.";
     public static final String MESSAGE_REWARD_DESCRIPTION_CONSTRAINTS =
             "Reward descriptions must not be blank.";
     public static final String MESSAGE_REQUIRED_SCORE_CONSTRAINTS = "Required scores must be positive.";
-    private static final String CODE_VALIDATION_REGEX = "[A-Za-z0-9]+";
 
     private final String code;
     private final String rewardDescription;
     private final int requiredScore;
 
     /**
+     * Constructs a milestone reward with a generated internal code.
+     */
+    public Milestone(String rewardDescription, int requiredScore) {
+        this(UUID.randomUUID().toString(), rewardDescription, requiredScore);
+    }
+
+    /**
      * Constructs a milestone reward with the given code, reward description, and required score.
      *
-     * @param code A case-insensitive alphanumeric milestone code.
+     * @param code A case-insensitive, nonblank milestone code.
      * @param rewardDescription A nonblank description of the reward.
      * @param requiredScore A positive score required to reach the milestone.
      * @throws NullPointerException if {@code code} or {@code rewardDescription} is null.
@@ -44,10 +51,10 @@ public final class Milestone {
     }
 
     /**
-     * Returns true if the given code contains one or more ASCII letters or digits.
+     * Returns true if the given code is neither null nor blank.
      */
     public static boolean isValidCode(String code) {
-        return code != null && code.matches(CODE_VALIDATION_REGEX);
+        return code != null && !code.isBlank();
     }
 
     /**

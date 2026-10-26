@@ -49,7 +49,7 @@ public class JsonAdaptedMilestoneTest {
     @Test
     public void toModelType_invalidCode_throwsIllegalValueException() {
         JsonAdaptedMilestone milestone =
-                new JsonAdaptedMilestone("FREE-500", VALID_REWARD_DESCRIPTION, VALID_REQUIRED_SCORE);
+                new JsonAdaptedMilestone(" ", VALID_REWARD_DESCRIPTION, VALID_REQUIRED_SCORE);
         assertThrows(IllegalValueException.class, Milestone.MESSAGE_CODE_CONSTRAINTS, milestone::toModelType);
     }
 

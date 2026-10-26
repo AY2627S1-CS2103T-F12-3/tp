@@ -83,7 +83,7 @@ public class JsonMilestoneCatalogStorageTest {
     @Test
     public void readMilestoneCatalog_invalidMilestoneFields_throwsDataLoadingException() throws IOException {
         for (String milestone : List.of(
-                "{\"code\":\"!\",\"rewardDescription\":\"Reward\",\"requiredScore\":500}",
+                "{\"code\":\" \",\"rewardDescription\":\"Reward\",\"requiredScore\":500}",
                 "{\"code\":\"FREE500\",\"rewardDescription\":\"\",\"requiredScore\":500}",
                 "{\"code\":\"FREE500\",\"rewardDescription\":\"Reward\",\"requiredScore\":0}",
                 "{\"code\":\"FREE500\",\"rewardDescription\":\"Reward\",\"requiredScore\":500.9}",

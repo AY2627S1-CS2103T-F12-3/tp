@@ -149,13 +149,11 @@ public class MilestoneTimeline extends ScrollPane {
         return details;
     }
 
-    /** Creates a wrapping reward title containing its description and code. */
+    /** Creates a wrapping reward title containing its description. */
     private TextFlow createMilestoneTitle(Milestone milestone) {
         Text description = new Text(milestone.getRewardDescription());
         description.getStyleClass().add("milestone-reward");
-        Text code = new Text(" [" + milestone.getCode() + "]");
-        code.getStyleClass().add("milestone-code");
-        TextFlow title = new TextFlow(description, code);
+        TextFlow title = new TextFlow(description);
         title.prefWidthProperty().bind(timeline.widthProperty().subtract(REWARD_X + 12));
         return title;
     }

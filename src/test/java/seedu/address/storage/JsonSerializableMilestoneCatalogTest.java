@@ -96,7 +96,7 @@ public class JsonSerializableMilestoneCatalogTest {
     @Test
     public void toModelType_invalidMilestone_throwsIllegalValueException() {
         List<JsonAdaptedMilestone> invalidMilestones = List.of(
-                new JsonAdaptedMilestone("!", "Reward", 100),
+                new JsonAdaptedMilestone(" ", "Reward", 100),
                 new JsonAdaptedMilestone("FREE500", " ", 100),
                 new JsonAdaptedMilestone("FREE500", "Reward", 0));
         List<String> messages = List.of(Milestone.MESSAGE_CODE_CONSTRAINTS,
