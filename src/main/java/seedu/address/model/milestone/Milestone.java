@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.person.Score;
 
 /**
  * Represents an immutable milestone reward with an identifying code, reward description, and required score.
@@ -17,7 +18,8 @@ public final class Milestone {
     public static final String MESSAGE_CODE_CONSTRAINTS = "Milestone codes must be alphanumeric.";
     public static final String MESSAGE_REWARD_DESCRIPTION_CONSTRAINTS =
             "Reward descriptions must not be blank.";
-    public static final String MESSAGE_REQUIRED_SCORE_CONSTRAINTS = "Required scores must be positive.";
+    public static final String MESSAGE_REQUIRED_SCORE_CONSTRAINTS =
+            "Required scores must be positive and no greater than 999999999.";
     private static final String CODE_VALIDATION_REGEX = "[A-Za-z0-9]+";
 
     private final String code;
@@ -57,11 +59,9 @@ public final class Milestone {
         return rewardDescription != null && !rewardDescription.isBlank();
     }
 
-    /**
-     * Returns true if the given required score is positive.
-     */
+    /** Returns true if the given required score is positive and attainable by a member. */
     public static boolean isValidRequiredScore(int requiredScore) {
-        return requiredScore > 0;
+        return requiredScore > 0 && requiredScore <= Score.MAX_SCORE;
     }
 
     public String getCode() {

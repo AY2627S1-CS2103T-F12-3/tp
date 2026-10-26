@@ -56,7 +56,7 @@ public class MilestoneTest {
     @Test
     public void constructor_nonPositiveRequiredScore_throwsIllegalArgumentException() {
         String expectedMessage = Milestone.MESSAGE_REQUIRED_SCORE_CONSTRAINTS;
-        for (int requiredScore : new int[] {0, -1, Integer.MIN_VALUE}) {
+        for (int requiredScore : new int[] {0, -1, Integer.MIN_VALUE, 1000000000, Integer.MAX_VALUE}) {
             assertThrows(IllegalArgumentException.class, expectedMessage, () ->
                     new Milestone("FREE500", "Free drink", requiredScore));
         }
@@ -87,7 +87,8 @@ public class MilestoneTest {
         assertFalse(Milestone.isValidRequiredScore(0));
         assertFalse(Milestone.isValidRequiredScore(-1));
         assertTrue(Milestone.isValidRequiredScore(1));
-        assertTrue(Milestone.isValidRequiredScore(Integer.MAX_VALUE));
+        assertTrue(Milestone.isValidRequiredScore(999999999));
+        assertFalse(Milestone.isValidRequiredScore(1000000000));
     }
 
     @Test
