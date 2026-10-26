@@ -1,10 +1,22 @@
 {
-  "persons": [ {
-    "name": "Alice Pauline",
-    "phone": "94351253",
-    "tags": [ "friends" ]
-  }, {
-    "name": "Alice Pauline",
-    "phone": "94351253"
-  } ]
+  "persons": [
+    {
+      "name": "Alice Pauline",
+      "phone": "94351253",
+      "tags": [
+        "friends"
+      ],
+      "score": "0",
+      "orderHistory": [],
+      "redeemedMilestoneRewardHistory": []
+    },
+    {
+      "name": "Alice Pauline",
+      "phone": "94351253",
+      "tags": [],
+      "score": "0",
+      "orderHistory": [],
+      "redeemedMilestoneRewardHistory": []
+    }
+  ]
 }
