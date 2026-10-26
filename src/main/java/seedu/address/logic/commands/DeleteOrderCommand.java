@@ -39,7 +39,7 @@ public class DeleteOrderCommand extends Command {
      * Creates a {@code DeleteOrderCommand} to delete an order from a person.
      *
      * @param targetIndex index of the person in the filtered person list
-     * @param orderIndex index of the order in the person's order history
+     * @param orderIndex displayed index of the order in the person's newest-first order history
      */
     public DeleteOrderCommand(Index targetIndex, Index orderIndex) {
         requireAllNonNull(targetIndex, orderIndex);
@@ -62,8 +62,9 @@ public class DeleteOrderCommand extends Command {
             throw new CommandException(MESSAGE_INVALID_ORDER_INDEX);
         }
 
-        Order orderToDelete = orders.get(orderIndex.getZeroBased());
-        Person editedPerson = createPersonWithoutOrder(person, orderToDelete);
+        int historyIndex = orders.size() - orderIndex.getZeroBased() - 1;
+        Order orderToDelete = orders.get(historyIndex);
+        Person editedPerson = createPersonWithoutOrder(person, orderToDelete, historyIndex);
 
         model.setPerson(person, editedPerson);
         model.selectPerson(editedPerson);
@@ -72,13 +73,14 @@ public class DeleteOrderCommand extends Command {
     }
 
     /** Creates the updated member after removing the selected order and its earned points. */
-    private Person createPersonWithoutOrder(Person person, Order orderToDelete) throws CommandException {
+    private Person createPersonWithoutOrder(Person person, Order orderToDelete, int historyIndex)
+            throws CommandException {
         long updatedScore = (long) person.getScore().value - orderToDelete.scoreGained;
         if (updatedScore < 0) {
             throw new CommandException(MESSAGE_SCORE_BELOW_ZERO);
         }
 
-        OrderHistory updatedOrderHistory = person.getOrderHistory().deleteOrder(orderIndex.getZeroBased());
+        OrderHistory updatedOrderHistory = person.getOrderHistory().deleteOrder(historyIndex);
         return new Person(
                 person.getName(),
                 person.getPhone(),

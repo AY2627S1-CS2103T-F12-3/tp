@@ -40,13 +40,13 @@ public class DeleteOrderCommandTest {
     public void execute_validIndexes_deletesOrderFromPersonHistory() throws Exception {
         Person originalPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         List<Order> originalOrders = originalPerson.getOrderHistory().getOrders();
-        Order orderToDelete = originalOrders.get(INDEX_FIRST_PERSON.getZeroBased());
+        Order orderToDelete = originalOrders.get(originalOrders.size() - INDEX_FIRST_PERSON.getZeroBased() - 1);
         DeleteOrderCommand command = new DeleteOrderCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON);
 
         CommandResult result = command.execute(model);
 
         Person updatedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
-        assertEquals(List.of(originalOrders.get(INDEX_SECOND_PERSON.getZeroBased())),
+        assertEquals(List.of(originalOrders.get(INDEX_FIRST_PERSON.getZeroBased())),
                 updatedPerson.getOrderHistory().getOrders());
         assertEquals(originalPerson.getName(), updatedPerson.getName());
         assertEquals(originalPerson.getPhone(), updatedPerson.getPhone());
@@ -111,7 +111,7 @@ public class DeleteOrderCommandTest {
                 original.getRedeemedMilestoneRewardHistory());
         model.setPerson(original, withOrder);
 
-        Index newOrderIndex = Index.fromOneBased(withOrder.getOrderHistory().getOrders().size());
+        Index newOrderIndex = Index.fromOneBased(1);
         new DeleteOrderCommand(INDEX_FIRST_PERSON, newOrderIndex).execute(model);
 
         Person updated = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
