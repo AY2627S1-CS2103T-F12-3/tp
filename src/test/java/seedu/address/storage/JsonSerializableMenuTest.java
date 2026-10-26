@@ -3,6 +3,8 @@ package seedu.address.storage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.testutil.Assert.assertThrows;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
 
 public class JsonSerializableMenuTest {
+    private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonSerializableMenuTest");
     private static final FoodItem CHICKEN_RICE = new FoodItem("CR01", "Chicken Rice", 450);
     private static final FoodItem COFFEE = new FoodItem("CF01", "Coffee", 150);
 
@@ -32,14 +35,13 @@ public class JsonSerializableMenuTest {
 
     @Test
     public void toModelType_emptyMenu_returnsEmptyMenu() throws Exception {
-        assertEquals(new Menu(), new JsonSerializableMenu(List.of()).toModelType());
+        assertEquals(new Menu(), readMenu("emptyMenu.json").toModelType());
         assertEquals(new Menu(), new JsonSerializableMenu(new Menu()).toModelType());
     }
 
     @Test
     public void toModelType_validItems_preservesValuesAndOrder() throws Exception {
-        JsonSerializableMenu saved = new JsonSerializableMenu(List.of(
-                new JsonAdaptedFoodItem(COFFEE), new JsonAdaptedFoodItem(CHICKEN_RICE)));
+        JsonSerializableMenu saved = readMenu("validMenu.json");
 
         assertEquals(List.of(COFFEE, CHICKEN_RICE), saved.toModelType().getFoodItemList());
     }
@@ -87,8 +89,8 @@ public class JsonSerializableMenuTest {
 
     @Test
     public void toModelType_missingOrNullItemList_throwsIllegalValueException() throws Exception {
-        for (String json : List.of("{}", "{\"foodItems\":null}")) {
-            JsonSerializableMenu saved = JsonUtil.fromJsonString(json, JsonSerializableMenu.class);
+        for (String fileName : List.of("missingFoodItems.json", "nullFoodItems.json")) {
+            JsonSerializableMenu saved = readMenu(fileName);
             assertThrows(IllegalValueException.class,
                     JsonSerializableMenu.MESSAGE_MISSING_FOOD_ITEMS, saved::toModelType);
         }
@@ -96,7 +98,7 @@ public class JsonSerializableMenuTest {
 
     @Test
     public void toModelType_nullItem_throwsIllegalValueException() throws Exception {
-        JsonSerializableMenu saved = JsonUtil.fromJsonString("{\"foodItems\":[null]}", JsonSerializableMenu.class);
+        JsonSerializableMenu saved = readMenu("nullFoodItem.json");
         assertThrows(IllegalValueException.class, JsonSerializableMenu.MESSAGE_NULL_FOOD_ITEM, saved::toModelType);
     }
 
@@ -157,5 +159,9 @@ public class JsonSerializableMenuTest {
         Menu loaded = JsonUtil.fromJsonString(json, JsonSerializableMenu.class).toModelType();
         assertEquals(expected, loaded);
         assertEquals(List.of(CHICKEN_RICE, new FoodItem("cr01", "Coffee", 1)), loaded.getFoodItemList());
+    }
+
+    private JsonSerializableMenu readMenu(String fileName) throws Exception {
+        return JsonUtil.readJsonFile(TEST_DATA_FOLDER.resolve(fileName), JsonSerializableMenu.class).orElseThrow();
     }
 }

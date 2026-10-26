@@ -1,0 +1,10 @@
+{
+  "persons": [{
+    "name": "Alice Pauline",
+    "phone": "94351253",
+    "tags": ["#friends"],
+    "score": "0",
+    "orderHistory": [],
+    "redeemedMilestoneRewardHistory": []
+  }]
+}

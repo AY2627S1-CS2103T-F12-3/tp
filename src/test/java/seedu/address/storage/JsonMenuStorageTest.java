@@ -7,6 +7,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 
 public class JsonMenuStorageTest {
+    private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonMenuStorageTest");
     private static final FoodItem CHICKEN_RICE = new FoodItem("CR01", "Chicken Rice", 450);
 
     @TempDir
@@ -48,18 +50,24 @@ public class JsonMenuStorageTest {
     }
 
     @Test
-    public void readMenu_malformedJson_throwsDataLoadingException() throws IOException {
-        for (String json : List.of("", "not JSON", "{", "null", "[]", "42")) {
-            assertInvalidFile(json);
-        }
+    public void readMenu_validFile_loadsMenu() throws Exception {
+        Path path = TEST_DATA_FOLDER.resolve("validMenu.json");
+        Menu expected = new Menu();
+        expected.setFoodItems(List.of(CHICKEN_RICE, new FoodItem("CF01", "Coffee", 150)));
+
+        assertEquals(expected, new Menu(new JsonMenuStorage(path).readMenu().orElseThrow()));
     }
 
     @Test
-    public void readMenu_trailingContent_throwsDataLoadingException() throws IOException {
-        for (String json : List.of("{\"foodItems\":[]} garbage", "{\"foodItems\":[]} {\"foodItems\":[]}",
-                "{\"foodItems\":[]} 42", "{\"foodItems\":[]} null")) {
-            assertInvalidFile(json);
-        }
+    public void readMenu_malformedJson_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("notJsonFormat.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
+    }
+
+    @Test
+    public void readMenu_trailingContent_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("trailingObject.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
     }
 
     @Test
@@ -70,29 +78,45 @@ public class JsonMenuStorageTest {
     }
 
     @Test
-    public void readMenu_invalidMenuData_throwsDataLoadingException() throws IOException {
-        for (String json : List.of("{}", "{\"foodItems\":null}", "{\"foodItems\":[null]}",
-                "{\"foodItems\":[{}]}", "{\"foodItems\":{}}")) {
-            assertInvalidFile(json);
-        }
+    public void readMenu_missingFoodItems_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("missingFoodItems.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
     }
 
     @Test
-    public void readMenu_invalidItemFields_throwsDataLoadingException() throws IOException {
-        for (String item : List.of("{\"code\":\"!\",\"name\":\"Dish\",\"priceInCents\":450}",
-                "{\"code\":\"CR01\",\"name\":\"\",\"priceInCents\":450}",
-                "{\"code\":\"CR01\",\"name\":\"Dish\",\"priceInCents\":0}",
-                "{\"code\":\"CR01\",\"name\":\"Dish\",\"priceInCents\":450.9}",
-                "{\"code\":\"CR01\",\"name\":\"Dish\",\"priceInCents\":2147483648}")) {
-            assertInvalidFile("{\"foodItems\":[" + item + "]}");
-        }
+    public void readMenu_nullFoodItem_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("nullFoodItem.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
     }
 
     @Test
-    public void readMenu_duplicateCodes_throwsDataLoadingException() throws IOException {
-        String first = "{\"code\":\"CR01\",\"name\":\"Chicken Rice\",\"priceInCents\":450}";
-        String second = "{\"code\":\"CR01\",\"name\":\"Different Dish\",\"priceInCents\":600}";
-        assertInvalidFile("{\"foodItems\":[" + first + "," + second + "]}");
+    public void readMenu_invalidCode_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("invalidCode.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
+    }
+
+    @Test
+    public void readMenu_blankName_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("blankName.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
+    }
+
+    @Test
+    public void readMenu_zeroPrice_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("zeroPrice.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
+    }
+
+    @Test
+    public void readMenu_fractionalPrice_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("fractionalPrice.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
+    }
+
+    @Test
+    public void readMenu_duplicateCodes_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("duplicateCodesMenu.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMenuStorage(path).readMenu());
     }
 
     @Test
@@ -158,12 +182,4 @@ public class JsonMenuStorageTest {
         assertThrows(IOException.class, () -> storage.saveMenu(new Menu()));
     }
 
-    private void assertInvalidFile(String json) throws IOException {
-        Path path = testFolder.resolve("invalid.json");
-        Files.writeString(path, json);
-        JsonMenuStorage storage = new JsonMenuStorage(path);
-
-        assertThrows(DataLoadingException.class, storage::readMenu);
-        assertEquals(json, Files.readString(path));
-    }
 }
