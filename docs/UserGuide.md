@@ -28,7 +28,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432` : Adds a contact named `John Doe` to the Address Book.
+   * `add-member n/John Doe p/98765432` : Adds a contact named `John Doe` to the Address Book.
 
    * `add-menu-item c/12A n/Dessert p/3.50` : Adds Dessert to the menu at $3.50.
 
@@ -42,7 +42,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
 
-   * `delete 3` : Deletes the 3rd contact shown in the current list.
+   * `delete-member 3` : Deletes the 3rd contact shown in the current list.
 
    * `update-score 1 s/10` increases the score of the 1st person shown by 10.
 
@@ -61,7 +61,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 **:information_source: Notes about the command format:**<br>
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
-  For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
+  For example, in `add-member n/NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
   For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
@@ -87,19 +87,19 @@ Shows a message explaining how to access the help page.
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a member: `add-member`
 
 Adds a person to the address book.
 
-Format: `add n/NAME p/PHONE_NUMBER [t/TAG]…​`
+Format: `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, including zero.
 </div>
 
 Examples:
-* `add n/John Doe p/98765432`
-* `add n/Betsy Crowe t/friend p/1234567 t/criminal`
+* `add-member n/John Doe p/98765432`
+* `add-member n/Betsy Crowe t/friend p/1234567 t/criminal`
 
 ### Listing all persons: `list`
 
@@ -107,11 +107,11 @@ Shows a list of all persons in the address book.
 
 Format: `list`
 
-### Editing a person: `edit`
+### Editing a member: `edit-member`
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
+Format: `edit-member INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
@@ -120,8 +120,8 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
 * To remove all of a person's tags, enter `t/` without a tag after it.
 
 Examples:
-*  `edit 1 p/91234567` Edits the phone number of the 1st person to be `91234567`.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+*  `edit-member 1 p/91234567` Edits the phone number of the 1st person to be `91234567`.
+*  `edit-member 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 
 ### Adding a menu item: `add-menu-item`
 
@@ -410,19 +410,19 @@ Examples:
 * `find 98765432` returns the person whose phone number is exactly `98765432`
 * `find alex david` returns `Alex Yeoh` and `David Li`.
 
-### Deleting a person: `delete`
+### Deleting a member: `delete-member`
 
 Deletes the specified person from the address book.
 
-Format: `delete INDEX`
+Format: `delete-member INDEX`
 
 * Deletes the person at the specified `INDEX`.
 * The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `list` followed by `delete-member 2` deletes the 2nd person in the address book.
+* `find Betsy` followed by `delete-member 1` deletes the 1st person in the results of the `find` command.
 
 ### Clearing all entries: `clear`
 
@@ -498,15 +498,15 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
+**Add member** | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/22224444 t/friend t/colleague`
 **Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
 **Edit menu item** | `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `edit-menu-item 12A c/12B p/4.00`
 **Add milestone** | `add-milestone c/CODE r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone c/FREE500 r/Free drink s/500`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete member** | `delete-member INDEX`<br> e.g., `delete-member 3`
 **Delete milestone** | `delete-milestone INDEX`<br> e.g., `delete-milestone 1`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
+**Edit member** | `edit-member INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit-member 2 n/James Lee`
 **Edit milestone** | `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`<br> e.g., `edit-milestone 1 s/600`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
