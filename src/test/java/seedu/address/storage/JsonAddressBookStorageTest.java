@@ -67,6 +67,21 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAddressBook_invalidTag_throwsDataLoadingException() {
+        assertThrows(DataLoadingException.class, () -> readAddressBook("invalidTagAddressBook.json"));
+    }
+
+    @Test
+    public void readAddressBook_invalidScore_throwsDataLoadingException() {
+        assertThrows(DataLoadingException.class, () -> readAddressBook("invalidScoreAddressBook.json"));
+    }
+
+    @Test
+    public void readAddressBook_invalidOrder_throwsDataLoadingException() {
+        assertThrows(DataLoadingException.class, () -> readAddressBook("invalidOrderAddressBook.json"));
+    }
+
+    @Test
     public void readAndSaveAddressBook_allInOrder_success() throws Exception {
         Path filePath = testFolder.resolve("TempAddressBook.json");
         AddressBook original = getTypicalAddressBook();

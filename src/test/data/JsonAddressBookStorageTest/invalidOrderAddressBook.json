@@ -1,0 +1,16 @@
+{
+  "persons": [{
+    "name": "Alice Pauline",
+    "phone": "94351253",
+    "tags": [],
+    "score": "0",
+    "orderHistory": [{
+      "itemCode": "CR01",
+      "itemName": "Chicken Rice",
+      "quantity": 0,
+      "scoreGained": 10,
+      "recordedAt": "2026-01-01T00:00:00Z"
+    }],
+    "redeemedMilestoneRewardHistory": []
+  }]
+}
