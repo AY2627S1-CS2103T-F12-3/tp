@@ -460,7 +460,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* *`    | A new user          | Clear all sample data                                   | I can begin using the application with my actual business data                                   |
 | `* *`    | A new user          | View a list of available commands and their usage       | I can learn how to use the application quickly                                                   |
 | `* *`    | Food stall owner    | Configure the number of membership points awarded per dollar spent | I can adjust the rewards program to suit my business                                    |
-| `* *`    | Food stall owner    | Update a menu item’s details and price                  | I can ensure orders and revenue calculations use accurate information                            |
+| `* *`    | Food stall owner    | Edit a menu item’s details and price                    | I can ensure orders and revenue calculations use accurate information                            |
 | `* *`    | Food stall owner    | Add a menu item                                         | I can record orders containing that item and its price                                           |
 | `* *`    | Food stall owner    | View all menu items                                     | I can check the items and prices currently recorded in the application                           |
 | `* *`    | Food stall owner    | Delete a menu item                                      | Unavailable or discontinued items cannot be added to new orders                                  |
