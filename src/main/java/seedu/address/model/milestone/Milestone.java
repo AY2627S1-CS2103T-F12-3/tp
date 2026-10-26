@@ -28,7 +28,7 @@ public final class Milestone {
      * Constructs a milestone reward with a generated internal code.
      */
     public Milestone(String rewardDescription, int requiredScore) {
-        this(UUID.randomUUID().toString(), rewardDescription, requiredScore);
+        this(generateCode(), rewardDescription, requiredScore);
     }
 
     /**
@@ -48,6 +48,13 @@ public final class Milestone {
         this.code = code.toUpperCase(Locale.ROOT);
         this.rewardDescription = rewardDescription;
         this.requiredScore = requiredScore;
+    }
+
+    /**
+     * Returns a randomly generated UUID string for a milestone's internal code.
+     */
+    private static String generateCode() {
+        return UUID.randomUUID().toString();
     }
 
     /**
