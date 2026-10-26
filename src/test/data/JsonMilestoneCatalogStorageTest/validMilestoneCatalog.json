@@ -1,0 +1,6 @@
+{
+  "milestones": [
+    {"code": "FREE500", "rewardDescription": "Free drink", "requiredScore": 500},
+    {"code": "DESSERT500", "rewardDescription": "Free dessert", "requiredScore": 500}
+  ]
+}

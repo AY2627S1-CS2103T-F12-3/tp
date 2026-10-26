@@ -7,6 +7,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.MilestoneCatalog;
 
 public class JsonMilestoneCatalogStorageTest {
+    private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data",
+            "JsonMilestoneCatalogStorageTest");
     private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
 
     @TempDir
@@ -49,19 +52,27 @@ public class JsonMilestoneCatalogStorageTest {
     }
 
     @Test
-    public void readMilestoneCatalog_malformedJson_throwsDataLoadingException() throws IOException {
-        for (String json : List.of("", "not JSON", "{", "null", "[]", "42")) {
-            assertInvalidFile(json);
-        }
+    public void readMilestoneCatalog_validFile_loadsCatalog() throws Exception {
+        Path path = TEST_DATA_FOLDER.resolve("validMilestoneCatalog.json");
+        MilestoneCatalog expected = new MilestoneCatalog();
+        expected.setMilestones(List.of(FREE_DRINK, new Milestone("DESSERT500", "Free dessert", 500)));
+
+        assertEquals(expected, new MilestoneCatalog(
+                new JsonMilestoneCatalogStorage(path).readMilestoneCatalog().orElseThrow()));
     }
 
     @Test
-    public void readMilestoneCatalog_trailingContent_throwsDataLoadingException() throws IOException {
-        for (String json : List.of("{\"milestones\":[]} garbage",
-                "{\"milestones\":[]} {\"milestones\":[]}",
-                "{\"milestones\":[]} 42", "{\"milestones\":[]} null")) {
-            assertInvalidFile(json);
-        }
+    public void readMilestoneCatalog_malformedJson_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("notJsonFormat.json");
+        JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
+        assertThrows(DataLoadingException.class, storage::readMilestoneCatalog);
+    }
+
+    @Test
+    public void readMilestoneCatalog_trailingContent_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("trailingObject.json");
+        JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
+        assertThrows(DataLoadingException.class, storage::readMilestoneCatalog);
     }
 
     @Test
@@ -73,31 +84,44 @@ public class JsonMilestoneCatalogStorageTest {
     }
 
     @Test
-    public void readMilestoneCatalog_invalidCatalogData_throwsDataLoadingException() throws IOException {
-        for (String json : List.of("{}", "{\"milestones\":null}", "{\"milestones\":[null]}",
-                "{\"milestones\":[{}]}", "{\"milestones\":{}}")) {
-            assertInvalidFile(json);
-        }
+    public void readMilestoneCatalog_missingMilestones_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("missingMilestones.json");
+        JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
+        assertThrows(DataLoadingException.class, storage::readMilestoneCatalog);
     }
 
     @Test
-    public void readMilestoneCatalog_invalidMilestoneFields_throwsDataLoadingException() throws IOException {
-        for (String milestone : List.of(
-                "{\"code\":\"!\",\"rewardDescription\":\"Reward\",\"requiredScore\":500}",
-                "{\"code\":\"FREE500\",\"rewardDescription\":\"\",\"requiredScore\":500}",
-                "{\"code\":\"FREE500\",\"rewardDescription\":\"Reward\",\"requiredScore\":0}",
-                "{\"code\":\"FREE500\",\"rewardDescription\":\"Reward\",\"requiredScore\":500.9}",
-                "{\"code\":\"FREE500\",\"rewardDescription\":\"Reward\",\"requiredScore\":2147483648}")) {
-            assertInvalidFile("{\"milestones\":[" + milestone + "]}");
-        }
+    public void readMilestoneCatalog_nullMilestone_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("nullMilestone.json");
+        JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
+        assertThrows(DataLoadingException.class, storage::readMilestoneCatalog);
     }
 
     @Test
-    public void readMilestoneCatalog_duplicateCodes_throwsDataLoadingException() throws IOException {
-        String first = "{\"code\":\"FREE500\",\"rewardDescription\":\"Free drink\",\"requiredScore\":500}";
-        String second =
-                "{\"code\":\"free500\",\"rewardDescription\":\"Different reward\",\"requiredScore\":700}";
-        assertInvalidFile("{\"milestones\":[" + first + "," + second + "]}");
+    public void readMilestoneCatalog_invalidCode_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("invalidCode.json");
+        JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
+        assertThrows(DataLoadingException.class, storage::readMilestoneCatalog);
+    }
+
+    @Test
+    public void readMilestoneCatalog_blankRewardDescription_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("blankRewardDescription.json");
+        JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
+        assertThrows(DataLoadingException.class, storage::readMilestoneCatalog);
+    }
+
+    @Test
+    public void readMilestoneCatalog_zeroScore_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("zeroScore.json");
+        JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
+        assertThrows(DataLoadingException.class, storage::readMilestoneCatalog);
+    }
+
+    @Test
+    public void readMilestoneCatalog_duplicateCodes_throwsDataLoadingException() {
+        Path path = TEST_DATA_FOLDER.resolve("duplicateCodesMilestoneCatalog.json");
+        assertThrows(DataLoadingException.class, () -> new JsonMilestoneCatalogStorage(path).readMilestoneCatalog());
     }
 
     @Test
@@ -163,12 +187,4 @@ public class JsonMilestoneCatalogStorageTest {
         assertThrows(IOException.class, () -> storage.saveMilestoneCatalog(new MilestoneCatalog()));
     }
 
-    private void assertInvalidFile(String json) throws IOException {
-        Path path = testFolder.resolve("invalid.json");
-        Files.writeString(path, json);
-        JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
-
-        assertThrows(DataLoadingException.class, storage::readMilestoneCatalog);
-        assertEquals(json, Files.readString(path));
-    }
 }

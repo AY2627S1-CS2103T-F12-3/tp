@@ -1,0 +1,18 @@
+{
+  "persons": [
+    {
+      "name": "Alice Pauline",
+      "phone": "94351253",
+      "tags": [],
+      "score": "100",
+      "orderHistory": [],
+      "redeemedMilestoneRewardHistory": [
+        {
+          "code": "WELCOME",
+          "rewardDescription": "",
+          "requiredScore": 10
+        }
+      ]
+    }
+  ]
+}

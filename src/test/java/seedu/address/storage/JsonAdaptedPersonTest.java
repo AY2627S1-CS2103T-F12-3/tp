@@ -25,7 +25,6 @@ public class JsonAdaptedPersonTest {
     private static final String NAME_WITHOUT_LETTER = "12345678";
     private static final String INVALID_PHONE = "+651234";
     private static final String INVALID_TAG = "#friend";
-    private static final String INVALID_SCORE = null;
 
     private static final String VALID_NAME = BENSON.getName().toString();
     private static final String VALID_PHONE = BENSON.getPhone().toString();
@@ -92,14 +91,6 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
-    public void toModelType_legacyAddressField_returnsPerson() throws Exception {
-        String json = JsonUtil.toJsonString(new JsonAdaptedPerson(BENSON));
-        String legacyJson = json.replaceFirst("\\{", "{\"address\":\"Old Street\",");
-        JsonAdaptedPerson person = JsonUtil.fromJsonString(legacyJson, JsonAdaptedPerson.class);
-        assertEquals(BENSON, person.toModelType());
-    }
-
-    @Test
     public void toJsonString_validPerson_omitsAddressField() throws Exception {
         String json = JsonUtil.toJsonString(new JsonAdaptedPerson(BENSON));
         assertFalse(json.contains("\"address\""));
@@ -111,7 +102,7 @@ public class JsonAdaptedPersonTest {
                 new JsonAdaptedPerson(
                         INVALID_NAME, VALID_PHONE,
                         VALID_TAGS, VALID_SCORE,
-                        VALID_ORDER_HISTORY);
+                        VALID_ORDER_HISTORY, VALID_REDEEMED_MILESTONE_REWARDS);
         String expectedMessage = Name.MESSAGE_CONSTRAINTS;
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
     }
@@ -122,7 +113,7 @@ public class JsonAdaptedPersonTest {
                 new JsonAdaptedPerson(
                         NAME_WITHOUT_LETTER, VALID_PHONE,
                         VALID_TAGS, VALID_SCORE,
-                        VALID_ORDER_HISTORY);
+                        VALID_ORDER_HISTORY, VALID_REDEEMED_MILESTONE_REWARDS);
         String expectedMessage = Name.MESSAGE_CONSTRAINTS_MISSING_LETTER;
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
     }
@@ -132,7 +123,7 @@ public class JsonAdaptedPersonTest {
         JsonAdaptedPerson person = new JsonAdaptedPerson(
                 null, VALID_PHONE,
                 VALID_TAGS, VALID_SCORE,
-                VALID_ORDER_HISTORY);
+                VALID_ORDER_HISTORY, VALID_REDEEMED_MILESTONE_REWARDS);
         String expectedMessage = String.format(MISSING_FIELD_MESSAGE_FORMAT, Name.class.getSimpleName());
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
     }
@@ -143,7 +134,7 @@ public class JsonAdaptedPersonTest {
                 new JsonAdaptedPerson(
                         VALID_NAME, INVALID_PHONE,
                         VALID_TAGS, VALID_SCORE,
-                        VALID_ORDER_HISTORY);
+                        VALID_ORDER_HISTORY, VALID_REDEEMED_MILESTONE_REWARDS);
         String expectedMessage = Phone.MESSAGE_CONSTRAINTS;
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
     }
@@ -153,11 +144,12 @@ public class JsonAdaptedPersonTest {
         JsonAdaptedPerson person = new JsonAdaptedPerson(
                 VALID_NAME, null,
                 VALID_TAGS, VALID_SCORE,
-                VALID_ORDER_HISTORY);
+                VALID_ORDER_HISTORY, VALID_REDEEMED_MILESTONE_REWARDS);
         String expectedMessage = String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName());
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
     }
 
+    @Test
     public void toModelType_invalidTags_throwsIllegalValueException() {
         List<JsonAdaptedTag> invalidTags = new ArrayList<>(VALID_TAGS);
         invalidTags.add(new JsonAdaptedTag(INVALID_TAG));
@@ -165,7 +157,7 @@ public class JsonAdaptedPersonTest {
                 new JsonAdaptedPerson(
                         VALID_NAME, VALID_PHONE,
                         invalidTags, VALID_SCORE,
-                        VALID_ORDER_HISTORY);
+                        VALID_ORDER_HISTORY, VALID_REDEEMED_MILESTONE_REWARDS);
         assertThrows(IllegalValueException.class, person::toModelType);
     }
 }

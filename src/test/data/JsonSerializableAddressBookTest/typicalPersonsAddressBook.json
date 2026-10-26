@@ -1,80 +1,119 @@
 {
-  "_comment": "AddressBook save file which contains the same Person values as in TypicalPersons#getTypicalAddressBook()",
-  "persons" : [ {
-    "name" : "Alice Pauline",
-    "phone" : "94351253",
-    "tags" : [ "friends" ],
-    "orderHistory" : [ {
-      "itemCode" : "Chicken",
-      "itemName" : "Chicken",
-      "scoreGained" : 0,
-      "quantity" : 2,
-      "recordedAt" : "2026-01-01T00:00:00Z"
-    }, {
-      "itemCode" : "Potato",
-      "itemName" : "Potato",
-      "scoreGained" : 0,
-      "quantity" : 1,
-      "recordedAt" : "2026-01-02T00:00:00Z"
-    } ]
-  }, {
-    "name" : "Benson Meier",
-    "phone" : "98765432",
-    "tags" : [ "owesMoney", "friends" ],
-    "orderHistory" : [ {
-      "itemCode" : "Potato",
-      "itemName" : "Potato",
-      "scoreGained" : 0,
-      "quantity" : 1,
-      "recordedAt" : "2026-01-03T00:00:00Z"
-    } ],
-    "redeemedMilestoneRewardHistory" : [ {
-      "code" : "WELCOME",
-      "rewardDescription" : "Free drink",
-      "requiredScore" : 10
-    } ]
-  }, {
-    "name" : "Carl Kurz",
-    "phone" : "95352563",
-    "tags" : [ ],
-    "orderHistory" : [ ]
-  }, {
-    "name" : "Daniel Meier",
-    "phone" : "87652533",
-    "tags" : [ "friends" ],
-    "orderHistory" : [ ]
-  }, {
-    "name" : "Elle Meyer",
-    "phone" : "9482224",
-    "tags" : [ ],
-    "orderHistory" : [ {
-      "itemCode" : "Chicken",
-      "itemName" : "Chicken",
-      "scoreGained" : 0,
-      "quantity" : 2,
-      "recordedAt" : "2026-01-04T00:00:00Z"
-    }, {
-      "itemCode" : "Pork",
-      "itemName" : "Pork",
-      "scoreGained" : 0,
-      "quantity" : 9,
-      "recordedAt" : "2026-01-05T00:00:00Z"
-    } ]
-  }, {
-    "name" : "Fiona Kunz",
-    "phone" : "9482427",
-    "tags" : [ ],
-    "orderHistory" : [ {
-      "itemCode" : "Chicken",
-      "itemName" : "Chicken",
-      "scoreGained" : 0,
-      "quantity" : 9,
-      "recordedAt" : "2026-01-06T00:00:00Z"
-    } ]
-  }, {
-    "name" : "George Best",
-    "phone" : "9482442",
-    "tags" : [ ],
-    "orderHistory" : [ ]
-  } ]
+  "persons": [
+    {
+      "name": "Alice Pauline",
+      "phone": "94351253",
+      "tags": [
+        "friends"
+      ],
+      "score": "0",
+      "orderHistory": [
+        {
+          "itemCode": "Chicken",
+          "itemName": "Chicken",
+          "scoreGained": 0,
+          "quantity": 2,
+          "recordedAt": "2026-01-01T00:00:00Z"
+        },
+        {
+          "itemCode": "Potato",
+          "itemName": "Potato",
+          "scoreGained": 0,
+          "quantity": 1,
+          "recordedAt": "2026-01-02T00:00:00Z"
+        }
+      ],
+      "redeemedMilestoneRewardHistory": []
+    },
+    {
+      "name": "Benson Meier",
+      "phone": "98765432",
+      "tags": [
+        "owesMoney",
+        "friends"
+      ],
+      "score": "0",
+      "orderHistory": [
+        {
+          "itemCode": "Potato",
+          "itemName": "Potato",
+          "scoreGained": 0,
+          "quantity": 1,
+          "recordedAt": "2026-01-03T00:00:00Z"
+        }
+      ],
+      "redeemedMilestoneRewardHistory": [
+        {
+          "code": "WELCOME",
+          "rewardDescription": "Free drink",
+          "requiredScore": 10
+        }
+      ]
+    },
+    {
+      "name": "Carl Kurz",
+      "phone": "95352563",
+      "tags": [],
+      "score": "0",
+      "orderHistory": [],
+      "redeemedMilestoneRewardHistory": []
+    },
+    {
+      "name": "Daniel Meier",
+      "phone": "87652533",
+      "tags": [
+        "friends"
+      ],
+      "score": "0",
+      "orderHistory": [],
+      "redeemedMilestoneRewardHistory": []
+    },
+    {
+      "name": "Elle Meyer",
+      "phone": "9482224",
+      "tags": [],
+      "score": "0",
+      "orderHistory": [
+        {
+          "itemCode": "Chicken",
+          "itemName": "Chicken",
+          "scoreGained": 0,
+          "quantity": 2,
+          "recordedAt": "2026-01-04T00:00:00Z"
+        },
+        {
+          "itemCode": "Pork",
+          "itemName": "Pork",
+          "scoreGained": 0,
+          "quantity": 9,
+          "recordedAt": "2026-01-05T00:00:00Z"
+        }
+      ],
+      "redeemedMilestoneRewardHistory": []
+    },
+    {
+      "name": "Fiona Kunz",
+      "phone": "9482427",
+      "tags": [],
+      "score": "0",
+      "orderHistory": [
+        {
+          "itemCode": "Chicken",
+          "itemName": "Chicken",
+          "scoreGained": 0,
+          "quantity": 9,
+          "recordedAt": "2026-01-06T00:00:00Z"
+        }
+      ],
+      "redeemedMilestoneRewardHistory": []
+    },
+    {
+      "name": "George Best",
+      "phone": "9482442",
+      "tags": [],
+      "score": "0",
+      "orderHistory": [],
+      "redeemedMilestoneRewardHistory": []
+    }
+  ]
 }
