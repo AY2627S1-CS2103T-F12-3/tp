@@ -19,6 +19,7 @@ import seedu.address.model.person.Person;
  * Cancels a redeemed milestone reward for a person in the address book.
  */
 public class CancelRedeemCommand extends Command {
+
     public static final String COMMAND_WORD = "cancel-redeem";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Cancel a redeemed milestone reward. "
             + "Parameters: PERSON_INDEX " + PREFIX_MILESTONE + "MILESTONE_INDEX\n"
@@ -54,14 +55,9 @@ public class CancelRedeemCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownPersonList = model.getFilteredPersonList();
-        validatePersonIndex(lastShownPersonList);
 
-        List<Milestone> milestoneList = model.getMilestoneList();
-        validateMilestoneIndex(milestoneList);
-
-        Person personToUpdate = lastShownPersonList.get(personIndex.getZeroBased());
-        Milestone milestoneToCancel = milestoneList.get(milestoneIndex.getZeroBased());
+        Person personToUpdate = getPerson(model);
+        Milestone milestoneToCancel = getMilestone(model);
         validateMilestoneHasBeenRedeemed(personToUpdate, milestoneToCancel);
 
         Person updatedPerson = createUpdatedPerson(personToUpdate, milestoneToCancel);
@@ -72,17 +68,43 @@ public class CancelRedeemCommand extends Command {
         return new CommandResult(MESSAGE_SUCCESS);
     }
 
-    /** Ensures that the selected person exists in the displayed person list. */
-    private void validatePersonIndex(List<Person> persons) throws CommandException {
-        if (personIndex.getZeroBased() >= persons.size()) {
-            throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
-        }
+    /**
+     * Returns the person at the selected index in the filtered person list.
+     *
+     * @param model the model containing the filtered person list
+     * @return the selected person
+     * @throws CommandException if the person index is invalid
+     */
+    private Person getPerson(Model model) throws CommandException {
+        List<Person> filteredPersons = model.getFilteredPersonList();
+        validateIndex(personIndex, filteredPersons.size(), Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        return filteredPersons.get(personIndex.getZeroBased());
     }
 
-    /** Ensures that the selected milestone exists in the displayed milestone list. */
-    private void validateMilestoneIndex(List<Milestone> milestones) throws CommandException {
-        if (milestoneIndex.getZeroBased() >= milestones.size()) {
-            throw new CommandException(MESSAGE_INVALID_MILESTONE_DISPLAYED_INDEX);
+    /**
+     * Returns the milestone at the selected index in the milestone list.
+     *
+     * @param model the model containing the milestone list
+     * @return the selected milestone
+     * @throws CommandException if the milestone index is invalid
+     */
+    private Milestone getMilestone(Model model) throws CommandException {
+        List<Milestone> milestones = model.getMilestoneList();
+        validateIndex(milestoneIndex, milestones.size(), MESSAGE_INVALID_MILESTONE_DISPLAYED_INDEX);
+        return milestones.get(milestoneIndex.getZeroBased());
+    }
+
+    /**
+     * Validates that an index refers to an element in a list.
+     *
+     * @param index the index to validate
+     * @param listSize the size of the list being accessed
+     * @param errorMessage the message for an invalid index
+     * @throws CommandException if the index is outside the list bounds
+     */
+    private void validateIndex(Index index, int listSize, String errorMessage) throws CommandException {
+        if (index.getZeroBased() >= listSize) {
+            throw new CommandException(errorMessage);
         }
     }
 
