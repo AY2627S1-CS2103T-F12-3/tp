@@ -99,7 +99,7 @@ public class RedeemedMilestoneRewardHistory {
 
     @Override
     public int hashCode() {
-        return redeemedMilestoneRewards.toString().hashCode();
+        return redeemedMilestoneRewards.hashCode();
     }
 
     @Override

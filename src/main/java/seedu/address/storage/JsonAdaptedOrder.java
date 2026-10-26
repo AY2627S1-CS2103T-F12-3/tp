@@ -1,5 +1,7 @@
 package seedu.address.storage;
 
+import static java.util.Objects.requireNonNull;
+
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -10,7 +12,7 @@ import seedu.address.model.menu.FoodItem;
 import seedu.address.model.order.Order;
 
 /**
- * Jackson-friendly version of {@link Order}
+ * Jackson-friendly version of {@link Order}.
  */
 public class JsonAdaptedOrder {
 
@@ -38,9 +40,11 @@ public class JsonAdaptedOrder {
     }
 
     /**
-     *  Converts a given {@code Order} into this class for Jackson use
+     * Converts a given {@code Order} into this class for Jackson use.
      */
     public JsonAdaptedOrder(Order source) {
+        requireNonNull(source);
+
         itemCode = source.itemCode;
         itemName = source.itemName;
         quantity = source.quantity;

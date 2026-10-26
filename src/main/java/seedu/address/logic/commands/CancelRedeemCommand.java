@@ -108,7 +108,9 @@ public class CancelRedeemCommand extends Command {
         }
     }
 
-    /** Ensures that the person has redeemed the selected milestone. */
+    /**
+     * Ensures that the person has redeemed the selected milestone.
+     */
     private void validateMilestoneHasBeenRedeemed(Person person, Milestone milestone)
             throws CommandException {
         if (!person.hasRedeemed(milestone)) {
@@ -116,7 +118,9 @@ public class CancelRedeemCommand extends Command {
         }
     }
 
-    /** Returns a copy of the person with the selected milestone removed from their history. */
+    /**
+     * Returns a copy of the person with the selected milestone removed from their history.
+     */
     private Person createUpdatedPerson(Person person, Milestone milestone) {
         return new Person(
                 person.getName(),

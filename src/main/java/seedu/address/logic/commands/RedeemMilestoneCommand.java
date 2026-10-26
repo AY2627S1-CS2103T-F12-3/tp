@@ -71,7 +71,9 @@ public class RedeemMilestoneCommand extends Command {
         return new CommandResult(MESSAGE_SUCCESS);
     }
 
-    /** Returns a string representation containing the person and milestone indices. */
+    /**
+     * Returns a string representation containing the person and milestone indices.
+     */
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -120,7 +122,9 @@ public class RedeemMilestoneCommand extends Command {
         }
     }
 
-    /** Ensures that the person has enough score to redeem the selected milestone. */
+    /**
+     * Ensures that the person has enough score to redeem the selected milestone.
+     */
     private void validateSufficientScore(Person person, Milestone milestone)
             throws CommandException {
         if (person.getScore().value < milestone.getRequiredScore()) {
@@ -128,7 +132,9 @@ public class RedeemMilestoneCommand extends Command {
         }
     }
 
-    /** Ensures that the person has not already redeemed the selected milestone. */
+    /**
+     * Ensures that the person has not already redeemed the selected milestone.
+     */
     private void validateMilestoneHasNotBeenRedeemed(Person person, Milestone milestone)
             throws CommandException {
         if (person.hasRedeemed(milestone)) {
@@ -136,7 +142,9 @@ public class RedeemMilestoneCommand extends Command {
         }
     }
 
-    /** Returns a copy of the person with the selected milestone added to their history. */
+    /**
+     * Returns a copy of the person with the selected milestone added to their history.
+     */
     private Person createUpdatedPerson(Person person, Milestone milestone) {
         return new Person(
                 person.getName(),
