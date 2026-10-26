@@ -9,6 +9,8 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
+import seedu.address.model.milestone.Milestone;
+import seedu.address.model.milestone.MilestoneCatalog;
 import seedu.address.model.order.Order;
 import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Name;
@@ -19,7 +21,7 @@ import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 import seedu.address.model.tag.Tag;
 
 /**
- * Contains utility methods for populating {@code AddressBook} with sample data.
+ * Contains utility methods for creating sample members, menu items, and milestone rewards.
  */
 public class SampleDataUtil {
     /**
@@ -101,6 +103,17 @@ public class SampleDataUtil {
         sampleMenu.addFoodItem(new FoodItem("10", "Mee Goreng", 500));
         sampleMenu.addFoodItem(new FoodItem("11", "Lime Juice", 250));
         return sampleMenu;
+    }
+
+    /**
+     * Returns a milestone catalog with sample rewards at increasing score thresholds.
+     */
+    public static MilestoneCatalog getSampleMilestoneCatalog() {
+        MilestoneCatalog sampleCatalog = new MilestoneCatalog();
+        sampleCatalog.addMilestone(new Milestone("DRINK100", "Free drink", 100));
+        sampleCatalog.addMilestone(new Milestone("SNACK200", "Free snack", 200));
+        sampleCatalog.addMilestone(new Milestone("MEAL500", "Free meal", 500));
+        return sampleCatalog;
     }
 
     /**
