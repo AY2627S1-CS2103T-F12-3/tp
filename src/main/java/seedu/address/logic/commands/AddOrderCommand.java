@@ -4,7 +4,6 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ORDER;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_QUANTITY;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class AddOrderCommand extends Command {
             + PREFIX_ORDER + "1 "
             + PREFIX_QUANTITY + "5";
 
-    public static final String MESSAGE_SUCCESS = "New order added successfully!";
+    public static final String MESSAGE_SUCCESS = "Order added";
     public static final String MESSAGE_ITEM_NOT_IN_MENU = "The item code is not in the menu.";
     public static final String MESSAGE_SCORE_TOO_LARGE = "Score cannot exceed 999999999.";
 
@@ -69,24 +68,27 @@ public class AddOrderCommand extends Command {
         FoodItem foodItem = model.getMenu().findFoodItemByCode(itemCode)
                 .orElseThrow(() -> new CommandException(MESSAGE_ITEM_NOT_IN_MENU));
         Person person = lastShownList.get(index.getZeroBased());
-        Person personWithOrderAdded = createPersonWithOrder(person, foodItem);
+        Order newOrder = createOrder(foodItem);
+        Person personWithOrderAdded = createPersonWithOrder(person, newOrder);
 
         model.setPerson(person, personWithOrderAdded);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(personWithOrderAdded);
 
-        return new CommandResult(generateSuccessMessage(personWithOrderAdded));
+        return new CommandResult(generateSuccessMessage(personWithOrderAdded, newOrder));
+    }
+
+    /** Create a valid order using the menu item's current name and price */
+    private Order createOrder(FoodItem foodItem) {
+        long scoreGained = Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
+        return new Order(itemCode, foodItem.getName(), quantity, (int) scoreGained);
     }
 
     /** Creates the updated member using the menu item's current name and price. */
-    private Person createPersonWithOrder(Person person, FoodItem foodItem) throws CommandException {
-        long scoreGained = Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
-        long updatedScore = person.getScore().value + scoreGained;
+    private Person createPersonWithOrder(Person person, Order order) throws CommandException {
+        long updatedScore = person.getScore().value + order.scoreGained;
         if (!Score.isValidScore(String.valueOf(updatedScore))) {
             throw new CommandException(MESSAGE_SCORE_TOO_LARGE);
         }
-        Order order = new Order(itemCode, foodItem.getName(), quantity, (int) scoreGained);
-
         return new Person(
                 person.getName(),
                 person.getPhone(),
@@ -122,7 +124,11 @@ public class AddOrderCommand extends Command {
                 && quantity == otherAddOrderCommand.quantity;
     }
 
-    private String generateSuccessMessage(Person personToEdit) {
-        return MESSAGE_SUCCESS + " " + personToEdit;
+    private String generateSuccessMessage(Person personToEdit, Order newOrder) {
+        return String.format("%s: %s ordered %s",
+                MESSAGE_SUCCESS,
+                personToEdit.getName(),
+                newOrder
+        );
     }
 }

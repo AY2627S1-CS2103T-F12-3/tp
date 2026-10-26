@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
@@ -140,7 +142,15 @@ public class Order {
      */
     @Override
     public String toString() {
-        return '[' + itemName + " (" + itemCode + ") x " + quantity
-                + ", score gained " + scoreGained + " at " + recordedAt + ']';
+        return "[ (" + itemCode + ") " + itemName + " x " + quantity
+                + ", +" + scoreGained + " score, on " + formatTime(recordedAt) + "]";
+    }
+
+    /**
+     * Formats the given instant as a day, full month, and year.
+     */
+    private String formatTime(Instant time) {
+        return time.atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("d MMMM uuuu"));
     }
 }
