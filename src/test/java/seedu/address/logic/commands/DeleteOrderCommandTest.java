@@ -128,7 +128,7 @@ public class DeleteOrderCommandTest {
                 original.getRedeemedMilestoneRewardHistory());
         model.setPerson(original, withOrder);
 
-        Index newOrderIndex = Index.fromOneBased(withOrder.getOrderHistory().getOrders().size());
+        Index newOrderIndex = Index.fromOneBased(1);
         CommandException exception = assertThrows(CommandException.class, () ->
                 new DeleteOrderCommand(INDEX_FIRST_PERSON, newOrderIndex).execute(model));
 

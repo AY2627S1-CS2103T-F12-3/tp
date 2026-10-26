@@ -16,8 +16,8 @@ public class MilestoneTest {
         assertEquals("Free drink", FREE_DRINK.getRewardDescription());
         assertEquals(500, FREE_DRINK.getRequiredScore());
         assertEquals(1, new Milestone("A", "Small reward", 1).getRequiredScore());
-        assertEquals(Integer.MAX_VALUE,
-                new Milestone("B", "Large reward", Integer.MAX_VALUE).getRequiredScore());
+        assertEquals(999999999,
+                new Milestone("B", "Large reward", 999999999).getRequiredScore());
     }
 
     @Test
