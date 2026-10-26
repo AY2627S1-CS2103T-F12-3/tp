@@ -67,7 +67,6 @@ public class DeleteOrderCommand extends Command {
         Person editedPerson = createPersonWithoutOrder(person, orderToDelete);
 
         model.setPerson(person, editedPerson);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(editedPerson);
 
         return new CommandResult(String.format(MESSAGE_DELETE_ORDER_SUCCESS, orderToDelete));

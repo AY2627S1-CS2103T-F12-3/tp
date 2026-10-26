@@ -73,7 +73,6 @@ public class AddOrderCommand extends Command {
         Person personWithOrderAdded = createPersonWithOrder(person, newOrder);
 
         model.setPerson(person, personWithOrderAdded);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(personWithOrderAdded);
 
         return new CommandResult(generateSuccessMessage(personWithOrderAdded, newOrder));
