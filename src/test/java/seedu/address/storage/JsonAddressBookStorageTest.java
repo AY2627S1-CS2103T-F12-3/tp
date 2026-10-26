@@ -61,6 +61,12 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAddressBook_invalidRedeemedMilestoneAddressBook_throwDataLoadingException() {
+        String fileName = "invalidRedeemedMilestoneAddressBook.json";
+        assertThrows(DataLoadingException.class, () -> readAddressBook(fileName));
+    }
+
+    @Test
     public void readAndSaveAddressBook_allInOrder_success() throws Exception {
         Path filePath = testFolder.resolve("TempAddressBook.json");
         AddressBook original = getTypicalAddressBook();
