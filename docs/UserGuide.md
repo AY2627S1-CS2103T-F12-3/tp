@@ -46,7 +46,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `update-score 1 s/10` increases the score of the 1st person shown by 10.
 
-   * `clear` : Deletes all contacts.
+   * `clear` : Deletes all customers, menu items, and milestone rewards.
 
    * `exit` : Exits the app.
 
@@ -148,7 +148,7 @@ Examples:
 * `add-menu-item p/1.20 n/Coffee c/12B`
 
 The first example shows `New menu item added: Dessert` after saving succeeds. The customer list stays as it is;
-`list` displays customers, not the menu. Menu items are stored separately, and `clear` does not delete them.
+`list` displays customers, not the menu. Menu items are stored separately; `clear` deletes them along with all customers and milestone rewards.
 
 Common errors:
 
@@ -288,7 +288,7 @@ Common milestone-command errors:
 | `delete-milestone 999` | The milestone-index error is shown. Use an index in the displayed milestone list. |
 
 Failed milestone commands leave the milestone catalog unchanged. Successful commands are saved in
-`data/milestones.json`; `clear` removes customers but does not remove milestone rewards.
+`data/milestones.json`; `clear` removes all customers, menu items, and milestone rewards.
 
 ### Recording an order: `add-order`
 
@@ -426,7 +426,8 @@ Examples:
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the address book.
+Clears all customers, menu items, and milestone rewards, and deselects the current customer.
+This also saves the empty data files, so the cleared data stays empty after restarting the application.
 
 Format: `clear`
 

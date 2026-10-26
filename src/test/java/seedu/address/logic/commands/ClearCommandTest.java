@@ -9,6 +9,8 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.menu.FoodItem;
+import seedu.address.model.milestone.Milestone;
 
 public class ClearCommandTest {
 
@@ -28,6 +30,29 @@ public class ClearCommandTest {
         expectedModel.setAddressBook(new AddressBook());
 
         assertCommandSuccess(new ClearCommand(), model, ClearCommand.MESSAGE_SUCCESS, expectedModel);
+    }
+
+    @Test
+    public void execute_populatedMenuAndMilestonesWithoutCustomers_clearsAllData() {
+        Model model = new ModelManager();
+        model.addFoodItem(new FoodItem("CR01", "Chicken Rice", 450));
+        model.addFoodItem(new FoodItem("T01", "Tea", 150));
+        model.addMilestone(new Milestone("M1", "Free drink", 100));
+        model.addMilestone(new Milestone("M2", "Free meal", 500));
+
+        assertCommandSuccess(new ClearCommand(), model, ClearCommand.MESSAGE_SUCCESS, new ModelManager());
+        assertCommandSuccess(new ClearCommand(), model, ClearCommand.MESSAGE_SUCCESS, new ModelManager());
+    }
+
+    @Test
+    public void execute_allDataPopulated_clearsAllDataAndSelection() {
+        Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        model.selectPerson(model.getFilteredPersonList().get(0));
+        model.updateFilteredPersonList(person -> false);
+        model.addFoodItem(new FoodItem("CR01", "Chicken Rice", 450));
+        model.addMilestone(new Milestone("M1", "Free drink", 100));
+
+        assertCommandSuccess(new ClearCommand(), model, ClearCommand.MESSAGE_SUCCESS, new ModelManager());
     }
 
 }
