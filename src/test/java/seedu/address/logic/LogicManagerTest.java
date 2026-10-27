@@ -108,6 +108,22 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_invalidSingaporePhone_throwsParseException() throws Exception {
+        logic.execute("add n/Alice p/91234567");
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.selectPerson(model.getSelectedPerson().orElseThrow());
+        String savedData = Files.readString(temporaryFolder.resolve("addressBook.json"));
+        for (String invalidPhone : List.of("911", "9123456", "912345678", "12345678", "72345678",
+                "+6591234567", "9123-4567", "9123 4567")) {
+            assertCommandFailure("add n/Bob p/" + invalidPhone, ParseException.class,
+                    Phone.MESSAGE_CONSTRAINTS, expectedModel);
+            assertCommandFailure("edit 1 p/" + invalidPhone, ParseException.class,
+                    Phone.MESSAGE_CONSTRAINTS, expectedModel);
+        }
+        assertEquals(savedData, Files.readString(temporaryFolder.resolve("addressBook.json")));
+    }
+
+    @Test
     public void execute_invalidCommandFormat_throwsParseException() {
         String invalidCommand = "uicfhmowqewca";
         assertParseException(invalidCommand, MESSAGE_UNKNOWN_COMMAND);

@@ -24,11 +24,19 @@ public class ParserUtilTest {
     private static final String INVALID_TAG = "#friend";
 
     private static final String VALID_NAME = "Rachel Walker";
-    private static final String VALID_PHONE = "123456";
+    private static final String VALID_PHONE = "91234567";
     private static final String VALID_TAG_1 = "friend";
     private static final String VALID_TAG_2 = "neighbour";
 
     private static final String WHITESPACE = " \t\r\n";
+
+    @Test
+    public void parsePhone_invalidSingaporeNumbers_throwsParseException() {
+        for (String invalidPhone : List.of("911", "9123456", "912345678", "12345678", "72345678",
+                "+6591234567", "9123-4567", "9123 4567")) {
+            assertThrows(ParseException.class, Phone.MESSAGE_CONSTRAINTS, () -> ParserUtil.parsePhone(invalidPhone));
+        }
+    }
 
     @Test
     public void parseIndex_invalidInput_throwsParseException() {

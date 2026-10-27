@@ -1,8 +1,11 @@
 package seedu.address.model.person;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,26 +27,29 @@ public class PhoneTest {
         // null phone number
         assertThrows(NullPointerException.class, () -> Phone.isValidPhone(null));
 
-        // invalid phone numbers
-        assertFalse(Phone.isValidPhone("")); // empty string
-        assertFalse(Phone.isValidPhone(" ")); // spaces only
-        assertFalse(Phone.isValidPhone("91")); // less than 3 numbers
-        assertFalse(Phone.isValidPhone("phone")); // non-numeric
-        assertFalse(Phone.isValidPhone("9011p041")); // alphabets within digits
-        assertFalse(Phone.isValidPhone("9312 1534")); // spaces within digits
+        // Invalid lengths, prefixes, characters and separators.
+        for (String invalidPhone : List.of("", " ", "91", "911", "9123456", "912345678",
+                "124293842033123", "01234567", "12345678", "22345678", "32345678", "42345678",
+                "52345678", "72345678", "phone", "9011p041", "9312 1534", "9123-4567",
+                "+6591234567", "6591234567", " 91234567", "91234567 ", "9１２３４５６７")) {
+            assertFalse(Phone.isValidPhone(invalidPhone), invalidPhone);
+            assertThrows(IllegalArgumentException.class, Phone.MESSAGE_CONSTRAINTS, () -> new Phone(invalidPhone));
+        }
 
-        // valid phone numbers
-        assertTrue(Phone.isValidPhone("911")); // exactly 3 numbers
-        assertTrue(Phone.isValidPhone("93121534"));
-        assertTrue(Phone.isValidPhone("124293842033123")); // long phone numbers
+        // Boundary values for all permitted prefixes.
+        for (String validPhone : List.of("60000000", "69999999", "80000000", "89999999",
+                "90000000", "99999999")) {
+            assertTrue(Phone.isValidPhone(validPhone), validPhone);
+            assertEquals(validPhone, new Phone(validPhone).value);
+        }
     }
 
     @Test
     public void equals() {
-        Phone phone = new Phone("999");
+        Phone phone = new Phone("99999999");
 
         // same values -> returns true
-        assertTrue(phone.equals(new Phone("999")));
+        assertTrue(phone.equals(new Phone("99999999")));
 
         // same object -> returns true
         assertTrue(phone.equals(phone));
@@ -55,6 +61,6 @@ public class PhoneTest {
         assertFalse(phone.equals(5.0f));
 
         // different values -> returns false
-        assertFalse(phone.equals(new Phone("995")));
+        assertFalse(phone.equals(new Phone("99500000")));
     }
 }

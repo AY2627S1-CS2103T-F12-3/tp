@@ -41,6 +41,16 @@ public class JsonAdaptedPersonTest {
                     .collect(Collectors.toList());
 
     @Test
+    public void toModelType_invalidSingaporePhone_throwsIllegalValueException() {
+        for (String invalidPhone : List.of("911", "9123456", "912345678", "12345678", "+6591234567")) {
+            JsonAdaptedPerson person = new JsonAdaptedPerson(
+                    VALID_NAME, invalidPhone, VALID_TAGS, VALID_SCORE, VALID_ORDER_HISTORY);
+
+            assertThrows(IllegalValueException.class, Phone.MESSAGE_CONSTRAINTS, person::toModelType);
+        }
+    }
+
+    @Test
     public void toModelType_validPersonDetails_returnsPerson() throws Exception {
         JsonAdaptedPerson person = new JsonAdaptedPerson(BENSON);
         assertEquals(BENSON, person.toModelType());

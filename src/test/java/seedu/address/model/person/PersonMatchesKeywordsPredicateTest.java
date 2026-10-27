@@ -69,30 +69,30 @@ public class PersonMatchesKeywordsPredicateTest {
         predicate = new PersonMatchesKeywordsPredicate(List.of("Carol"));
         assertFalse(predicate.test(new PersonBuilder().withName("Alice Bob").build()));
 
-        // Keyword matches phone, but does not match name
+        // A partial phone number does not match a name.
         predicate = new PersonMatchesKeywordsPredicate(List.of("12345"));
-        assertFalse(predicate.test(new PersonBuilder().withName("Alice").withPhone("12345").build()));
+        assertFalse(predicate.test(new PersonBuilder().withName("Alice").withPhone("91234567").build()));
     }
 
     @Test
     public void test_eightDigitKeywordExactlyMatchesPhone_returnsTrue() {
-        Person person = new PersonBuilder().withPhone("12345678").build();
-        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(List.of("12345678"));
+        Person person = new PersonBuilder().withPhone("91234567").build();
+        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(List.of("91234567"));
 
         assertTrue(predicate.test(person));
     }
 
     @Test
-    public void test_eightDigitKeywordPartiallyMatchesPhone_returnsFalse() {
-        Person person = new PersonBuilder().withPhone("912345678").build();
-        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(List.of("12345678"));
+    public void test_eightDigitKeywordDoesNotMatchPhone_returnsFalse() {
+        Person person = new PersonBuilder().withPhone("81234567").build();
+        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(List.of("91234567"));
 
         assertFalse(predicate.test(person));
     }
 
     @Test
     public void test_nonEightDigitKeywordMatchesPhone_returnsFalse() {
-        Person person = new PersonBuilder().withPhone("12345678").build();
+        Person person = new PersonBuilder().withPhone("91234567").build();
         PersonMatchesKeywordsPredicate sevenDigitPredicate =
                 new PersonMatchesKeywordsPredicate(List.of("1234567"));
         PersonMatchesKeywordsPredicate nineDigitPredicate =
@@ -104,9 +104,9 @@ public class PersonMatchesKeywordsPredicateTest {
 
     @Test
     public void test_nameOrPhoneMatchesKeyword_returnsTrue() {
-        Person person = new PersonBuilder().withName("Alice Bob").withPhone("12345678").build();
+        Person person = new PersonBuilder().withName("Alice Bob").withPhone("91234567").build();
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of("Carol", "12345678"));
+                new PersonMatchesKeywordsPredicate(List.of("Carol", "91234567"));
 
         assertTrue(predicate.test(person));
     }

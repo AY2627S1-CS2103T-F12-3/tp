@@ -71,7 +71,7 @@ public class TypicalPersons {
             .build();
     public static final Person ELLE = new PersonBuilder()
             .withName("Elle Meyer")
-            .withPhone("9482224")
+            .withPhone("94822240")
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
@@ -81,7 +81,7 @@ public class TypicalPersons {
             .build();
     public static final Person FIONA = new PersonBuilder()
             .withName("Fiona Kunz")
-            .withPhone("9482427")
+            .withPhone("94824270")
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
@@ -90,13 +90,13 @@ public class TypicalPersons {
             .build();
     public static final Person GEORGE = new PersonBuilder()
             .withName("George Best")
-            .withPhone("9482442")
+            .withPhone("94824420")
             .build();
 
     // Manually added
     public static final Person HOON = new PersonBuilder()
             .withName("Hoon Meier")
-            .withPhone("8482424")
+            .withPhone("84824240")
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
@@ -105,7 +105,7 @@ public class TypicalPersons {
             .build();
     public static final Person IDA = new PersonBuilder()
             .withName("Ida Mueller")
-            .withPhone("8482131")
+            .withPhone("84821310")
             .withScore(Score.DEFAULT)
             .withOrderHistory(
                     new OrderHistory()
