@@ -109,12 +109,12 @@ public class PhoneTest {
         for (List<String> pair : List.of(
                 List.of("123456789", "23456789"),
                 List.of("92345678 ext 123", "92345678123"),
-                List.of("92345678 ext 123", "81234567 ext 123"),
+                List.of("92345678 ext 123456", "81234567 ext 123456"),
                 List.of("9234 / 5678", "92345678"),
                 List.of("+86 92345678", "92345678"),
                 List.of("+86 138119828111", "+44 138119828111"),
                 List.of("+86 138119828111", "138119828111"),
-                List.of("123456 Office", "123456"),
+                List.of("12345 Office", "12345"),
                 List.of("Not available", "---"))) {
             Phone first = new Phone(pair.get(0));
             Phone second = new Phone(pair.get(1));
