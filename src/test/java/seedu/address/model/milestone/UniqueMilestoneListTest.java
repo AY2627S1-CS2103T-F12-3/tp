@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalMilestones.EDITED_FREE_DRINK;
+import static seedu.address.testutil.TypicalMilestones.FREE_DESSERT;
+import static seedu.address.testutil.TypicalMilestones.FREE_DRINK;
+import static seedu.address.testutil.TypicalMilestones.VOUCHER;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +22,6 @@ import seedu.address.model.milestone.exceptions.DuplicateMilestoneException;
 import seedu.address.model.milestone.exceptions.MilestoneNotFoundException;
 
 public class UniqueMilestoneListTest {
-    private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
-    private static final Milestone EDITED_FREE_DRINK = new Milestone("FREE500", "Free drink and snack", 600);
-    private static final Milestone FREE_DESSERT = new Milestone("DESSERT500", "Free dessert", 500);
-    private static final Milestone VOUCHER = new Milestone("VOUCHER1000", "$10 voucher", 1000);
 
     private final UniqueMilestoneList milestones = new UniqueMilestoneList();
 

@@ -3,6 +3,7 @@ package seedu.address;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.testutil.TypicalMilestones.FREE_DRINK;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -102,7 +103,7 @@ public class MainAppTest {
     public void initMilestoneCatalog_validFile_loadsSavedCatalog() throws Exception {
         StorageManager storage = createStorage();
         MilestoneCatalog saved = new MilestoneCatalog();
-        saved.addMilestone(new Milestone("FREE500", "Free drink", 500));
+        saved.addMilestone(FREE_DRINK);
         storage.saveMilestoneCatalog(saved);
 
         assertEquals(saved, new MilestoneCatalog(new MainApp().initMilestoneCatalog(storage)));
