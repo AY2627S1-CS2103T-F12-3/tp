@@ -29,7 +29,7 @@ public class MilestoneTimeline extends ScrollPane {
     private static final double FIRST_MILESTONE_Y = 92;
     private static final double MILESTONE_SPACING = 87.2;
     private static final double END_PADDING = 64;
-    private static final double REWARD_X = 118;
+    private static final double REWARD_X = 121;
     private static final double MILESTONE_NUMBER_SIZE = 34;
     private static final double SCORE_INDICATOR_SHIFT_X = -6;
     private static final double SCORE_LABEL_WIDTH = 58;
@@ -145,7 +145,7 @@ public class MilestoneTimeline extends ScrollPane {
         Label status = createMilestoneStatus(milestone, title);
         VBox details = new VBox(4, title, status);
         details.setLayoutX(REWARD_X);
-        details.setLayoutY(y - 23);
+        details.setLayoutY(y - 20);
         return details;
     }
 
