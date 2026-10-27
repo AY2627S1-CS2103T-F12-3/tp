@@ -28,6 +28,7 @@ import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -40,6 +41,7 @@ import seedu.address.model.milestone.MilestoneCatalog;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.util.SampleDataUtil;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonMenuStorage;
 import seedu.address.storage.JsonMilestoneCatalogStorage;
@@ -69,6 +71,46 @@ public class LogicManagerTest {
         StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage,
                 milestoneCatalogStorage);
         logic = new LogicManager(model, storage);
+    }
+
+    @Test
+    public void execute_phoneManualTestWithSampleData_preservesExpectedMembers() throws Exception {
+        ReadOnlyAddressBook sampleAddressBook = SampleDataUtil.getSampleAddressBook();
+        model.setAddressBook(sampleAddressBook);
+        logic.execute("add n/PhoneCheck p/61234567");
+        Person existingPerson = model.getSelectedPerson().orElseThrow();
+        logic.execute("add n/PhoneCheck p/81234567");
+        Person personToEdit = model.getSelectedPerson().orElseThrow();
+
+        assertThrows(CommandException.class,
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(existingPerson)), () ->
+                        logic.execute("add n/OtherCheck p/61234567"));
+        logic.execute("find 81234567");
+        assertThrows(CommandException.class,
+                String.format(EditCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(existingPerson)), () ->
+                        logic.execute("edit 1 p/61234567"));
+        assertEquals(List.of(personToEdit), model.getFilteredPersonList());
+
+        logic.execute("edit 1 p/81234567");
+        assertEquals(model.getAddressBook().getPersonList(), model.getFilteredPersonList());
+        logic.execute("find 81234567");
+        logic.execute("edit 1 p/91234567");
+        for (String command : List.of("add n/OtherCheck p/12345678", "edit 1 p/9123456",
+                "edit 1 p/+6591234567")) {
+            assertThrows(ParseException.class, Phone.MESSAGE_CONSTRAINTS, () -> logic.execute(command));
+        }
+
+        AddressBook expectedAddressBook = new AddressBook(sampleAddressBook);
+        expectedAddressBook.addPerson(existingPerson);
+        Person editedPerson = new PersonBuilder(personToEdit).withPhone("91234567").build();
+        expectedAddressBook.addPerson(editedPerson);
+        ReadOnlyAddressBook reloaded = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow();
+        assertEquals(expectedAddressBook, model.getAddressBook());
+        assertEquals(expectedAddressBook, reloaded);
+        model.setAddressBook(reloaded);
+        logic.execute("find PhoneCheck");
+        assertEquals(List.of(existingPerson, editedPerson), model.getFilteredPersonList());
     }
 
     @Test
