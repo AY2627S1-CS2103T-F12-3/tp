@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Represents a member's phone entry, including legacy contact notes.
@@ -17,12 +18,15 @@ public class Phone {
 
     public static final String MESSAGE_CONSTRAINTS = "Phone numbers must not be blank";
     public static final String MESSAGE_MISSING_DIGIT = "Phone numbers must contain at least one digit";
+    private static final int SINGAPORE_NUMBER_LENGTH = 8;
     private static final String SINGAPORE_PHONE_REGEX = "[689][0-9]{7}";
     private static final String SEPARATOR_REGEX = "[\\s\\p{Zs}-]+";
     private static final String FORMATTED_PHONE_REGEX = "[0-9](?:[0-9\\s\\p{Zs}-]*[0-9])?";
-    private static final int MIN_SIMILAR_NUMBER_DIGITS = 7;
+    private static final int MIN_SIMILAR_NUMBER_DIGITS = 6;
     private static final Pattern NUMBER_SEGMENT_PATTERN =
             Pattern.compile("\\p{Nd}(?:[\\p{Nd}\\s\\p{Zs}()（）.．\\-－–—]*\\p{Nd})?");
+    private static final Pattern EXTENSION_PATTERN = Pattern.compile(
+            "(?i)\\b(?:ext(?:ension)?|x)\\.?\\s*[:#-]?\\s*\\p{Nd}+(?:[().-]\\p{Nd}+)*");
     private static final int FULL_WIDTH_ASCII_OFFSET = 0xFEE0;
     public final String value;
 
@@ -89,9 +93,10 @@ public class Phone {
     }
 
     /**
-     * Returns true if the entries may contain a common phone number of at least seven digits.
+     * Returns true if the entries may contain a common phone number of at least six digits.
      * Formatting separators and a recognized Singapore country prefix are ignored for this advisory check.
-     * Text, slashes and plus signs separate number segments; country codes are not otherwise inferred.
+     * Explicit extension values are excluded, and concatenated eight-digit Singapore numbers are checked
+     * individually. Text, slashes and plus signs separate number segments; country codes are not otherwise inferred.
      * This heuristic must not establish member identity or block a command.
      */
     public boolean hasPossibleNumberInCommon(Phone other) {
@@ -101,11 +106,25 @@ public class Phone {
     }
 
     private Set<String> extractComparisonNumbers() {
-        return NUMBER_SEGMENT_PATTERN.matcher(value).results()
+        String withoutExtensions = EXTENSION_PATTERN.matcher(value).replaceAll(" ");
+        return NUMBER_SEGMENT_PATTERN.matcher(withoutExtensions).results()
                 .map(MatchResult::group)
                 .map(Phone::toComparisonNumber)
+                .flatMap(number -> splitConcatenatedSingaporeNumbers(number).stream())
                 .filter(number -> number.length() >= MIN_SIMILAR_NUMBER_DIGITS)
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private static Set<String> splitConcatenatedSingaporeNumbers(String number) {
+        if (number.length() <= SINGAPORE_NUMBER_LENGTH || number.length() % SINGAPORE_NUMBER_LENGTH != 0) {
+            return Set.of(number);
+        }
+        Set<String> numbers = IntStream.iterate(0, index -> index < number.length(),
+                        index -> index + SINGAPORE_NUMBER_LENGTH)
+                .mapToObj(index -> number.substring(index, index + SINGAPORE_NUMBER_LENGTH))
+                .collect(Collectors.toUnmodifiableSet());
+        return numbers.stream().allMatch(candidate -> candidate.matches(SINGAPORE_PHONE_REGEX))
+                ? numbers : Set.of(number);
     }
 
     private static String toComparisonNumber(String segment) {

@@ -138,10 +138,12 @@ The `Model` component,
   numbers do not establish exact member identity.
 * provides `Model.findPersonsWithSimilarPhone` as a separate advisory query over the full member list.
   `Phone.hasPossibleNumberInCommon` extracts complete digit segments separated by text or delimiters, ignores
-  formatting characters and compares segments of at least seven digits. Unicode decimal digits are mapped to
-  ASCII for comparison, and a recognized Singapore `65` prefix is removed. It never uses substring matching,
-  infers other country codes, or joins numbers across text, slashes or plus signs. Adjacent digits separated only
-  by formatting characters form one segment, so not every multi-number spelling can be identified.
+  explicit extension values and compares segments of at least six digits. Unicode decimal digits are mapped to
+  ASCII for comparison, and a recognized Singapore `65` prefix is removed. Complete sequences whose total digit
+  count is a multiple of eight are checked as separate eight-digit Singapore numbers. The check never uses
+  arbitrary substring matching, infers other country codes, or joins numbers across text, slashes or plus signs.
+  Adjacent digits separated only by formatting characters form one segment, so not every multi-number spelling can
+  be identified.
   Exact matches are handled by the existing blocking identity check; potential matches are formatted by
   `Messages.formatPossiblePhoneDuplicates` after a successful add or phone edit. Editing excludes the original
   member from this query, and edits without a phone field do not trigger another overlap warning.

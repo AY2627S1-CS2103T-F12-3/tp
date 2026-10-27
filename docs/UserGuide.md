@@ -106,7 +106,7 @@ Adds a person to the address book.
   If the entry is already registered, the command rejects it and identifies the existing person, even if that
   person is hidden by a search. Recognized Singapore formats are compared after normalization.
 * For all other entries, only an exact, case-sensitive text match (apart from surrounding whitespace) blocks a
-  duplicate. A separate **possible duplicate warning** checks complete number segments of at least seven digits
+  duplicate. A separate **possible duplicate warning** checks complete number segments of at least six digits
   against all existing members, including members hidden by a search. Spaces, parentheses, dots and common
   dashes are ignored for this advisory comparison; a recognized Singapore `65` prefix is also ignored.
   For example, `（86）12345678` and `+8612345678` remain different saved entries but trigger a warning.
@@ -114,11 +114,13 @@ Adds a person to the address book.
   is still saved: check whether the records represent separate memberships, and use `delete INDEX` to remove an
   unintended extra record after checking the displayed list. No records, points or order histories are merged.
   When editing, the member being edited is excluded; this warning is checked only when `p/` is supplied.
-* Letters and delimiters such as `/`, `,`, `;` and `+` separate number segments. Shorter segments, partial digit
-  matches and inferred foreign country codes are not checked. For example, `+86 138119828111` matches a compact
+* Letters and delimiters such as `/`, `,`, `;` and `+` separate number segments. Explicit extension values
+  introduced by `ext`, `extension` or `x` are excluded from this warning. Complete sequences of adjacent eight-digit
+  Singapore numbers are checked as separate numbers. Shorter segments, partial digit matches and inferred foreign
+  country codes are not checked. For example, `+86 138119828111` matches a compact
   `+86138119828111` for a warning, but the app does not guess that `138119828111` belongs to country code `86`.
-  Numbers separated only by spaces or dashes can be treated as one segment; use `/` or a label between separate
-  numbers. The absence of a warning does not establish that two entries belong to different people.
+  Other numbers separated only by spaces or dashes can still be treated as one segment; use `/` or a label to
+  make their boundaries clear. The absence of a warning does not establish that two entries belong to different people.
 * Command prefixes such as `n/`, `p/` and `t/` still delimit fields and cannot be embedded literally in a phone
   value when preceded by whitespace.
 
