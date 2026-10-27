@@ -14,7 +14,6 @@ import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.Logic;
 import seedu.address.logic.LogicManager;
-import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -40,6 +39,11 @@ import seedu.address.ui.UiManager;
 public class MainApp extends Application {
 
     public static final String VERSION = "V0.5.1";
+
+    public static final String MESSAGE_MEMBER_LOAD_FAILURE =
+            "Member data could not be loaded. Startup was stopped to protect the saved records. "
+            + "Back up the member file, restore a valid copy or resolve invalid fields and duplicate phone entries, "
+            + "then restart. Data file: %s";
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
@@ -81,10 +85,12 @@ public class MainApp extends Application {
 
     /**
      * Loads the saved address book.
-     * The data from the sample address book will be used instead if {@code storage}'s address book is not found,
-     * or an empty address book will be used instead if errors occur when reading {@code storage}'s address book.
+     * The data from the sample address book will be used instead if {@code storage}'s address book is not found.
+     * Startup is stopped on read failures so commands cannot overwrite unread member records.
+     *
+     * @throws IllegalStateException if existing member data cannot be loaded.
      */
-    private ReadOnlyAddressBook initMembers(Storage storage) {
+    ReadOnlyAddressBook initMembers(Storage storage) {
         logger.info("Using data file : " + storage.getAddressBookFilePath());
 
         Optional<ReadOnlyAddressBook> addressBookOptional;
@@ -97,9 +103,9 @@ public class MainApp extends Application {
             }
             initialData = addressBookOptional.orElseGet(SampleDataUtil::getSampleAddressBook);
         } catch (DataLoadingException e) {
-            logger.warning("Data file at " + storage.getAddressBookFilePath() + " could not be loaded."
-                    + " Will be starting with an empty AddressBook.");
-            initialData = new AddressBook();
+            String message = String.format(MESSAGE_MEMBER_LOAD_FAILURE, storage.getAddressBookFilePath());
+            logger.log(Level.SEVERE, message, e);
+            throw new IllegalStateException(message, e);
         }
 
         return initialData;
