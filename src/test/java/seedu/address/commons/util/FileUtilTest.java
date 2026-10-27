@@ -5,11 +5,22 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.DosFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -33,6 +44,95 @@ public class FileUtilTest {
         Files.writeString(destination, "old contents that are longer");
         FileUtil.writeToFile(destination, "new");
         assertEquals("new", Files.readString(destination));
+        assertOnlyDestinationRemains(destination);
+    }
+
+    @Test
+    public void writeToFile_existingPosixPermissions_preservesPermissions() throws IOException {
+        assumeTrue(Files.getFileAttributeView(testFolder, PosixFileAttributeView.class) != null);
+        Path destination = testFolder.resolve("data.json");
+        Files.writeString(destination, "previous contents");
+        var permissions = PosixFilePermissions.fromString("rw-r-----");
+        Files.setPosixFilePermissions(destination, permissions);
+
+        FileUtil.writeToFile(destination, "new contents");
+
+        assertEquals("new contents", Files.readString(destination));
+        assertEquals(permissions, Files.getPosixFilePermissions(destination));
+        assertOnlyDestinationRemains(destination);
+    }
+
+    @Test
+    public void writeToFile_readOnlyPosixFile_rejectsSaveWithoutChanges() throws IOException {
+        assumeTrue(Files.getFileAttributeView(testFolder, PosixFileAttributeView.class) != null);
+        Path destination = testFolder.resolve("data.json");
+        Files.writeString(destination, "previous contents");
+        var permissions = PosixFilePermissions.fromString("r--r--r--");
+        Files.setPosixFilePermissions(destination, permissions);
+        try {
+            assumeFalse(Files.isWritable(destination), "Privileged users may write to read-only files");
+            assertThrows(AccessDeniedException.class, () -> FileUtil.writeToFile(destination, "new contents"));
+            assertEquals("previous contents", Files.readString(destination));
+            assertEquals(permissions, Files.getPosixFilePermissions(destination));
+            assertOnlyDestinationRemains(destination);
+        } finally {
+            Files.setPosixFilePermissions(destination, PosixFilePermissions.fromString("rw-------"));
+        }
+    }
+
+    @Test
+    public void writeToFile_existingAcl_preservesAcl() throws IOException {
+        assumeTrue(Files.getFileAttributeView(testFolder, AclFileAttributeView.class) != null);
+        Path destination = testFolder.resolve("data.json");
+        Files.writeString(destination, "previous contents");
+        AclFileAttributeView attributes = Files.getFileAttributeView(destination, AclFileAttributeView.class);
+        var customAcl = new ArrayList<>(attributes.getAcl());
+        customAcl.add(0, AclEntry.newBuilder().setType(AclEntryType.ALLOW)
+                .setPrincipal(attributes.getOwner()).setPermissions(AclEntryPermission.READ_DATA).build());
+        attributes.setAcl(customAcl);
+        var permissions = attributes.getAcl();
+
+        FileUtil.writeToFile(destination, "new contents");
+
+        assertEquals("new contents", Files.readString(destination));
+        assertEquals(permissions, Files.getFileAttributeView(destination, AclFileAttributeView.class).getAcl());
+        assertOnlyDestinationRemains(destination);
+    }
+
+    @Test
+    public void writeToFile_readOnlyDosFile_rejectsSaveWithoutChanges() throws IOException {
+        assumeTrue(Files.getFileAttributeView(testFolder, AclFileAttributeView.class) != null);
+        Path destination = testFolder.resolve("data.json");
+        Files.writeString(destination, "previous contents");
+        DosFileAttributeView attributes = Files.getFileAttributeView(destination, DosFileAttributeView.class);
+        assumeTrue(attributes != null);
+        attributes.setReadOnly(true);
+        try {
+            assertThrows(AccessDeniedException.class, () -> FileUtil.writeToFile(destination, "new contents"));
+            assertEquals("previous contents", Files.readString(destination));
+            assertTrue(attributes.readAttributes().isReadOnly());
+            assertOnlyDestinationRemains(destination);
+        } finally {
+            attributes.setReadOnly(false);
+        }
+    }
+
+    @Test
+    public void writeToFile_copyPermissionsFails_preservesExistingFile() throws IOException {
+        Path destination = testFolder.resolve("data.json");
+        Files.writeString(destination, "previous contents");
+        IOException failure = new IOException("Cannot copy permissions");
+        FileUtil.FileOperations operations = new FileUtil.FileOperations() {
+            @Override
+            void copyPermissions(Path source, Path target) throws IOException {
+                throw failure;
+            }
+        };
+
+        IOException actual = assertThrows(IOException.class, () ->
+                FileUtil.writeToFile(destination, "new contents", operations));
+        assertSame(failure, actual);
+        assertEquals("previous contents", Files.readString(destination));
         assertOnlyDestinationRemains(destination);
     }
 
