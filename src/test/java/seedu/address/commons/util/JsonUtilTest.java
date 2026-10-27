@@ -1,5 +1,6 @@
 package seedu.address.commons.util;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -25,6 +27,27 @@ public class JsonUtilTest {
 
     @TempDir
     public Path testFolder;
+
+    @Test
+    public void readAndSaveJsonFile_leftoverTemporaryFile_ignoresItAndSavesNormally() throws Exception {
+        Path destination = testFolder.resolve("data.json");
+        Files.writeString(destination, "[\"saved entry\"]");
+        Path leftoverFile = Files.createTempFile(testFolder, ".saving-", ".tmp");
+        String incompleteJson = "[\"unfinished";
+        Files.writeString(leftoverFile, incompleteJson);
+
+        assertArrayEquals(new String[]{"saved entry"},
+                JsonUtil.readJsonFile(destination, String[].class).orElseThrow());
+
+        JsonUtil.saveJsonFile(List.of("updated entry", "new entry"), destination);
+
+        assertArrayEquals(new String[]{"updated entry", "new entry"},
+                JsonUtil.readJsonFile(destination, String[].class).orElseThrow());
+        assertEquals(incompleteJson, Files.readString(leftoverFile));
+        try (var files = Files.list(testFolder)) {
+            assertEquals(2, files.count());
+        }
+    }
 
     @Test
     public void saveJsonFile_serializationFails_preservesExistingFile() throws IOException {
