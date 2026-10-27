@@ -123,6 +123,26 @@ public class AddOrderCommandTest {
     }
 
     @Test
+    public void execute_maximumQuantityWithValidEarnings_addsOrder() throws Exception {
+        Model model = modelWithMenuItem(1);
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person zeroScorePerson = new Person(original.getName(), original.getPhone(), original.getTags(),
+                Score.DEFAULT, original.getOrderHistory(), original.getRedeemedMilestoneRewardHistory());
+        model.setPerson(original, zeroScorePerson);
+
+        new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, Integer.MAX_VALUE).execute(model);
+
+        Person updated = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        assertEquals(zeroScorePerson.getOrderHistory().getOrders().size() + 1,
+                updated.getOrderHistory().getOrders().size());
+        Order addedOrder = updated.getOrderHistory().getOrders()
+                .get(updated.getOrderHistory().getOrders().size() - 1);
+        assertEquals(Integer.MAX_VALUE, addedOrder.quantity);
+        assertEquals(214748364, addedOrder.scoreGained);
+        assertEquals(214748364, updated.getScore().value);
+    }
+
+    @Test
     public void execute_orderReachesScoreLimit_addsOrder() throws Exception {
         Model model = modelWithMenuItem();
         Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
