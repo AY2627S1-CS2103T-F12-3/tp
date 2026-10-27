@@ -3,6 +3,7 @@ package seedu.address.model;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -110,6 +111,15 @@ public class ModelManager implements Model {
         return addressBook.getPersonList().stream()
                 .filter(person -> person.getPhone().equals(phone))
                 .findFirst();
+    }
+
+    @Override
+    public List<Person> findPersonsWithSimilarPhone(Phone phone) {
+        requireNonNull(phone);
+        return addressBook.getPersonList().stream()
+                .filter(person -> !person.getPhone().equals(phone))
+                .filter(person -> phone.hasPossibleNumberInCommon(person.getPhone()))
+                .toList();
     }
 
     @Override

@@ -156,6 +156,11 @@ public class AddCommandTest {
         }
 
         @Override
+        public List<Person> findPersonsWithSimilarPhone(Phone phone) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public Optional<Person> findPersonByPhone(Phone phone) {
             throw new AssertionError("This method should not be called.");
         }
@@ -255,6 +260,11 @@ public class AddCommandTest {
         public Optional<Person> findPersonByPhone(Phone phone) {
             requireNonNull(phone);
             return personsAdded.stream().filter(person -> person.getPhone().equals(phone)).findFirst();
+        }
+
+        @Override
+        public List<Person> findPersonsWithSimilarPhone(Phone phone) {
+            return personsAdded.stream().filter(person -> phone.hasPossibleNumberInCommon(person.getPhone())).toList();
         }
 
         @Override

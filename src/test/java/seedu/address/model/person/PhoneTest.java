@@ -79,6 +79,47 @@ public class PhoneTest {
     }
 
     @Test
+    public void hasPossibleNumberInCommon_completeFormattedSegments_returnsTrueSymmetrically() {
+        for (List<String> pair : List.of(
+                List.of("92345678", "92345678 (HP)"),
+                List.of("92345678", "+65 9234 5678 ext 123"),
+                List.of("92345678", "９２３４５６７８ (HP)"),
+                List.of("92345678", "٩٢٣٤٥٦٧٨ (HP)"),
+                List.of("+86 138119828111", "+86138119828111"),
+                List.of("（86）12345678", "+8612345678"),
+                List.of("92345678 / 81234567", "81234567"),
+                List.of("92345678 +81234567", "81234567"),
+                List.of("92345678, 81234567; 94351253", "94351253"),
+                List.of("1234 5678 (HP) 1111-3333 (Office)", "11113333"),
+                List.of("9234.5678", "92345678"),
+                List.of("1234567 Office", "1234567"))) {
+            Phone first = new Phone(pair.get(0));
+            Phone second = new Phone(pair.get(1));
+            assertTrue(first.hasPossibleNumberInCommon(second), pair.toString());
+            assertTrue(second.hasPossibleNumberInCommon(first), pair.toString());
+        }
+    }
+
+    @Test
+    public void hasPossibleNumberInCommon_unrelatedOrAmbiguousEntries_returnsFalse() {
+        for (List<String> pair : List.of(
+                List.of("123456789", "23456789"),
+                List.of("92345678 ext 123", "92345678123"),
+                List.of("9234 / 5678", "92345678"),
+                List.of("+86 92345678", "92345678"),
+                List.of("+86 138119828111", "+44 138119828111"),
+                List.of("+86 138119828111", "138119828111"),
+                List.of("123456 Office", "123456"),
+                List.of("Not available", "---"))) {
+            Phone first = new Phone(pair.get(0));
+            Phone second = new Phone(pair.get(1));
+            assertFalse(first.hasPossibleNumberInCommon(second), pair.toString());
+            assertFalse(second.hasPossibleNumberInCommon(first), pair.toString());
+        }
+        assertThrows(NullPointerException.class, () -> new Phone("92345678").hasPossibleNumberInCommon(null));
+    }
+
+    @Test
     public void equals_unrecognizedEntries_comparesExactText() {
         assertFalse(new Phone("（86）12345678").equals(new Phone("+8612345678")));
         assertFalse(new Phone("+86 138119828111").equals(new Phone("+86138119828111")));

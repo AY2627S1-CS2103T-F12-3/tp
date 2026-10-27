@@ -1,5 +1,6 @@
 package seedu.address.model;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -54,6 +55,15 @@ public interface Model {
      * @throws NullPointerException if {@code phone} is null.
      */
     Optional<Person> findPersonByPhone(Phone phone);
+
+    /**
+     * Returns members with different phone entries that may contain a common number.
+     * Searches the complete member list without changing the display filter or selection.
+     * This advisory query does not establish duplicate member identities.
+     *
+     * @throws NullPointerException if {@code phone} is null.
+     */
+    List<Person> findPersonsWithSimilarPhone(Phone phone);
 
     /**
      * Deletes the given person.

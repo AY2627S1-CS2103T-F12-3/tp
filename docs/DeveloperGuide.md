@@ -135,7 +135,17 @@ The `Model` component,
   `add` and `edit` append the shared `Messages.formatPhoneWarning` after successful changes for nonstandard
   entries containing digits. Editing other fields on a legacy digitless entry also remains possible.
   No country-specific validity or reachability check is performed for foreign numbers. Annotated or multiple
-  numbers are not split or guessed for identity checks.
+  numbers do not establish exact member identity.
+* provides `Model.findPersonsWithSimilarPhone` as a separate advisory query over the full member list.
+  `Phone.hasPossibleNumberInCommon` extracts complete digit segments separated by text or delimiters, ignores
+  formatting characters and compares segments of at least seven digits. Unicode decimal digits are mapped to
+  ASCII for comparison, and a recognized Singapore `65` prefix is removed. It never uses substring matching,
+  infers other country codes, or joins numbers across text, slashes or plus signs. Adjacent digits separated only
+  by formatting characters form one segment, so not every multi-number spelling can be identified.
+  Exact matches are handled by the existing blocking identity check; potential matches are formatted by
+  `Messages.formatPossiblePhoneDuplicates` after a successful add or phone edit. Editing excludes the original
+  member from this query, and edits without a phone field do not trigger another overlap warning.
+  The advisory query itself does not change phone equality, stored text, scores, histories, filters or selection.
 * searches phone entries through the same normalization rules. `find p/PHONE_ENTRY` constructs a phone-only
   predicate so spaces and annotations are retained; ordinary queries keep name-keyword OR matching and exact
   phone matching. A whole recognized Singapore query is normalized before keyword splitting.
@@ -838,6 +848,14 @@ testers are expected to do more *exploratory* testing.
 
 1. Test cases: `add n/BlankCheck p/` and `edit 1 p/`.<br>
    Expected: Both report that phone numbers must not be blank without changing any member.
+
+1. Test case: `add n/NoteCheck p/91234567 (HP)`.<br>
+   Expected: The entry is saved unchanged. In addition to the format warning, a possible duplicate warning
+   identifies the PhoneCheck member with `91234567`. Neither member's points or history are merged.
+
+1. Test case: `find Nobody`, then `add n/OverseasAlias p/+86138119828111`.<br>
+   Expected: The compact entry is saved and a possible duplicate warning identifies OverseasCheck, even though
+   the search hid that member. The original overseas entry remains unchanged.
 
 1. Test cases: `add n/NoPhone p/Not available` and `edit 1 p/---`.<br>
    Expected: Both report `Phone numbers must contain at least one digit`, with no change to any member.

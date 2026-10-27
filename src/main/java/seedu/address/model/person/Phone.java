@@ -3,6 +3,11 @@ package seedu.address.model.person;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+import java.util.Set;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 /**
  * Represents a member's phone entry, including legacy contact notes.
  * Guarantees: immutable; is storable as declared in {@link #isStorablePhone(String)}
@@ -15,6 +20,9 @@ public class Phone {
     private static final String SINGAPORE_PHONE_REGEX = "[689][0-9]{7}";
     private static final String SEPARATOR_REGEX = "[\\s\\p{Zs}-]+";
     private static final String FORMATTED_PHONE_REGEX = "[0-9](?:[0-9\\s\\p{Zs}-]*[0-9])?";
+    private static final int MIN_SIMILAR_NUMBER_DIGITS = 7;
+    private static final Pattern NUMBER_SEGMENT_PATTERN =
+            Pattern.compile("\\p{Nd}(?:[\\p{Nd}\\s\\p{Zs}()（）.．\\-－–—]*\\p{Nd})?");
     private static final int FULL_WIDTH_ASCII_OFFSET = 0xFEE0;
     public final String value;
 
@@ -78,6 +86,35 @@ public class Phone {
             return compact.substring(2);
         }
         return compact.matches(SINGAPORE_PHONE_REGEX) ? compact : original;
+    }
+
+    /**
+     * Returns true if the entries may contain a common phone number of at least seven digits.
+     * Formatting separators and a recognized Singapore country prefix are ignored for this advisory check.
+     * Text, slashes and plus signs separate number segments; country codes are not otherwise inferred.
+     * This heuristic must not establish member identity or block a command.
+     */
+    public boolean hasPossibleNumberInCommon(Phone other) {
+        requireNonNull(other);
+        Set<String> numbers = extractComparisonNumbers();
+        return other.extractComparisonNumbers().stream().anyMatch(numbers::contains);
+    }
+
+    private Set<String> extractComparisonNumbers() {
+        return NUMBER_SEGMENT_PATTERN.matcher(value).results()
+                .map(MatchResult::group)
+                .map(Phone::toComparisonNumber)
+                .filter(number -> number.length() >= MIN_SIMILAR_NUMBER_DIGITS)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private static String toComparisonNumber(String segment) {
+        String digits = segment.codePoints()
+                .filter(Character::isDigit)
+                .map(character -> '0' + Character.digit(character, 10))
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        return digits.matches("65" + SINGAPORE_PHONE_REGEX) ? digits.substring(2) : digits;
     }
 
     private static String trimWhitespace(String text) {

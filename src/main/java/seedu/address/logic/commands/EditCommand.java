@@ -80,11 +80,22 @@ public class EditCommand extends Command {
                     Messages.format(conflictingPerson.get())));
         }
 
+        List<Person> possibleDuplicates = findPossiblePhoneDuplicates(model, personToEdit, editedPerson);
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(editedPerson);
         return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson))
-                + Messages.formatPhoneWarning(editedPerson.getPhone()));
+                + Messages.formatPhoneWarning(editedPerson.getPhone())
+                + Messages.formatPossiblePhoneDuplicates(possibleDuplicates));
+    }
+
+    private List<Person> findPossiblePhoneDuplicates(Model model, Person original, Person edited) {
+        if (editPersonDescriptor.getPhone().isEmpty()) {
+            return List.of();
+        }
+        return model.findPersonsWithSimilarPhone(edited.getPhone()).stream()
+                .filter(person -> !person.isSamePerson(original))
+                .toList();
     }
 
     /**

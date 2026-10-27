@@ -105,9 +105,20 @@ Adds a person to the address book.
 * Each saved phone entry identifies one person. People can share a name if their phone entries differ.
   If the entry is already registered, the command rejects it and identifies the existing person, even if that
   person is hidden by a search. Recognized Singapore formats are compared after normalization.
-* For all other entries, duplicate detection uses exact, case-sensitive text after removing surrounding whitespace.
-  The app does not infer foreign country codes or compare individual numbers inside a note or a list.
-  For example, `（86）12345678` and `+8612345678` are treated as different entries.
+* For all other entries, only an exact, case-sensitive text match (apart from surrounding whitespace) blocks a
+  duplicate. A separate **possible duplicate warning** checks complete number segments of at least seven digits
+  against all existing members, including members hidden by a search. Spaces, parentheses, dots and common
+  dashes are ignored for this advisory comparison; a recognized Singapore `65` prefix is also ignored.
+  For example, `（86）12345678` and `+8612345678` remain different saved entries but trigger a warning.
+* A possible duplicate warning lists each related member once, with their name and phone entry. The new entry
+  is still saved: check whether the records represent separate memberships, and use `delete INDEX` to remove an
+  unintended extra record after checking the displayed list. No records, points or order histories are merged.
+  When editing, the member being edited is excluded; this warning is checked only when `p/` is supplied.
+* Letters and delimiters such as `/`, `,`, `;` and `+` separate number segments. Shorter segments, partial digit
+  matches and inferred foreign country codes are not checked. For example, `+86 138119828111` matches a compact
+  `+86138119828111` for a warning, but the app does not guess that `138119828111` belongs to country code `86`.
+  Numbers separated only by spaces or dashes can be treated as one segment; use `/` or a label between separate
+  numbers. The absence of a warning does not establish that two entries belong to different people.
 * Command prefixes such as `n/`, `p/` and `t/` still delimit fields and cannot be embedded literally in a phone
   value when preceded by whitespace.
 
@@ -125,11 +136,21 @@ Phone input examples (assuming the saved entry is not already registered):
 | `Not available`, `---`, `phone` | Not saved | Error: `Phone numbers must contain at least one digit` |
 | Empty or only whitespace | Not saved | Error: `Phone numbers must not be blank` |
 
-The warning is:
+The nonstandard-format warning is:
 
 > Warning: This phone entry was not recognized as a standard Singapore number. It has been saved; please check it.
 > You may ignore this warning for an overseas number or an intentional special format.
-> Duplicate detection for these entries uses exact text only.
+> Only exact text duplicates are blocked for these entries.
+
+Duplicate-check examples:
+
+| Existing entry | New input | Result |
+|---|---|---|
+| `92345678` | `+6592345678` | Rejected as an exact normalized duplicate |
+| `92345678` | `92345678 (HP)` | Saved; format warning and possible duplicate warning identify the existing member |
+| `92345678 (HP)` | `92345678` | Saved; possible duplicate warning identifies the existing member |
+| `+86 138119828111` | `+86138119828111` | Saved; format warning and possible duplicate warning |
+| `92345678` and `81234567` in separate members | `92345678 (HP) / 81234567 (Office)` | Saved; possible duplicate warning identifies both members |
 
 Format: `add n/NAME p/PHONE_NUMBER [t/TAG]…​`
 

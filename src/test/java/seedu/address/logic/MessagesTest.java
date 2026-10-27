@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.testutil.TypicalMilestones.FREE_DRINK;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class MessagesTest {
@@ -13,6 +15,13 @@ public class MessagesTest {
         String expected = "Alice Pauline; Phone: 94351253; Tags: [friends]";
 
         assertEquals(expected, Messages.format(ALICE));
+    }
+
+    @Test
+    public void formatPossiblePhoneDuplicates_matchesIdentifiedAsAdvisory() {
+        assertEquals("", Messages.formatPossiblePhoneDuplicates(List.of()));
+        assertEquals("\n" + String.format(Messages.MESSAGE_POSSIBLE_PHONE_DUPLICATES, Messages.format(ALICE)),
+                Messages.formatPossiblePhoneDuplicates(List.of(ALICE)));
     }
 
     @Test

@@ -140,6 +140,11 @@ public class AddMenuItemCommandTest {
         }
 
         @Override
+        public List<Person> findPersonsWithSimilarPhone(Phone phone) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public Optional<Person> findPersonByPhone(Phone phone) {
             throw new AssertionError("This method should not be called.");
         }

@@ -5,6 +5,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
+import java.util.List;
 import java.util.Optional;
 
 import seedu.address.commons.util.ToStringBuilder;
@@ -55,10 +56,12 @@ public class AddCommand extends Command {
                     Messages.format(existingPerson.get())));
         }
 
+        List<Person> possibleDuplicates = model.findPersonsWithSimilarPhone(toAdd.getPhone());
         model.addPerson(toAdd);
         model.selectPerson(toAdd);
         return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(toAdd))
-                + Messages.formatPhoneWarning(toAdd.getPhone()));
+                + Messages.formatPhoneWarning(toAdd.getPhone())
+                + Messages.formatPossiblePhoneDuplicates(possibleDuplicates));
     }
 
     @Override

@@ -153,13 +153,13 @@ public class LogicManagerTest {
         for (String input : List.of("911", "12345678", "+86 138119828111", "（86）12345678",
                 "1234 5678 (HP) 1111-3333 (Office)")) {
             String addedFeedback = logic.execute("add n/PhoneCheck p/" + input).getFeedbackToUser();
-            assertTrue(addedFeedback.endsWith("\n" + Messages.MESSAGE_PHONE_WARNING));
+            assertTrue(addedFeedback.contains("\n" + Messages.MESSAGE_PHONE_WARNING));
             Person added = model.getSelectedPerson().orElseThrow();
             assertEquals(input, added.getPhone().value);
             logic.execute("find p/" + input);
             assertEquals(List.of(added), model.getFilteredPersonList());
             String editedFeedback = logic.execute("edit 1 n/Renamed").getFeedbackToUser();
-            assertTrue(editedFeedback.endsWith("\n" + Messages.MESSAGE_PHONE_WARNING));
+            assertTrue(editedFeedback.contains("\n" + Messages.MESSAGE_PHONE_WARNING));
             logic.execute("find p/" + input);
             Person renamed = model.getSelectedPerson().orElseThrow();
             assertEquals(added.getScore(), renamed.getScore());
@@ -211,7 +211,7 @@ public class LogicManagerTest {
     public void execute_phoneEdit_toUnusualEntryWarnsAndBlankInputDoesNotMutate() throws Exception {
         logic.execute("add n/Alice p/91234567");
         String feedback = logic.execute("edit 1 p/（86）12345678").getFeedbackToUser();
-        assertTrue(feedback.endsWith("\n" + Messages.MESSAGE_PHONE_WARNING));
+        assertTrue(feedback.contains("\n" + Messages.MESSAGE_PHONE_WARNING));
         assertEquals("（86）12345678", model.getSelectedPerson().orElseThrow().getPhone().value);
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.selectPerson(model.getSelectedPerson().orElseThrow());
@@ -261,6 +261,76 @@ public class LogicManagerTest {
         assertEquals(legacyMember.getOrderHistory(), corrected.getOrderHistory());
         assertEquals(legacyMember.getRedeemedMilestoneRewardHistory(), corrected.getRedeemedMilestoneRewardHistory());
         assertEquals(model.getAddressBook(), membersStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_similarOverseasPhone_hiddenMemberWarnedAndBothEntriesPersist() throws Exception {
+        logic.execute("add n/Alice p/+86 138119828111");
+        Person alice = model.getSelectedPerson().orElseThrow();
+        logic.execute("find Nobody");
+        String feedback = logic.execute("add n/Bob p/+86138119828111").getFeedbackToUser();
+        assertTrue(feedback.contains(Messages.format(alice)));
+        assertTrue(feedback.contains("No records have been merged."));
+        assertEquals("+86138119828111", model.getSelectedPerson().orElseThrow().getPhone().value);
+        assertEquals(List.of(alice, model.getSelectedPerson().orElseThrow()), model.getAddressBook().getPersonList());
+        assertEquals(model.getAddressBook(), new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_standardPhoneMatchingAnnotatedEntry_warnsButExactAliasStillRejected() throws Exception {
+        logic.execute("add n/Alice p/92345678 (HP)");
+        Person alice = model.getSelectedPerson().orElseThrow();
+        String feedback = logic.execute("add n/Bob p/92345678").getFeedbackToUser();
+        Person bob = model.getSelectedPerson().orElseThrow();
+        assertTrue(feedback.contains(Messages.format(alice)));
+        assertTrue(feedback.contains("No records have been merged."));
+        assertFalse(feedback.contains(Messages.MESSAGE_PHONE_WARNING));
+        String savedData = Files.readString(temporaryFolder.resolve("addressBook.json"));
+        assertThrows(CommandException.class,
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(bob)), () ->
+                        logic.execute("add n/Other p/+6592345678"));
+        assertEquals(2, model.getAddressBook().getPersonList().size());
+        assertEquals(savedData, Files.readString(temporaryFolder.resolve("addressBook.json")));
+    }
+
+    @Test
+    public void execute_multiplePhoneNumbers_identifiesEachOverlappingMemberOnce() throws Exception {
+        logic.execute("add n/Alice p/92345678");
+        Person alice = model.getSelectedPerson().orElseThrow();
+        logic.execute("add n/Bob p/81234567");
+        Person bob = model.getSelectedPerson().orElseThrow();
+        String feedback = logic.execute("add n/Carol p/92345678 (HP) 92345678 / 81234567 (Office)")
+                .getFeedbackToUser();
+        assertEquals(1L, feedback.lines().filter(Messages.format(alice)::equals).count());
+        assertEquals(1L, feedback.lines().filter(Messages.format(bob)::equals).count());
+        assertEquals(3, model.getAddressBook().getPersonList().size());
+        assertEquals(alice, model.getAddressBook().getPersonList().get(0));
+        assertEquals(bob, model.getAddressBook().getPersonList().get(1));
+        assertEquals(model.getAddressBook(), new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_similarPhoneEdit_excludesSelfAndWarnsOnlyForOtherMembers() throws Exception {
+        logic.execute("add n/Alice p/92345678");
+        String selfFeedback = logic.execute("edit 1 p/92345678 (HP)").getFeedbackToUser();
+        assertFalse(selfFeedback.contains("No records have been merged."));
+        logic.execute("add n/Bob p/81234567");
+        Person bob = model.getSelectedPerson().orElseThrow();
+        logic.execute("find Alice");
+        String feedback = logic.execute("edit 1 p/92345678 (HP) / 81234567 (Office)").getFeedbackToUser();
+        assertTrue(feedback.contains(Messages.format(bob)));
+        assertEquals(1L, feedback.lines().filter(Messages.format(bob)::equals).count());
+        assertEquals(0L, feedback.lines().filter(line -> line.startsWith("Alice; Phone:")).count());
+        assertEquals("92345678 (HP) / 81234567 (Office)",
+                model.getSelectedPerson().orElseThrow().getPhone().value);
+        logic.execute("find Alice");
+        String nameFeedback = logic.execute("edit 1 n/Alice Renamed").getFeedbackToUser();
+        assertFalse(nameFeedback.contains("No records have been merged."));
+        assertEquals(bob, model.getAddressBook().getPersonList().get(1));
+        assertEquals(model.getAddressBook(), new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow());
     }
 
     @Test
