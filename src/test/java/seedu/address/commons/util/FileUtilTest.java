@@ -129,10 +129,7 @@ public class FileUtilTest {
             }
         };
 
-        IOException actual = assertThrows(IOException.class, () ->
-                FileUtil.writeToFile(destination, "new contents", operations));
-        assertSame(failure, actual);
-        assertEquals("previous contents", Files.readString(destination));
+        assertSaveFailurePreservesFile(destination, operations, failure);
         assertOnlyDestinationRemains(destination);
     }
 
@@ -149,10 +146,7 @@ public class FileUtilTest {
             }
         };
 
-        IOException actual = assertThrows(IOException.class, () ->
-                FileUtil.writeToFile(destination, "new contents", operations));
-        assertSame(failure, actual);
-        assertEquals("previous contents", Files.readString(destination));
+        assertSaveFailurePreservesFile(destination, operations, failure);
         assertOnlyDestinationRemains(destination);
     }
 
@@ -202,10 +196,7 @@ public class FileUtilTest {
             }
         };
 
-        IOException actual = assertThrows(IOException.class, () ->
-                FileUtil.writeToFile(destination, "new contents", operations));
-        assertSame(failure, actual);
-        assertEquals("previous contents", Files.readString(destination));
+        assertSaveFailurePreservesFile(destination, operations, failure);
     }
 
     @Test
@@ -243,11 +234,16 @@ public class FileUtilTest {
             }
         };
 
-        IOException actual = assertThrows(IOException.class, () ->
-                FileUtil.writeToFile(destination, "new contents", operations));
-        assertSame(failure, actual);
-        assertEquals("previous contents", Files.readString(destination));
+        assertSaveFailurePreservesFile(destination, operations, failure);
         assertOnlyDestinationRemains(destination);
+    }
+
+    private void assertSaveFailurePreservesFile(Path destination, FileUtil.FileOperations operations,
+            IOException expectedFailure) throws IOException {
+        IOException actualFailure = assertThrows(IOException.class, () ->
+                FileUtil.writeToFile(destination, "new contents", operations));
+        assertSame(expectedFailure, actualFailure);
+        assertEquals("previous contents", Files.readString(destination));
     }
 
     private void assertOnlyDestinationRemains(Path destination) throws IOException {
