@@ -800,8 +800,9 @@ testers are expected to do more *exploratory* testing.
    Expected: An error identifies the existing person even though that person is hidden by the search.
    The displayed person's number remains `81234567`.
 
-1. Test case: `edit 1 p/81234567`, then `edit 1 p/91234567`.<br>
-   Expected: Keeping the current number succeeds, and changing to an unused valid number also succeeds.
+1. Test case: `edit 1 p/81234567`, then `find 81234567`, then `edit 1 p/91234567`.<br>
+   Expected: Keeping the current number succeeds and restores the full list. Search again to select the intended
+   person before changing their number. Changing to an unused valid number also succeeds.
 
 1. Test cases: `add n/OtherCheck p/12345678`, `edit 1 p/9123456`, `edit 1 p/+6591234567`.<br>
    Expected: Each command reports the phone format constraints without changing any person.
