@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -31,6 +33,9 @@ public class MilestoneTimeline extends ScrollPane {
     private static final double MILESTONE_SPACING = 87.2;
     private static final double END_PADDING = 64;
     private static final double REWARD_X = 135;
+    private static final double REWARD_RIGHT_PADDING = 12;
+    private static final double MILESTONE_DETAILS_OFFSET_Y = 20;
+    private static final double MILESTONE_ROW_GAP = 20;
     private static final double MILESTONE_NUMBER_SIZE = 34;
     private static final double SCORE_INDICATOR_SHIFT_X = -6;
     private static final double SCORE_LABEL_WIDTH = 72;
@@ -38,6 +43,8 @@ public class MilestoneTimeline extends ScrollPane {
     private static final double SCORE_ARROW_HALF_HEIGHT = 5;
 
     private final Pane timeline = new Pane();
+    private final DoubleBinding rewardWidth = Bindings.max(1.0,
+            timeline.widthProperty().subtract(REWARD_X + REWARD_RIGHT_PADDING));
     private final List<VBox> milestoneDetails = new ArrayList<>();
     /** Null when the timeline is shown without a selected member. */
     private final Person selectedPerson;
@@ -103,17 +110,32 @@ public class MilestoneTimeline extends ScrollPane {
     /** Repositions rows and progress indicators after the available text width changes. */
     private void updateTimeline(List<Milestone> milestones) {
         timeline.applyCss();
+        layoutMilestoneRows();
+        double timelineHeight = calculateTimelineHeight();
+        timeline.setPrefHeight(timelineHeight);
+        redrawTimeline(milestones, timelineHeight);
+    }
+
+    /** Positions rows with enough space for their wrapped reward and status text. */
+    private void layoutMilestoneRows() {
         double y = FIRST_MILESTONE_Y;
         for (VBox details : milestoneDetails) {
-            details.setLayoutY(y - 20);
-            double height = details.prefHeight(Math.max(1, timeline.getWidth() - REWARD_X - 12));
-            y += Math.max(MILESTONE_SPACING, height + 20);
+            details.setLayoutY(y - MILESTONE_DETAILS_OFFSET_Y);
+            double height = details.prefHeight(rewardWidth.get());
+            y += Math.max(MILESTONE_SPACING, height + MILESTONE_ROW_GAP);
         }
+    }
+
+    /** Returns a height that accommodates the last marker and the full final reward row. */
+    private double calculateTimelineHeight() {
         VBox lastDetails = milestoneDetails.get(milestoneDetails.size() - 1);
-        double timelineHeight = Math.max(calculateMilestoneY(milestones.size() - 1) + END_PADDING,
-                lastDetails.getLayoutY() + lastDetails.prefHeight(
-                        Math.max(1, timeline.getWidth() - REWARD_X - 12)) + 20);
-        timeline.setPrefHeight(timelineHeight);
+        double lastRowBottom = lastDetails.getLayoutY() + lastDetails.prefHeight(rewardWidth.get());
+        return Math.max(calculateMilestoneY(milestoneDetails.size() - 1) + END_PADDING,
+                lastRowBottom + MILESTONE_ROW_GAP);
+    }
+
+    /** Redraws markers and member progress at the newly calculated row positions. */
+    private void redrawTimeline(List<Milestone> milestones, double timelineHeight) {
         timeline.getChildren().clear();
         addTimelineLine(timelineHeight);
         for (int i = 0; i < milestones.size(); i++) {
@@ -171,7 +193,7 @@ public class MilestoneTimeline extends ScrollPane {
         details.prefWidthProperty().bind(title.prefWidthProperty());
         details.maxWidthProperty().bind(title.prefWidthProperty());
         details.setLayoutX(REWARD_X);
-        details.setLayoutY(y - 20);
+        details.setLayoutY(y - MILESTONE_DETAILS_OFFSET_Y);
         return details;
     }
 
@@ -181,7 +203,7 @@ public class MilestoneTimeline extends ScrollPane {
         description.getStyleClass().add("milestone-reward");
         TextFlow title = new TextFlow(description);
         title.setMinWidth(0);
-        title.prefWidthProperty().bind(timeline.widthProperty().subtract(REWARD_X + 12));
+        title.prefWidthProperty().bind(rewardWidth);
         return title;
     }
 
@@ -286,6 +308,6 @@ public class MilestoneTimeline extends ScrollPane {
 
     /** Returns the center position for the milestone at {@code index}. */
     private double calculateMilestoneY(int index) {
-        return milestoneDetails.get(index).getLayoutY() + 20;
+        return milestoneDetails.get(index).getLayoutY() + MILESTONE_DETAILS_OFFSET_Y;
     }
 }
