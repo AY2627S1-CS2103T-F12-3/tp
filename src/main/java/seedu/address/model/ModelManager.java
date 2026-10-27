@@ -150,6 +150,11 @@ public class ModelManager implements Model {
         return milestoneCatalog::getMilestoneList;
     }
 
+    @Override
+    public void setMilestoneCatalog(ReadOnlyMilestoneCatalog milestoneCatalog) {
+        this.milestoneCatalog.resetData(milestoneCatalog);
+    }
+
     //=========== SelectedPerson =============================================================================
 
     @Override
@@ -237,6 +242,11 @@ public class ModelManager implements Model {
     @Override
     public boolean hasFoodItem(FoodItem foodItem) {
         return menu.hasFoodItem(foodItem);
+    }
+
+    @Override
+    public void setMenu(ReadOnlyMenu menu) {
+        this.menu.resetData(menu);
     }
 
     @Override
