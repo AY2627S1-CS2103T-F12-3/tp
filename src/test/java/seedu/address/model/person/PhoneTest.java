@@ -23,25 +23,55 @@ public class PhoneTest {
     }
 
     @Test
-    public void isValidPhone() {
-        // null phone number
+    public void isValidPhone_blankInput_rejected() {
         assertThrows(NullPointerException.class, () -> Phone.isValidPhone(null));
-
-        // Invalid lengths, prefixes, characters and separators.
-        for (String invalidPhone : List.of("", " ", "91", "911", "9123456", "912345678",
-                "124293842033123", "01234567", "12345678", "22345678", "32345678", "42345678",
-                "52345678", "72345678", "phone", "9011p041", "9312 1534", "9123-4567",
-                "+6591234567", "6591234567", " 91234567", "91234567 ", "9１２３４５６７")) {
-            assertFalse(Phone.isValidPhone(invalidPhone), invalidPhone);
-            assertThrows(IllegalArgumentException.class, Phone.MESSAGE_CONSTRAINTS, () -> new Phone(invalidPhone));
+        for (String blank : List.of("", " ", "\t\r\n", "\u00a0", "\u3000", " \u2003 ")) {
+            assertFalse(Phone.isValidPhone(blank), blank);
+            assertThrows(IllegalArgumentException.class, Phone.MESSAGE_CONSTRAINTS, () -> new Phone(blank));
         }
+    }
 
-        // Boundary values for all permitted prefixes.
-        for (String validPhone : List.of("60000000", "69999999", "80000000", "89999999",
-                "90000000", "99999999")) {
-            assertTrue(Phone.isValidPhone(validPhone), validPhone);
-            assertEquals(validPhone, new Phone(validPhone).value);
+    @Test
+    public void constructor_recognizedSingaporeFormats_normalizesWithoutWarning() {
+        for (String input : List.of("91234567", " 91234567 ", "9123 4567", "9123   4567", "9123-4567",
+                "9123 - 4567", "+6591234567", "+65 9123 4567", "+65-9123-4567", "(+65) 9123 4567",
+                "(65) 9123 4567", "65 9123 4567", "6591234567", "65-9123-4567", "９１２３４５６７",
+                "＋６５　９１２３　４５６７", "（＋６５）９１２３－４５６７", "9123\u00a04567",
+                "\u300091234567\u3000")) {
+            Phone phone = new Phone(input);
+            assertEquals("91234567", phone.value, input);
+            assertTrue(phone.isStandardSingaporeNumber(), input);
+            assertEquals(phone, new Phone(phone.value), input);
+            assertEquals(phone.hashCode(), new Phone("91234567").hashCode(), input);
         }
+        for (String boundary : List.of("60000000", "65000000", "69999999", "80000000",
+                "89999999", "90000000", "99999999")) {
+            assertTrue(new Phone(boundary).isStandardSingaporeNumber(), boundary);
+        }
+    }
+
+    @Test
+    public void constructor_unrecognizedEntries_preservesTextAndNeedsWarning() {
+        for (String input : List.of("91", "911", "9123456", "912345678", "12345678", "72345678",
+                "+86 138119828111", "（86）12345678", "(86)12345678", "86 138119828111", "006591234567",
+                "+65 12345678", "+65 6591234567", "(+65) 6591234567", "65 12345678",
+                "phone", "9011p041", "91234567 (HP)", "91234567 ext 123", "91234567 / 81234567",
+                "1234 5678 (HP) 1111-3333 (Office)", "(91234567", "91234567)", "++6591234567",
+                "-91234567", "91234567-", "---")) {
+            assertTrue(Phone.isValidPhone(input), input);
+            Phone phone = new Phone(" " + input + " ");
+            assertEquals(input, phone.value, input);
+            assertFalse(phone.isStandardSingaporeNumber(), input);
+            assertEquals(phone, new Phone(phone.value), input);
+        }
+    }
+
+    @Test
+    public void equals_unrecognizedEntries_comparesExactText() {
+        assertFalse(new Phone("（86）12345678").equals(new Phone("+8612345678")));
+        assertFalse(new Phone("+86 138119828111").equals(new Phone("+86138119828111")));
+        assertFalse(new Phone("91234567 (HP)").equals(new Phone("91234567")));
+        assertFalse(new Phone("Office").equals(new Phone("office")));
     }
 
     @Test

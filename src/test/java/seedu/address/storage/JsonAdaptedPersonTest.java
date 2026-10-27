@@ -23,7 +23,7 @@ import seedu.address.model.reward.RedeemedMilestoneRewardHistory;
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
     private static final String NAME_WITHOUT_LETTER = "12345678";
-    private static final String INVALID_PHONE = "+651234";
+    private static final String INVALID_PHONE = " ";
     private static final String INVALID_TAG = "#friend";
 
     private static final String VALID_NAME = BENSON.getName().toString();
@@ -41,13 +41,15 @@ public class JsonAdaptedPersonTest {
                     .collect(Collectors.toList());
 
     @Test
-    public void toModelType_invalidSingaporePhone_throwsIllegalValueException() {
-        for (String invalidPhone : List.of("911", "9123456", "912345678", "12345678", "+6591234567")) {
+    public void toModelType_nonstandardAndLegacyPhones_preservesEntries() throws Exception {
+        for (String input : List.of("911", "9123456", "12345678", "+86 138119828111", "（86）12345678")) {
             JsonAdaptedPerson person = new JsonAdaptedPerson(
-                    VALID_NAME, invalidPhone, VALID_TAGS, VALID_SCORE, VALID_ORDER_HISTORY);
-
-            assertThrows(IllegalValueException.class, Phone.MESSAGE_CONSTRAINTS, person::toModelType);
+                    VALID_NAME, input, VALID_TAGS, VALID_SCORE, VALID_ORDER_HISTORY);
+            assertEquals(input, person.toModelType().getPhone().value);
         }
+        JsonAdaptedPerson formatted = new JsonAdaptedPerson(
+                VALID_NAME, "+65 9123 4567", VALID_TAGS, VALID_SCORE, VALID_ORDER_HISTORY);
+        assertEquals("91234567", formatted.toModelType().getPhone().value);
     }
 
     @Test

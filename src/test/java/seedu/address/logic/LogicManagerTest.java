@@ -95,8 +95,7 @@ public class LogicManagerTest {
         assertEquals(model.getAddressBook().getPersonList(), model.getFilteredPersonList());
         logic.execute("find 81234567");
         logic.execute("edit 1 p/91234567");
-        for (String command : List.of("add n/OtherCheck p/12345678", "edit 1 p/9123456",
-                "edit 1 p/+6591234567")) {
+        for (String command : List.of("add n/OtherCheck p/", "edit 1 p/")) {
             assertThrows(ParseException.class, Phone.MESSAGE_CONSTRAINTS, () -> logic.execute(command));
         }
 
@@ -150,17 +149,77 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_invalidSingaporePhone_throwsParseException() throws Exception {
+    public void execute_unusualPhone_addsEditsFindsAndReloadsWithWarning() throws Exception {
+        for (String input : List.of("911", "12345678", "+86 138119828111", "（86）12345678",
+                "1234 5678 (HP) 1111-3333 (Office)", "Not available", "---")) {
+            String addedFeedback = logic.execute("add n/PhoneCheck p/" + input).getFeedbackToUser();
+            assertTrue(addedFeedback.endsWith("\n" + Messages.MESSAGE_PHONE_WARNING));
+            Person added = model.getSelectedPerson().orElseThrow();
+            assertEquals(input, added.getPhone().value);
+            logic.execute("find p/" + input);
+            assertEquals(List.of(added), model.getFilteredPersonList());
+            String editedFeedback = logic.execute("edit 1 n/Renamed").getFeedbackToUser();
+            assertTrue(editedFeedback.endsWith("\n" + Messages.MESSAGE_PHONE_WARNING));
+            logic.execute("find p/" + input);
+            Person renamed = model.getSelectedPerson().orElseThrow();
+            assertEquals(added.getScore(), renamed.getScore());
+            assertEquals(added.getOrderHistory(), renamed.getOrderHistory());
+            assertEquals(input, renamed.getPhone().value);
+            String savedData = Files.readString(temporaryFolder.resolve("addressBook.json"));
+            assertThrows(CommandException.class,
+                    String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(renamed)), () ->
+                            logic.execute("add n/Duplicate p/" + input));
+            assertEquals(savedData, Files.readString(temporaryFolder.resolve("addressBook.json")));
+        }
+        assertEquals(model.getAddressBook(), new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_formattedPhone_detectsDuplicatesAndSearchesCanonicalValue() throws Exception {
+        assertFalse(logic.execute("add n/Alice p/+65 9123 4567").getFeedbackToUser()
+                .contains(Messages.MESSAGE_PHONE_WARNING));
+        Person alice = model.getSelectedPerson().orElseThrow();
+        assertEquals("91234567", alice.getPhone().value);
+        logic.execute("add n/Bob p/81234567");
+        Person bob = model.getSelectedPerson().orElseThrow();
+        logic.execute("find Bob");
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.updateFilteredPersonList(person -> person.getName().fullName.equals("Bob"));
+        expectedModel.selectPerson(bob);
+        String savedData = Files.readString(temporaryFolder.resolve("addressBook.json"));
+        for (String input : List.of("91234567", "9123-4567", "9123 4567", "6591234567",
+                "65 9123 4567", "(+65)91234567", "９１２３４５６７")) {
+            assertCommandFailure("add n/Other p/" + input, CommandException.class,
+                    String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(alice)), expectedModel);
+            assertCommandFailure("edit 1 p/" + input, CommandException.class,
+                    String.format(EditCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(alice)), expectedModel);
+        }
+        assertEquals(savedData, Files.readString(temporaryFolder.resolve("addressBook.json")));
+        for (String query : List.of("91234567", "9123 4567", "+6591234567", "p/+65 9123 4567")) {
+            logic.execute("find " + query);
+            assertEquals(List.of(alice), model.getFilteredPersonList());
+        }
+        String feedback = logic.execute("edit 1 p/+65-9123-4567").getFeedbackToUser();
+        assertFalse(feedback.contains(Messages.MESSAGE_PHONE_WARNING));
+        assertEquals(alice, model.getSelectedPerson().orElseThrow());
+        assertEquals(model.getAddressBook(), new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_phoneEdit_toUnusualEntryWarnsAndBlankInputDoesNotMutate() throws Exception {
         logic.execute("add n/Alice p/91234567");
+        String feedback = logic.execute("edit 1 p/（86）12345678").getFeedbackToUser();
+        assertTrue(feedback.endsWith("\n" + Messages.MESSAGE_PHONE_WARNING));
+        assertEquals("（86）12345678", model.getSelectedPerson().orElseThrow().getPhone().value);
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.selectPerson(model.getSelectedPerson().orElseThrow());
         String savedData = Files.readString(temporaryFolder.resolve("addressBook.json"));
-        for (String invalidPhone : List.of("911", "9123456", "912345678", "12345678", "72345678",
-                "+6591234567", "9123-4567", "9123 4567")) {
-            assertCommandFailure("add n/Bob p/" + invalidPhone, ParseException.class,
+        for (String blank : List.of("", " ", "\u00a0", "\u3000")) {
+            assertCommandFailure("add n/Bob p/" + blank, ParseException.class,
                     Phone.MESSAGE_CONSTRAINTS, expectedModel);
-            assertCommandFailure("edit 1 p/" + invalidPhone, ParseException.class,
-                    Phone.MESSAGE_CONSTRAINTS, expectedModel);
+            assertCommandFailure("edit 1 p/" + blank, ParseException.class, Phone.MESSAGE_CONSTRAINTS, expectedModel);
         }
         assertEquals(savedData, Files.readString(temporaryFolder.resolve("addressBook.json")));
     }

@@ -112,11 +112,24 @@ public class PersonMatchesKeywordsPredicateTest {
     }
 
     @Test
+    public void test_phoneOnlyQuery_matchesCompleteNormalizedEntry() {
+        Person person = new PersonBuilder().withName("Alice").withPhone("91234567").build();
+        assertTrue(new PersonMatchesKeywordsPredicate(new Phone("+65 9123 4567")).test(person));
+        assertFalse(new PersonMatchesKeywordsPredicate(new Phone("Alice")).test(person));
+        Person overseas = new PersonBuilder().withPhone("（86）12345678").build();
+        assertTrue(new PersonMatchesKeywordsPredicate(new Phone("（86）12345678")).test(overseas));
+        assertFalse(new PersonMatchesKeywordsPredicate(new Phone("+8612345678")).test(overseas));
+        assertTrue(new PersonMatchesKeywordsPredicate(List.of("911")).test(
+                new PersonBuilder().withPhone("911").build()));
+    }
+
+    @Test
     public void toStringMethod() {
         List<String> keywords = List.of("keyword1", "keyword2");
         PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(keywords);
 
-        String expected = PersonMatchesKeywordsPredicate.class.getCanonicalName() + "{keywords=" + keywords + "}";
+        String expected = PersonMatchesKeywordsPredicate.class.getCanonicalName()
+                + "{keywords=" + keywords + ", phoneQuery=Optional.empty}";
         assertEquals(expected, predicate.toString());
     }
 }

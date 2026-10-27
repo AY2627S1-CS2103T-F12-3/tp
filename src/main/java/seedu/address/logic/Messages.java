@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import seedu.address.logic.parser.Prefix;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 
 /**
  * Container for user visible messages.
@@ -21,6 +22,18 @@ public class Messages {
     public static final String MESSAGE_PERSONS_LISTED_OVERVIEW = "%1$d person(s) listed!";
     public static final String MESSAGE_DUPLICATE_FIELDS =
                 "Multiple values specified for the following single-valued field(s): ";
+
+    public static final String MESSAGE_PHONE_WARNING =
+            "Warning: This phone entry was not recognized as a standard Singapore number. "
+            + "It has been saved; please check it. You may ignore this warning for an overseas number "
+            + "or an intentional special format. Duplicate detection for these entries uses exact text only.";
+
+    /**
+     * Returns a nonblocking warning for an unusual phone entry, or an empty string for a standard number.
+     */
+    public static String formatPhoneWarning(Phone phone) {
+        return phone.isStandardSingaporeNumber() ? "" : "\n" + MESSAGE_PHONE_WARNING;
+    }
 
     /**
      * Returns an error message indicating the duplicate prefixes.
