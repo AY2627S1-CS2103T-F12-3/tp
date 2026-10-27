@@ -10,12 +10,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Score;
@@ -105,6 +108,59 @@ class MilestoneTimelineTest {
             Pane content = createTimelineForScore(400);
 
             assertTrue(getScoreY(content) > getMarkerCenterY(content, 3));
+        });
+    }
+
+    @Test
+    void longRewards_resize_keepsFullTextAndRowsSeparate() {
+        JavaFxTestUtil.runOnFxThread(() -> {
+            String reward = "A long reward description ".repeat(40);
+            Milestone first = new Milestone("FIRST", reward, 100);
+            Milestone last = new Milestone("LAST", "LongUnbrokenReward".repeat(40), 200);
+            MilestoneTimeline timeline = new MilestoneTimeline(List.of(first, last));
+            StackPane root = new StackPane(timeline);
+            new Scene(root, 500, 300);
+            root.getStylesheets().add(getClass().getResource("/view/Extensions.css").toExternalForm());
+            root.applyCss();
+            root.layout();
+            Pane content = (Pane) timeline.getContent();
+            List<VBox> rows = content.getChildren().stream().filter(VBox.class::isInstance)
+                    .map(VBox.class::cast).toList();
+            double wideSecondY = getMarkerCenterY(content, 2);
+
+            root.resize(300, 300);
+            root.layout();
+            content.layout();
+
+            TextFlow title = (TextFlow) rows.get(0).getChildren().get(0);
+            assertEquals(reward, ((Text) title.getChildren().get(0)).getText());
+            assertTrue(getMarkerCenterY(content, 2) > wideSecondY);
+            assertTrue(rows.get(0).getLayoutY() + rows.get(0).getHeight() < rows.get(1).getLayoutY());
+            assertTrue(content.getPrefHeight() > rows.get(1).getLayoutY() + rows.get(1).getHeight());
+            assertTrue(title.getHeight() >= title.prefHeight(title.getWidth()) - 1);
+
+            root.resize(500, 300);
+            root.layout();
+            assertEquals(wideSecondY, getMarkerCenterY(content, 2), 1);
+        });
+    }
+
+    @Test
+    void longReward_scoreBetweenMilestones_followsExpandedSpacing() {
+        JavaFxTestUtil.runOnFxThread(() -> {
+            Milestone first = new Milestone("FIRST", "Long reward ".repeat(40), 100);
+            Person person = new PersonBuilder().withScore(new Score(150)).build();
+            MilestoneTimeline timeline = new MilestoneTimeline(person, List.of(first, SECOND));
+            StackPane root = new StackPane(timeline);
+            new Scene(root, 350, 300);
+            root.getStylesheets().add(getClass().getResource("/view/Extensions.css").toExternalForm());
+            root.applyCss();
+            root.layout();
+            Pane content = (Pane) timeline.getContent();
+
+            assertTrue(getMarkerCenterY(content, 2) - getMarkerCenterY(content, 1) > 87.2);
+            assertEquals((getMarkerCenterY(content, 1) + getMarkerCenterY(content, 2)) / 2,
+                    getScoreY(content), 0.001);
         });
     }
 
