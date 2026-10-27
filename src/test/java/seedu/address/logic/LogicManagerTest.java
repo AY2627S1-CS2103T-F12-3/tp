@@ -24,6 +24,7 @@ import org.junit.jupiter.api.io.TempDir;
 import javafx.collections.ObservableList;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -38,6 +39,7 @@ import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.MilestoneCatalog;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonMenuStorage;
 import seedu.address.storage.JsonMilestoneCatalogStorage;
@@ -67,6 +69,42 @@ public class LogicManagerTest {
         StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage, menuStorage,
                 milestoneCatalogStorage);
         logic = new LogicManager(model, storage);
+    }
+
+    @Test
+    public void execute_phoneIdentityRules_persistsValidChanges() throws Exception {
+        logic.execute("add n/Alice p/91234567");
+        logic.execute("add n/Alice p/81234567");
+        logic.execute("edit 2 p/61234567");
+        logic.execute("edit 2 p/61234567");
+
+        ReadOnlyAddressBook reloaded = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow();
+        assertEquals(model.getAddressBook(), reloaded);
+        assertEquals(2, reloaded.getPersonList().size());
+        assertEquals(new Phone("61234567"), reloaded.getPersonList().get(1).getPhone());
+    }
+
+    @Test
+    public void execute_duplicatePhoneFilteredList_throwsCommandException() throws Exception {
+        logic.execute("add n/Alice p/91234567");
+        Person existingPerson = model.getAddressBook().getPersonList().get(0);
+        logic.execute("add n/Bob p/81234567");
+        logic.execute("find Bob");
+
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.updateFilteredPersonList(person -> person.getName().fullName.equals("Bob"));
+        expectedModel.selectPerson(model.getSelectedPerson().orElseThrow());
+        String savedData = Files.readString(temporaryFolder.resolve("addressBook.json"));
+
+        assertCommandFailure("add n/Carol p/91234567", CommandException.class,
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(existingPerson)), expectedModel);
+        assertCommandFailure("edit 1 p/91234567", CommandException.class,
+                String.format(EditCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(existingPerson)), expectedModel);
+        assertEquals(savedData, Files.readString(temporaryFolder.resolve("addressBook.json")));
+        ReadOnlyAddressBook reloaded = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow();
+        assertEquals(model.getAddressBook(), reloaded);
     }
 
     @Test

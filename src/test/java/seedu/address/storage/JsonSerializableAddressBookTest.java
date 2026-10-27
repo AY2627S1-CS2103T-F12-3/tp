@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.AddressBook;
+import seedu.address.testutil.PersonBuilder;
 import seedu.address.testutil.TypicalPersons;
 
 public class JsonSerializableAddressBookTest {
@@ -23,6 +24,17 @@ public class JsonSerializableAddressBookTest {
     private static final Path EMPTY_ADDRESS_BOOK_FILE = TEST_DATA_FOLDER.resolve("emptyAddressBook.json");
     private static final Path INVALID_PERSON_FILE = TEST_DATA_FOLDER.resolve("invalidPersonAddressBook.json");
     private static final Path DUPLICATE_PERSON_FILE = TEST_DATA_FOLDER.resolve("duplicatePersonAddressBook.json");
+
+    @Test
+    public void toModelType_sameNameDifferentPhone_preservesBothPersons() throws Exception {
+        AddressBook addressBook = new AddressBook();
+        addressBook.addPerson(TypicalPersons.ALICE);
+        addressBook.addPerson(new PersonBuilder(TypicalPersons.ALICE).withPhone("61234567").build());
+        String json = JsonUtil.toJsonString(new JsonSerializableAddressBook(addressBook));
+        JsonSerializableAddressBook reloaded = JsonUtil.fromJsonString(json, JsonSerializableAddressBook.class);
+
+        assertEquals(addressBook, reloaded.toModelType());
+    }
 
     @Test
     public void toModelType_typicalPersonsFile_success() throws Exception {
