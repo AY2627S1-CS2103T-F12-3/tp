@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents the history of orders made by a member.
+ * Represents the history of orders made by a member, stored from oldest to newest.
  * Guarantees: The history is immutable; adding or deleting an order returns a new {@code OrderHistory}.
  */
 public class OrderHistory {
