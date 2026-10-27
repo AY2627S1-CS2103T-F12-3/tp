@@ -34,7 +34,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `update-menu-item 12A c/12B p/4.00` : Updates Dessert's code and price.
 
-   * `add-milestone c/FREE500 r/Free drink s/500` : Adds a milestone reward that requires 500 points.
+   * `add-milestone r/Free drink s/500` : Adds a milestone reward that requires 500 points.
 
    * `list-milestones` : Lists all milestone rewards with their current indexes.
 
@@ -212,38 +212,38 @@ Lists all milestone rewards with the index used by `edit-milestone` and `delete-
 
 Format: `list-milestones`
 
-Milestones are ordered by required score from lowest to highest, then by code. Each entry shows its index, code,
-reward description, and required score. If the catalog is empty, the command displays `No milestones found.`
+Milestones are ordered by required score from lowest to highest. Milestones with the same required score may appear
+in either order. Each entry shows its index, reward description, and required score. If the catalog is empty, the
+command displays `No milestones found.`
 
 Example output:
 
 ```text
 2 milestone(s) listed!
-1. [FREE500] Free drink (Required score: 500)
-2. [VOUCHER1000] $10 voucher (Required score: 1000)
+1. Free drink (Required score: 500)
+2. $10 voucher (Required score: 1000)
 ```
 
 ### Adding a milestone reward: `add-milestone`
 
-Adds a milestone reward with a unique code, reward description, and required score to the milestone catalog.
+Adds a milestone reward with a reward description and required score to the milestone catalog.
 
-Format: `add-milestone c/CODE r/REWARD s/REQUIRED_SCORE`
+Format: `add-milestone r/REWARD s/REQUIRED_SCORE`
 
-* Provide all three prefixes exactly once. They may appear in any order, separated by spaces or tabs.
-* `CODE` must contain one or more ASCII letters or digits, without spaces or punctuation. Codes are
-  case-insensitive and saved in uppercase, so `free500` and `FREE500` identify the same milestone.
+* Provide both prefixes exactly once. They may appear in any order, separated by spaces or tabs.
 * `REWARD` must not be blank. Spaces, punctuation, and non-English characters are accepted.
 * `REQUIRED_SCORE` must be a positive whole number from `1` to `2147483647`. Do not include a leading `+` sign.
-* Single-letter prefixes such as `c/`, `r/`, and `s/` are interpreted as arguments when preceded by a space or tab;
+* Single-letter prefixes such as `r/` and `s/` are interpreted as arguments when preceded by a space or tab;
   avoid these tokens inside reward descriptions. Unsupported prefixes and control characters are rejected.
 
 Examples:
 
-* `add-milestone c/FREE500 r/Free drink s/500`
-* `add-milestone s/1000 c/VOUCHER1000 r/$10 voucher`
+* `add-milestone r/Free drink s/500`
+* `add-milestone s/1000 r/$10 voucher`
 
-A successful command displays all saved milestone fields, for example
-`New milestone added: [FREE500] Free drink (Required score: 500)`.
+A successful command displays the reward and required score, for example
+`New milestone added: Free drink (Required score: 500)`. The app generates and stores an internal code to track
+redemptions; you do not need to enter or use it.
 
 ### Editing a milestone reward: `edit-milestone`
 
@@ -253,10 +253,7 @@ Format: `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`
 
 * `INDEX` is the positive index number shown in the current milestone list.
 * Provide at least one of `r/REWARD` or `s/REQUIRED_SCORE`. Existing values for omitted fields are preserved.
-* A milestone code is its stable identity and cannot be edited. To use a different code, delete the old milestone and
-  add a new one.
-* Milestones are ordered by required score from lowest to highest, then by code. Changing a required score can move
-  the milestone to a different index.
+* Changing a required score can move the milestone to a different index.
 * Entering values that are already stored is accepted and leaves the milestone unchanged.
 
 Examples:
@@ -280,9 +277,9 @@ Common milestone-command errors:
 
 | Input | Result and recovery |
 |---|---|
-| Reusing `c/FREE500` in a different letter case | `A milestone with this code already exists.` Choose another code. |
-| `add-milestone c/FREE500 r/Free drink` | The command format is shown. Supply `s/REQUIRED_SCORE`. |
-| `add-milestone c/FREE500 r/Free drink s/+500` | The required-score constraint is shown. Remove the `+` sign. |
+| `add-milestone r/Free drink` | The command format is shown. Supply `s/REQUIRED_SCORE`. |
+| `add-milestone r/Free drink s/+500` | The required-score constraint is shown. Remove the `+` sign. |
+| `add-milestone c/FREE500 r/Free drink s/500` | The command format is shown because codes are generated automatically. |
 | `edit-milestone 1` | At least one editable field must be provided. |
 | `edit-milestone 1 c/NEWCODE` | The command format is shown because milestone codes cannot be edited. |
 | `delete-milestone 999` | The milestone-index error is shown. Use an index in the displayed milestone list. |
@@ -374,7 +371,7 @@ Format: `cancel-redeem INDEX m/MILESTONE_INDEX`
 * `MILESTONE_INDEX` is the positive index number shown in the current milestone list.
 * The selected milestone must already be present in that person's redeemed milestone history.
 * Cancellation uses the current milestone catalog. Therefore, the milestone's current catalog entry must still exist
-  and have the same code as the redeemed milestone. If the milestone was deleted or its code was changed, it cannot
+  and have the same internal code as the redeemed milestone. If the milestone was deleted, it cannot
   be cancelled through this command. This is intentional because the command identifies milestones by their current
   displayed index.
 
@@ -461,9 +458,9 @@ Use the corresponding menu item's code or name where possible. Orders missing ei
 In `menu.json`, each entry in `foodItems` has a string `code`, a string `name`, and a positive integer
 `priceInCents`. For example, the command price `p/4.50` is saved as `"priceInCents": 450`.
 
-In `milestones.json`, each entry in `milestones` has an alphanumeric string `code`, a non-blank string
-`rewardDescription`, and a positive integer `requiredScore`. Milestone codes are case-insensitive, are saved in
-uppercase, and must be unique.
+In `milestones.json`, each entry in `milestones` has an automatically generated, non-blank string `code`, a non-blank
+string `rewardDescription`, and a positive integer `requiredScore`. Existing milestone codes remain valid when
+loading older data. The internal codes are case-insensitive, saved in uppercase, and must be unique.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If the customer file is invalid, the app starts with an empty address book. A missing customer file loads sample
@@ -502,7 +499,7 @@ Action | Format, Examples
 **Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
 **Update menu item** | `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `update-menu-item 12A c/12B p/4.00`
-**Add milestone** | `add-milestone c/CODE r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone c/FREE500 r/Free drink s/500`
+**Add milestone** | `add-milestone r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone r/Free drink s/500`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Delete milestone** | `delete-milestone INDEX`<br> e.g., `delete-milestone 1`

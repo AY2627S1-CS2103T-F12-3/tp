@@ -132,15 +132,16 @@ public class MainAppTest {
         MainApp app = new MainApp();
         ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage),
                 app.initMilestoneCatalog(storage));
-        new LogicManager(model, storage).execute("add-milestone c/FREE500 r/Free drink s/500");
+        new LogicManager(model, storage).execute("add-milestone r/Free drink s/500");
 
         ModelManager reloaded = reloadModel(storage);
-        assertEquals(List.of(new Milestone("FREE500", "Free drink", 500)), reloaded.getMilestoneList());
+        Milestone added = model.getMilestoneList().get(0);
+        assertEquals(List.of(added), reloaded.getMilestoneList());
 
         new LogicManager(reloaded, storage).execute("edit-milestone 1 r/Free drink and snack s/750");
 
         reloaded = reloadModel(storage);
-        assertEquals(List.of(new Milestone("FREE500", "Free drink and snack", 750)),
+        assertEquals(List.of(new Milestone(added.getCode(), "Free drink and snack", 750)),
                 reloaded.getMilestoneList());
 
         new LogicManager(reloaded, storage).execute("delete-milestone 1");

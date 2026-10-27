@@ -34,10 +34,7 @@ public class MilestoneTest {
     @Test
     public void constructor_invalidCode_throwsIllegalArgumentException() {
         String expectedMessage = Milestone.MESSAGE_CODE_CONSTRAINTS;
-        String[] invalidCodes = {
-            "", " ", "FREE 500", "FREE-500", " FREE500", "FREE500 ", "FREE500\n",
-            "FREE\t500", "ＦＲＥＥ５００", "FREE\u200B500", "免费饮料"
-        };
+        String[] invalidCodes = {"", " ", "\t\n"};
         for (String code : invalidCodes) {
             assertThrows(IllegalArgumentException.class, expectedMessage, () ->
                     new Milestone(code, "Free drink", 500));
@@ -66,7 +63,8 @@ public class MilestoneTest {
     public void isValidCode() {
         assertFalse(Milestone.isValidCode(null));
         assertFalse(Milestone.isValidCode(""));
-        assertFalse(Milestone.isValidCode("FREE-500"));
+        assertFalse(Milestone.isValidCode(" "));
+        assertTrue(Milestone.isValidCode("FREE-500"));
         assertTrue(Milestone.isValidCode("FREE500"));
         assertTrue(Milestone.isValidCode("free500"));
         assertTrue(Milestone.isValidCode("500"));
