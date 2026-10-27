@@ -94,6 +94,11 @@ public interface Model {
     ReadOnlyMilestoneCatalog getMilestoneCatalog();
 
     /**
+     * Replaces the milestone catalog with a copy of {@code milestoneCatalog}.
+     */
+    void setMilestoneCatalog(ReadOnlyMilestoneCatalog milestoneCatalog);
+
+    /**
      * Selects {@code person} for display. The person must be equal to a person in the address book.
      * The selected person acts as a snapshot of the person's state and is not updated when the person's data changes.
      *
@@ -117,6 +122,11 @@ public interface Model {
      * Returns a read-only view of the menu.
      */
     ReadOnlyMenu getMenu();
+
+    /**
+     * Replaces the menu with a copy of {@code menu}.
+     */
+    void setMenu(ReadOnlyMenu menu);
 
     /**
      * Returns true if a menu item with the same code exists.

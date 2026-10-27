@@ -2,10 +2,10 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.menu.Menu;
+import seedu.address.model.milestone.MilestoneCatalog;
 
 /**
  * Clears all customers, menu items, and milestone rewards.
@@ -21,8 +21,8 @@ public class ClearCommand extends Command {
         requireNonNull(model);
         model.deselectPerson();
         model.setAddressBook(new AddressBook());
-        List.copyOf(model.getMenu().getFoodItemList()).forEach(model::deleteFoodItem);
-        List.copyOf(model.getMilestoneList()).forEach(model::deleteMilestone);
+        model.setMenu(new Menu());
+        model.setMilestoneCatalog(new MilestoneCatalog());
         return new CommandResult(MESSAGE_SUCCESS);
     }
 }
