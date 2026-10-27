@@ -2,16 +2,25 @@ package seedu.address;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalMilestones.FREE_DRINK;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.address.commons.core.LogsCenter;
+import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.logic.LogicManager;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ModelManager;
@@ -100,6 +109,29 @@ public class MainAppTest {
     }
 
     @Test
+    public void initMilestoneCatalog_invalidFile_logsOneFailureWithOriginalCause() throws Exception {
+        StorageManager storage = createStorage();
+        Files.writeString(storage.getMilestoneCatalogFilePath(), "not JSON");
+        MainApp app = new MainApp();
+        Logger baseLogger = LogsCenter.getLogger(MainApp.class).getParent();
+        RecordingLogHandler handler = new RecordingLogHandler();
+        baseLogger.addHandler(handler);
+        try {
+            assertTrue(app.initMilestoneCatalog(storage).getMilestoneList().isEmpty());
+        } finally {
+            baseLogger.removeHandler(handler);
+        }
+
+        List<LogRecord> failures = handler.records.stream().filter(record -> record.getThrown() != null).toList();
+        assertEquals(1, failures.size());
+        LogRecord failure = failures.getFirst();
+        assertEquals(Level.WARNING, failure.getLevel());
+        assertTrue(failure.getMessage().contains(storage.getMilestoneCatalogFilePath().toString()));
+        DataLoadingException exception = assertInstanceOf(DataLoadingException.class, failure.getThrown());
+        assertInstanceOf(IOException.class, exception.getCause());
+    }
+
+    @Test
     public void initMilestoneCatalog_validFile_loadsSavedCatalog() throws Exception {
         StorageManager storage = createStorage();
         MilestoneCatalog saved = new MilestoneCatalog();
@@ -179,5 +211,20 @@ public class MainAppTest {
                 new JsonUserPrefsStorage(testFolder.resolve("preferences.json")),
                 new JsonMenuStorage(testFolder.resolve("menu.json")),
                 new JsonMilestoneCatalogStorage(testFolder.resolve("milestones.json")));
+    }
+
+    private static class RecordingLogHandler extends Handler {
+        private final List<LogRecord> records = new ArrayList<>();
+
+        @Override
+        public void publish(LogRecord record) {
+            records.add(record);
+        }
+
+        @Override
+        public void flush() {}
+
+        @Override
+        public void close() {}
     }
 }
