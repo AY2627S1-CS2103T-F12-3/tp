@@ -91,6 +91,10 @@ Format: `help`
 
 Adds a person to the address book.
 
+* Phone numbers must contain exactly 8 digits and start with 6, 8 or 9, without spaces, dashes or a country code.
+* Each phone number identifies one person. People can share a name if their phone numbers differ.
+* If a phone number is already registered, the command shows an error identifying the existing person.
+
 Format: `add n/NAME p/PHONE_NUMBER [t/TAG]…​`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
@@ -99,7 +103,7 @@ A person can have any number of tags, including zero.
 
 Examples:
 * `add n/John Doe p/98765432`
-* `add n/Betsy Crowe t/friend p/1234567 t/criminal`
+* `add n/Betsy Crowe t/friend p/81234567 t/criminal`
 
 ### Listing all persons: `list`
 
@@ -116,6 +120,8 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* Phone numbers follow the same format and uniqueness rules as `add`. Changing a phone number to one already
+  registered to another person is rejected; keeping the person's current number is allowed.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 
@@ -495,7 +501,7 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 t/friend t/colleague`
+**Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/82224444 t/friend t/colleague`
 **Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
 **Update menu item** | `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `update-menu-item 12A c/12B p/4.00`

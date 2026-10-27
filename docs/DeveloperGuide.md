@@ -123,6 +123,8 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
+* identifies each person by their unique Singapore phone number using `Person.isSamePerson`. Different people
+  can have the same name. Phone numbers contain exactly eight digits and start with 6, 8 or 9.
 * stores each person's name, phone, tags, score, and order history. Editing a person's details preserves
   their existing score and order history.
 * stores each person's redeemed milestone rewards in a `RedeemedMilestoneRewardHistory`. The history is immutable:
@@ -783,6 +785,29 @@ testers are expected to do more *exploratory* testing.
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases …​ }_
+
+### Adding and editing phone numbers
+
+1. Prerequisites: Launch in a fresh folder with sample data. The numbers below must not be registered.
+
+1. Test case: `add n/PhoneCheck p/61234567`, then `add n/PhoneCheck p/81234567`.<br>
+   Expected: Both people are added despite sharing a name.
+
+1. Test case: `add n/OtherCheck p/61234567`.<br>
+   Expected: An error identifies the existing PhoneCheck person. No person is added.
+
+1. Test case: `find 81234567`, then `edit 1 p/61234567`.<br>
+   Expected: An error identifies the existing person even though that person is hidden by the search.
+   The displayed person's number remains `81234567`.
+
+1. Test case: `edit 1 p/81234567`, then `edit 1 p/91234567`.<br>
+   Expected: Keeping the current number succeeds, and changing to an unused valid number also succeeds.
+
+1. Test cases: `add n/OtherCheck p/12345678`, `edit 1 p/9123456`, `edit 1 p/+6591234567`.<br>
+   Expected: Each command reports the phone format constraints without changing any person.
+
+1. Close and relaunch the app, then run `find PhoneCheck`.<br>
+   Expected: Both people remain, with phone numbers `61234567` and `91234567`.
 
 ### Deleting a person
 
