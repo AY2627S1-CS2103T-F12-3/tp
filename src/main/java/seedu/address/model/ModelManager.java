@@ -19,6 +19,7 @@ import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.MilestoneCatalog;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 
 /**
  * Represents the in-memory model of member, menu, milestone catalog, and user preference data.
@@ -101,6 +102,14 @@ public class ModelManager implements Model {
     public boolean hasPerson(Person person) {
         requireNonNull(person);
         return addressBook.hasPerson(person);
+    }
+
+    @Override
+    public Optional<Person> findPersonByPhone(Phone phone) {
+        requireNonNull(phone);
+        return addressBook.getPersonList().stream()
+                .filter(person -> person.getPhone().equals(phone))
+                .findFirst();
     }
 
     @Override

@@ -10,6 +10,7 @@ import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 
 /**
  * The API of the Model component.
@@ -45,6 +46,14 @@ public interface Model {
      * Returns true if a person with the same identity as {@code person} exists in the address book.
      */
     boolean hasPerson(Person person);
+
+    /**
+     * Returns the person with the given phone number, or an empty optional if no person matches.
+     * Searches all persons regardless of the current display filter.
+     *
+     * @throws NullPointerException if {@code phone} is null.
+     */
+    Optional<Person> findPersonByPhone(Phone phone);
 
     /**
      * Deletes the given person.

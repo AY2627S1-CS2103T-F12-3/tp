@@ -24,6 +24,7 @@ import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 
 public class AddMenuItemCommandTest {
     private static final FoodItem CHICKEN_RICE = new FoodItem("CR01", "Chicken Rice", 450);
@@ -135,6 +136,11 @@ public class AddMenuItemCommandTest {
 
         @Override
         public boolean hasPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public Optional<Person> findPersonByPhone(Phone phone) {
             throw new AssertionError("This method should not be called.");
         }
 

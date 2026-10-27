@@ -5,6 +5,8 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
+import java.util.Optional;
+
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -47,11 +49,10 @@ public class AddCommand extends Command {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
-        if (model.hasPerson(toAdd)) {
-            Person existingPerson = model.getAddressBook().getPersonList().stream()
-                    .filter(toAdd::isSamePerson)
-                    .findFirst().orElseThrow();
-            throw new CommandException(String.format(MESSAGE_DUPLICATE_PERSON, Messages.format(existingPerson)));
+        Optional<Person> existingPerson = model.findPersonByPhone(toAdd.getPhone());
+        if (existingPerson.isPresent()) {
+            throw new CommandException(String.format(MESSAGE_DUPLICATE_PERSON,
+                    Messages.format(existingPerson.get())));
         }
 
         model.addPerson(toAdd);

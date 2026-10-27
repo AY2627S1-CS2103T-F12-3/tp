@@ -73,11 +73,11 @@ public class EditCommand extends Command {
         Person personToEdit = lastShownList.get(index.getZeroBased());
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
 
-        if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
-            Person existingPerson = model.getAddressBook().getPersonList().stream()
-                    .filter(editedPerson::isSamePerson)
-                    .findFirst().orElseThrow();
-            throw new CommandException(String.format(MESSAGE_DUPLICATE_PERSON, Messages.format(existingPerson)));
+        Optional<Person> conflictingPerson = model.findPersonByPhone(editedPerson.getPhone())
+                .filter(person -> !person.isSamePerson(personToEdit));
+        if (conflictingPerson.isPresent()) {
+            throw new CommandException(String.format(MESSAGE_DUPLICATE_PERSON,
+                    Messages.format(conflictingPerson.get())));
         }
 
         model.setPerson(personToEdit, editedPerson);

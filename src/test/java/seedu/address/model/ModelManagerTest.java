@@ -117,6 +117,25 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void findPersonByPhone_nullPhone_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> modelManager.findPersonByPhone(null));
+    }
+
+    @Test
+    public void findPersonByPhone_noMatchingPerson_returnsEmpty() {
+        assertEquals(Optional.empty(), modelManager.findPersonByPhone(ALICE.getPhone()));
+    }
+
+    @Test
+    public void findPersonByPhone_personHiddenByFilter_returnsPersonWithoutChangingFilter() {
+        modelManager.addPerson(ALICE);
+        modelManager.updateFilteredPersonList(person -> false);
+
+        assertEquals(Optional.of(ALICE), modelManager.findPersonByPhone(ALICE.getPhone()));
+        assertTrue(modelManager.getFilteredPersonList().isEmpty());
+    }
+
+    @Test
     public void hasMilestone_nullMilestone_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> modelManager.hasMilestone(null));
     }
