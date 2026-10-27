@@ -77,26 +77,43 @@ public class AddOrderCommand extends Command {
         return new CommandResult(generateSuccessMessage(personWithOrderAdded, newOrder));
     }
 
-    /** Create a valid order using the menu item's current name and price */
+    /**
+     * Create a valid order using the menu item's current name and price.
+     */
     private Order createOrder(FoodItem foodItem) {
         long scoreGained = Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
         return new Order(itemCode, foodItem.getName(), quantity, (int) scoreGained);
     }
 
-    /** Creates the updated member using the menu item's current name and price. */
+    /**
+     * Returns the updated member with new order and updated score.
+     */
     private Person createPersonWithOrder(Person person, Order order) throws CommandException {
-        long updatedScore = person.getScore().value + order.scoreGained;
-        if (!Score.isValidScore(String.valueOf(updatedScore))) {
-            throw new CommandException(MESSAGE_SCORE_TOO_LARGE);
-        }
+        Score updatedScore = calculateUpdatedScore(person, order);
         return new Person(
                 person.getName(),
                 person.getPhone(),
                 person.getTags(),
-                new Score((int) updatedScore),
+                updatedScore,
                 person.getOrderHistory().addOrder(order),
                 person.getRedeemedMilestoneRewardHistory()
         );
+    }
+
+    /**
+     * Calculates the person's updated score after adding an order.
+     *
+     * @param person the person whose score is being updated
+     * @param order the order contributing to the score
+     * @return the updated score
+     * @throws CommandException if the updated score exceeds the maximum allowed value
+     */
+    private Score calculateUpdatedScore(Person person, Order order) throws CommandException {
+        long updatedScore = person.getScore().value + order.scoreGained;
+        if (!Score.isValidScore(String.valueOf(updatedScore))) {
+            throw new CommandException(MESSAGE_SCORE_TOO_LARGE);
+        }
+        return new Score((int) updatedScore);
     }
 
     @Override

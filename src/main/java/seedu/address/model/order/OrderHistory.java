@@ -80,7 +80,7 @@ public class OrderHistory {
 
     @Override
     public int hashCode() {
-        return orders.toString().hashCode();
+        return orders.hashCode();
     }
 
     /**
