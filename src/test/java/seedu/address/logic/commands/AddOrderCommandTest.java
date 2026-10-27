@@ -98,6 +98,31 @@ public class AddOrderCommandTest {
     }
 
     @Test
+    public void execute_earnedPointsWouldWrapToPositive_throwsCommandExceptionWithoutChangingPerson() {
+        assertOrderExceedsScoreLimit(100, 444444444);
+    }
+
+    @Test
+    public void execute_earnedPointsWouldWrapToNegative_throwsCommandExceptionWithoutChangingPerson() {
+        assertOrderExceedsScoreLimit(100, 214748365);
+    }
+
+    @Test
+    public void execute_earnedPointsWouldWrapToZero_throwsCommandExceptionWithoutChangingPerson() {
+        assertOrderExceedsScoreLimit(160, 268435456);
+    }
+
+    @Test
+    public void execute_maximumPriceAndQuantity_throwsCommandExceptionWithoutChangingPerson() {
+        assertOrderExceedsScoreLimit(Integer.MAX_VALUE, Integer.MAX_VALUE);
+    }
+
+    @Test
+    public void execute_orderExceedsScoreLimitByOne_throwsCommandExceptionWithoutChangingPerson() {
+        assertOrderExceedsScoreLimit(100, 100000000);
+    }
+
+    @Test
     public void execute_orderReachesScoreLimit_addsOrder() throws Exception {
         Model model = modelWithMenuItem();
         Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
@@ -136,9 +161,24 @@ public class AddOrderCommandTest {
         assertEquals(expected, command.toString());
     }
 
+    private static void assertOrderExceedsScoreLimit(int priceInCents, int quantity) {
+        Model model = modelWithMenuItem(priceInCents);
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+
+        CommandException exception = assertThrows(CommandException.class, () ->
+                new AddOrderCommand(INDEX_FIRST_PERSON, VALID_ITEM_CODE, quantity).execute(model));
+
+        assertEquals(AddOrderCommand.MESSAGE_SCORE_TOO_LARGE, exception.getMessage());
+        assertEquals(original, model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()));
+    }
+
     private static Model modelWithMenuItem() {
+        return modelWithMenuItem(480);
+    }
+
+    private static Model modelWithMenuItem(int priceInCents) {
         Menu menu = new Menu();
-        menu.addFoodItem(new FoodItem(VALID_ITEM_CODE, "Nasi Lemak", 480));
+        menu.addFoodItem(new FoodItem(VALID_ITEM_CODE, "Nasi Lemak", priceInCents));
         return new ModelManager(getTypicalAddressBook(), new UserPrefs(), menu);
     }
 }
