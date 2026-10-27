@@ -224,6 +224,14 @@ save error does not roll back changes already made in memory. The address-book f
 the menu and milestone catalog, so an earlier file may already be saved if a later write fails; the three writes
 are not a transaction. A later successful command attempts all three saves again through the same flow.
 
+Each JSON save serializes its contents before writing a unique temporary file in the destination directory.
+Only after writing completes does `FileUtil` atomically replace the destination. A failed write or unsupported
+atomic replacement leaves the existing destination intact; a failed first save does not leave an empty JSON file.
+Missing parent directories are created as needed. Temporary files are removed after saving or failure where
+possible; cleanup errors are logged without hiding the save result. There is no non-atomic fallback, so a file
+system that cannot atomically replace the destination reports a save error. This protects individual files
+against partial writes, but does not provide a transaction across files or guarantee recovery after power loss.
+
 #### Testing
 
 `AddMenuItemCommandTest` isolates command behavior with model stubs. `AddMenuItemCommandParserTest` covers prefix
@@ -544,7 +552,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     * 2a1. App shows a save error. The item remains in memory.
     * 2a2. User resolves the file-access problem and requests another command.
-    * 2a3. App executes that command and attempts to save both data files again.
+    * 2a3. App executes that command and attempts to save all three data files again.
 
       Use case ends if saving succeeds; otherwise, extension 2a repeats.
 

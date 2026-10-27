@@ -3,6 +3,11 @@ package seedu.address.commons.util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import seedu.address.commons.core.LogsCenter;
 
 /**
  * Writes and reads files
@@ -10,6 +15,7 @@ import java.nio.file.Path;
 public class FileUtil {
 
     private static final String CHARSET = "UTF-8";
+    private static final Logger logger = LogsCenter.getLogger(FileUtil.class);
 
     /**
      * Creates a file if it does not exist along with its missing parent directories.
@@ -44,11 +50,48 @@ public class FileUtil {
     }
 
     /**
-     * Writes given string to a file.
-     * Will create the file if it does not exist yet.
+     * Writes the given string to a sibling temporary file, then atomically replaces the destination.
+     * Creates missing parent directories, but does not create the destination until replacement succeeds.
+     * Does not fall back to a non-atomic replacement if atomic replacement is unsupported.
+     *
+     * @throws IOException if writing or atomic replacement fails.
      */
     public static void writeToFile(Path file, String content) throws IOException {
-        Files.write(file, content.getBytes(CHARSET));
+        writeToFile(file, content, new FileOperations());
     }
 
+    static void writeToFile(Path file, String content, FileOperations operations) throws IOException {
+        Path destination = file.toAbsolutePath();
+        if (Files.isDirectory(destination)) {
+            throw new IOException("Cannot save data to a directory: " + destination);
+        }
+        createParentDirsOfFile(destination);
+        Path temporaryFile = Files.createTempFile(destination.getParent(), ".saving-", ".tmp");
+        try {
+            operations.write(temporaryFile, content);
+            operations.replace(temporaryFile, destination);
+        } finally {
+            try {
+                operations.deleteIfExists(temporaryFile);
+            } catch (IOException e) {
+                // Cleanup must not hide a save failure or report an already completed save as failed.
+                logger.log(Level.WARNING, "Could not remove temporary save file: " + temporaryFile, e);
+            }
+        }
+    }
+
+    /** File operations separated to allow deterministic tests of failures during saving. */
+    static class FileOperations {
+        void write(Path file, String content) throws IOException {
+            Files.write(file, content.getBytes(CHARSET));
+        }
+
+        void replace(Path source, Path destination) throws IOException {
+            Files.move(source, destination, StandardCopyOption.ATOMIC_MOVE);
+        }
+
+        void deleteIfExists(Path file) throws IOException {
+            Files.deleteIfExists(file);
+        }
+    }
 }

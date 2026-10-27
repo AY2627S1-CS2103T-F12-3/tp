@@ -1,11 +1,17 @@
 package seedu.address.commons.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.testutil.SerializableTestClass;
 import seedu.address.testutil.TestUtil;
@@ -16,6 +22,35 @@ import seedu.address.testutil.TestUtil;
 public class JsonUtilTest {
 
     private static final Path SERIALIZATION_FILE = TestUtil.getFilePathInSandboxFolder("serialize.json");
+
+    @TempDir
+    public Path testFolder;
+
+    @Test
+    public void saveJsonFile_serializationFails_preservesExistingFile() throws IOException {
+        Path destination = testFolder.resolve("data.json");
+        Files.writeString(destination, "previous contents");
+
+        assertThrows(IOException.class, () -> JsonUtil.saveJsonFile(new UnserializableClass(), destination));
+        assertEquals("previous contents", Files.readString(destination));
+        try (var files = Files.list(testFolder)) {
+            assertEquals(1, files.count());
+        }
+    }
+
+    @Test
+    public void saveJsonFile_firstSerializationFails_leavesNoDestination() {
+        Path destination = testFolder.resolve("nested/data.json");
+        assertThrows(IOException.class, () -> JsonUtil.saveJsonFile(new UnserializableClass(), destination));
+        assertFalse(Files.exists(destination.getParent()));
+    }
+
+    private static class UnserializableClass {
+        @JsonProperty
+        public String getValue() throws IOException {
+            throw new IOException("Serialization failed");
+        }
+    }
 
     @Test
     public void serializeObjectToJsonFile_noExceptionThrown() throws IOException {

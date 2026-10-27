@@ -441,6 +441,11 @@ successfully. You do not need to save manually. All three are loaded again at st
 If a save fails, an error is shown instead of the normal success feedback. Changes already made remain in memory;
 after fixing the file-access problem, run a command such as `list` to attempt saving again before closing the app.
 
+Each file is replaced only after its new contents have been fully written, so a failed write does not leave that
+file half-written. The three data files are saved separately: if a later file fails to save, earlier files may
+already contain the latest changes. If your storage location does not support safe file replacement, use a
+different location that does.
+
 ### Editing the data file
 
 Customer records are saved in `data/memberlist.json`, menu items in `data/menu.json`, and milestone rewards in
