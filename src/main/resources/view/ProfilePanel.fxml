@@ -18,7 +18,7 @@
   </rowConstraints>
   <VBox styleClass="profile-summary" minWidth="0" spacing="4" GridPane.columnIndex="0">
     <padding>
-      <Insets top="18" right="14" bottom="18" left="18" />
+      <Insets top="18" right="8" bottom="18" left="18" />
     </padding>
     <StackPane fx:id="personDetailsPlaceholder" minWidth="0"
                minHeight="100" prefHeight="100" maxHeight="100" />
@@ -31,7 +31,7 @@
   <StackPane fx:id="recentOrdersPlaceholder" minWidth="0" maxHeight="Infinity"
              GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
     <GridPane.margin>
-      <Insets top="12" right="12" bottom="12" left="8" />
+      <Insets top="12" right="12" bottom="12" left="4" />
     </GridPane.margin>
   </StackPane>
 </GridPane>

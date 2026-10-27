@@ -24,15 +24,15 @@ import seedu.address.model.person.Person;
 /** Displays equally spaced milestones on a scrollable timeline, with member progress when available. */
 public class MilestoneTimeline extends ScrollPane {
     private static final Logger logger = LogsCenter.getLogger(MilestoneTimeline.class);
-    private static final double LINE_X = 94;
+    private static final double LINE_X = 108;
     private static final double LINE_START_Y = 22;
     private static final double FIRST_MILESTONE_Y = 92;
     private static final double MILESTONE_SPACING = 87.2;
     private static final double END_PADDING = 64;
-    private static final double REWARD_X = 121;
+    private static final double REWARD_X = 135;
     private static final double MILESTONE_NUMBER_SIZE = 34;
     private static final double SCORE_INDICATOR_SHIFT_X = -6;
-    private static final double SCORE_LABEL_WIDTH = 58;
+    private static final double SCORE_LABEL_WIDTH = 72;
     private static final double SCORE_ARROW_WIDTH = 8;
     private static final double SCORE_ARROW_HALF_HEIGHT = 5;
 

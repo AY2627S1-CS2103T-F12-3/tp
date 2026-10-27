@@ -16,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Text;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Score;
@@ -105,6 +106,20 @@ class MilestoneTimelineTest {
             Pane content = createTimelineForScore(400);
 
             assertTrue(getScoreY(content) > getMarkerCenterY(content, 3));
+        });
+    }
+
+    @Test
+    void scoreAtMaximum_fitsNineDigitsInScoreLabel() {
+        JavaFxTestUtil.runOnFxThread(() -> {
+            Pane content = createTimelineForScore(Score.MAX_SCORE);
+            Label scoreLabel = (Label) getNodeWithStyleClass(content, "milestone-score");
+            Text digits = new Text(Integer.toString(Score.MAX_SCORE));
+            digits.setFont(scoreLabel.getFont());
+
+            double requiredWidth = digits.getLayoutBounds().getWidth()
+                    + scoreLabel.getPadding().getLeft() + scoreLabel.getPadding().getRight();
+            assertTrue(scoreLabel.getPrefWidth() >= requiredWidth);
         });
     }
 
