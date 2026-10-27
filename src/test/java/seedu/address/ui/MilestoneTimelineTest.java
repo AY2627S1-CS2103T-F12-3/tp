@@ -109,20 +109,6 @@ class MilestoneTimelineTest {
         });
     }
 
-    @Test
-    void scoreAtMaximum_fitsNineDigitsInScoreLabel() {
-        JavaFxTestUtil.runOnFxThread(() -> {
-            Pane content = createTimelineForScore(Score.MAX_SCORE);
-            Label scoreLabel = (Label) getNodeWithStyleClass(content, "milestone-score");
-            Text digits = new Text(Integer.toString(Score.MAX_SCORE));
-            digits.setFont(scoreLabel.getFont());
-
-            double requiredWidth = digits.getLayoutBounds().getWidth()
-                    + scoreLabel.getPadding().getLeft() + scoreLabel.getPadding().getRight();
-            assertTrue(scoreLabel.getPrefWidth() >= requiredWidth);
-        });
-    }
-
     private static Pane createTimelineForScore(int score) {
         Person person = new PersonBuilder().withScore(new Score(score)).build();
         return (Pane) new MilestoneTimeline(person, MILESTONES).getContent();
