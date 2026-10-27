@@ -16,7 +16,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Text;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Score;
