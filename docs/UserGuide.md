@@ -91,12 +91,14 @@ Format: `help`
 
 Adds a person to the address book.
 
-* A phone entry is required. Empty or whitespace-only entries are rejected.
+* A phone entry is required. Empty or whitespace-only entries are rejected. New entries supplied to `add` or
+  the `p/` field of `edit` must contain at least one decimal digit (including full-width digits). Inputs such as `Not available`
+  and `---` are rejected with `Phone numbers must contain at least one digit`.
 * Recognized Singapore numbers contain eight digits starting with 6, 8 or 9. Spaces and hyphens between
   digit groups are accepted. A country prefix of `+65`, `65`, `(+65)` or `(65)` is also accepted.
   These entries are saved as the same eight-digit number; full-width versions of these characters are accepted too.
   A bare `65` is treated as a country prefix only when followed by an otherwise recognized eight-digit number.
-* Other nonblank entries, including overseas numbers, unusual lengths, notes and multiple numbers, are saved
+* Other entries containing digits, including overseas numbers, unusual lengths, notes and multiple numbers, are saved
   as entered apart from surrounding whitespace. They show the same **nonblocking warning** after a successful
   add or edit. The app does not verify whether any number is assigned or reachable. Hover over a phone label to read the full
   entry if it is shortened in the member list or profile.
@@ -119,7 +121,8 @@ Phone input examples (assuming the saved entry is not already registered):
 | `12345678`, `911`, `912345678` | Unchanged | Success with warning |
 | `+86 138119828111`, `（86）12345678` | Unchanged | Success with warning |
 | `91234567 (HP)`, `1234 5678 (HP) 1111-3333 (Office)` | Unchanged | Success with warning |
-| `006591234567`, `+65 12345678`, `---` | Unchanged | Success with warning |
+| `006591234567`, `+65 12345678` | Unchanged | Success with warning |
+| `Not available`, `---`, `phone` | Not saved | Error: `Phone numbers must contain at least one digit` |
 | Empty or only whitespace | Not saved | Error: `Phone numbers must not be blank` |
 
 The warning is:
@@ -442,7 +445,9 @@ Formats: `find KEYWORD [MORE_KEYWORDS]` or `find p/PHONE_ENTRY`
   Everything after this first `p/` belongs to one phone query. Recognized Singapore formats are normalized as for
   `add`; other entries require an exact, case-sensitive match, including internal spaces and punctuation.
   Partial phone entries do not match.
-* Searches do not change the stored phone entry or show a phone-format warning.
+* Searches do not change the stored phone entry or show a phone-format warning. Previously saved entries without
+  digits still load and can be found with `find p/Not available`, for example. You can edit their other fields
+  or replace the phone entry with one containing digits; supplying digitless text in the `p/` field of `edit` is rejected.
 
 Examples:
 * `find John` returns `john` and `John Doe`.

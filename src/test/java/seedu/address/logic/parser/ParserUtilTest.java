@@ -41,6 +41,13 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parsePhone_digitlessText_throwsSpecificError() {
+        for (String text : List.of("Not available", "---", "phone", "未知", "＋（）", "①", "²")) {
+            assertThrows(ParseException.class, Phone.MESSAGE_MISSING_DIGIT, () -> ParserUtil.parsePhone(text));
+        }
+    }
+
+    @Test
     public void parseIndex_invalidInput_throwsParseException() {
         assertThrows(ParseException.class, () -> ParserUtil.parseIndex("10 a"));
     }

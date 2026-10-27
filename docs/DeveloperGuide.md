@@ -128,8 +128,12 @@ The `Model` component,
   to eight digits starting with 6, 8 or 9. It accepts spaces, hyphens, full-width ASCII characters and the country
   prefixes `+65`, `65`, `(+65)` and `(65)`. A bare `65` is removed only from ten digits whose last eight match
   the expected Singapore format. Other entries retain their spelling and use exact, case-sensitive equality.
-* uses the same `Phone` constructor for parsed commands and JSON loading. `add` and `edit` append the shared
-  `Messages.formatPhoneWarning` after successful changes for nonstandard entries; these entries are not rejected.
+* uses the same `Phone` constructor to normalize parsed commands and JSON data. `Phone.isStorablePhone` accepts
+  nonblank legacy entries; `Phone.isValidPhone` additionally requires a Unicode decimal digit for new phone
+  values in `ParserUtil.parsePhone`. Blank and digitless input have separate error messages. Storage and lookup
+  use the storable rule so users can retrieve and repair previously saved digitless notes without losing members.
+  `add` and `edit` append the shared `Messages.formatPhoneWarning` after successful changes for nonstandard
+  entries containing digits. Editing other fields on a legacy digitless entry also remains possible.
   No country-specific validity or reachability check is performed for foreign numbers. Annotated or multiple
   numbers are not split or guessed for identity checks.
 * searches phone entries through the same normalization rules. `find p/PHONE_ENTRY` constructs a phone-only
@@ -526,7 +530,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions**
 
-* 1a. The name is invalid or the phone entry is blank.
+* 1a. The name is invalid, or the supplied phone entry is blank or contains no decimal digits.
 
     * 1a1. App shows an error message.
 
@@ -768,7 +772,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Reversible command**: A command that changes stored data and can therefore be undone (e.g. `add-order`). Commands that only read or display data (e.g. `find`) or close the app (`exit`) are not reversible.
 * **Sample data**: Placeholder members loaded when Ratatouille is launched for the first time, so new users can try out commands.
 * **Phone entry**: A nonblank contact value identifying a member. Recognized Singapore formats are saved as eight
-  digits starting with 6, 8 or 9; other values are retained with a nonblocking warning on add or edit.
+  digits starting with 6, 8 or 9. New entries must contain a decimal digit; other digit-containing formats receive
+  a nonblocking warning. Legacy digitless notes can still be loaded and corrected.
 * **Stall owner**: The main user of Ratatouille, who runs a food stall at a hawker centre. Also covers staff operating the app on the owner's behalf.
 
 --------------------------------------------------------------------------------------------------------------------
@@ -833,6 +838,9 @@ testers are expected to do more *exploratory* testing.
 
 1. Test cases: `add n/BlankCheck p/` and `edit 1 p/`.<br>
    Expected: Both report that phone numbers must not be blank without changing any member.
+
+1. Test cases: `add n/NoPhone p/Not available` and `edit 1 p/---`.<br>
+   Expected: Both report `Phone numbers must contain at least one digit`, with no change to any member.
 
 1. Close and relaunch the app, then run `find PhoneCheck`.<br>
    Expected: Both people remain, with phone numbers `61234567` and `91234567`.

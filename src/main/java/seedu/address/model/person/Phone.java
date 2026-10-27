@@ -4,13 +4,14 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
 /**
- * Represents a Person's phone number in the address book.
- * Guarantees: immutable; is valid as declared in {@link #isValidPhone(String)}
+ * Represents a member's phone entry, including legacy contact notes.
+ * Guarantees: immutable; is storable as declared in {@link #isStorablePhone(String)}
  */
 public class Phone {
 
 
     public static final String MESSAGE_CONSTRAINTS = "Phone numbers must not be blank";
+    public static final String MESSAGE_MISSING_DIGIT = "Phone numbers must contain at least one digit";
     private static final String SINGAPORE_PHONE_REGEX = "[689][0-9]{7}";
     private static final String SEPARATOR_REGEX = "[\\s\\p{Zs}-]+";
     private static final String FORMATTED_PHONE_REGEX = "[0-9](?:[0-9\\s\\p{Zs}-]*[0-9])?";
@@ -25,14 +26,23 @@ public class Phone {
      */
     public Phone(String phone) {
         requireNonNull(phone);
-        checkArgument(isValidPhone(phone), MESSAGE_CONSTRAINTS);
+        checkArgument(isStorablePhone(phone), MESSAGE_CONSTRAINTS);
         value = normalize(phone);
     }
 
     /**
-     * Returns true if the input can be stored. Unusual formats are accepted with a command warning.
+     * Returns true if the input can be supplied as a new phone entry in add or edit.
+     * At least one Unicode decimal digit is required; unusual formats still receive a warning.
      */
     public static boolean isValidPhone(String test) {
+        return isStorablePhone(test) && test.codePoints().anyMatch(Character::isDigit);
+    }
+
+    /**
+     * Returns true if an entry can be retained in the model, storage or a lookup query.
+     * Legacy nonblank notes without digits remain readable so users can find and correct them.
+     */
+    public static boolean isStorablePhone(String test) {
         requireNonNull(test);
         return !trimWhitespace(test).isEmpty();
     }

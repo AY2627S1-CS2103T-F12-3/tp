@@ -27,8 +27,11 @@ public class FindCommandParser implements Parser<FindCommand> {
         }
 
         if (trimmedArgs.startsWith(CliSyntax.PREFIX_PHONE.toString())) {
-            Phone phone = ParserUtil.parsePhone(trimmedArgs.substring(CliSyntax.PREFIX_PHONE.toString().length()));
-            return new FindCommand(new PersonMatchesKeywordsPredicate(phone));
+            String query = trimmedArgs.substring(CliSyntax.PREFIX_PHONE.toString().length());
+            if (!Phone.isStorablePhone(query)) {
+                throw new ParseException(Phone.MESSAGE_CONSTRAINTS);
+            }
+            return new FindCommand(new PersonMatchesKeywordsPredicate(new Phone(query)));
         }
         Phone wholeQuery = new Phone(trimmedArgs);
         if (wholeQuery.isStandardSingaporeNumber()) {

@@ -42,7 +42,8 @@ public class JsonAdaptedPersonTest {
 
     @Test
     public void toModelType_nonstandardAndLegacyPhones_preservesEntries() throws Exception {
-        for (String input : List.of("911", "9123456", "12345678", "+86 138119828111", "（86）12345678")) {
+        for (String input : List.of("911", "9123456", "12345678", "+86 138119828111", "（86）12345678",
+                "Not available", "---")) {
             JsonAdaptedPerson person = new JsonAdaptedPerson(
                     VALID_NAME, input, VALID_TAGS, VALID_SCORE, VALID_ORDER_HISTORY);
             assertEquals(input, person.toModelType().getPhone().value);

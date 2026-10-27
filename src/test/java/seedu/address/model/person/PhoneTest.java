@@ -55,14 +55,26 @@ public class PhoneTest {
         for (String input : List.of("91", "911", "9123456", "912345678", "12345678", "72345678",
                 "+86 138119828111", "（86）12345678", "(86)12345678", "86 138119828111", "006591234567",
                 "+65 12345678", "+65 6591234567", "(+65) 6591234567", "65 12345678",
-                "phone", "9011p041", "91234567 (HP)", "91234567 ext 123", "91234567 / 81234567",
+                "9011p041", "91234567 (HP)", "91234567 ext 123", "91234567 / 81234567",
                 "1234 5678 (HP) 1111-3333 (Office)", "(91234567", "91234567)", "++6591234567",
-                "-91234567", "91234567-", "---")) {
+                "-91234567", "91234567-")) {
             assertTrue(Phone.isValidPhone(input), input);
             Phone phone = new Phone(" " + input + " ");
             assertEquals(input, phone.value, input);
             assertFalse(phone.isStandardSingaporeNumber(), input);
             assertEquals(phone, new Phone(phone.value), input);
+        }
+    }
+
+    @Test
+    public void isValidPhone_digitlessText_rejectedForNewInputButRetainedForLegacyData() {
+        for (String text : List.of("Not available", "---", "phone", "未知", "＋（）", "①", "²")) {
+            assertFalse(Phone.isValidPhone(text), text);
+            assertTrue(Phone.isStorablePhone(text), text);
+            assertEquals(text, new Phone(text).value, text);
+        }
+        for (String text : List.of("0", "９", "١", "1234 (HP)", "+86 138119828111")) {
+            assertTrue(Phone.isValidPhone(text), text);
         }
     }
 

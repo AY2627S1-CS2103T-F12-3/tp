@@ -151,7 +151,7 @@ public class LogicManagerTest {
     @Test
     public void execute_unusualPhone_addsEditsFindsAndReloadsWithWarning() throws Exception {
         for (String input : List.of("911", "12345678", "+86 138119828111", "（86）12345678",
-                "1234 5678 (HP) 1111-3333 (Office)", "Not available", "---")) {
+                "1234 5678 (HP) 1111-3333 (Office)")) {
             String addedFeedback = logic.execute("add n/PhoneCheck p/" + input).getFeedbackToUser();
             assertTrue(addedFeedback.endsWith("\n" + Messages.MESSAGE_PHONE_WARNING));
             Person added = model.getSelectedPerson().orElseThrow();
@@ -222,6 +222,45 @@ public class LogicManagerTest {
             assertCommandFailure("edit 1 p/" + blank, ParseException.class, Phone.MESSAGE_CONSTRAINTS, expectedModel);
         }
         assertEquals(savedData, Files.readString(temporaryFolder.resolve("addressBook.json")));
+    }
+
+    @Test
+    public void execute_digitlessPhone_rejectsAddAndEditWithoutChangingStateOrFile() throws Exception {
+        logic.execute("add n/Alice p/91234567");
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.selectPerson(model.getSelectedPerson().orElseThrow());
+        String savedData = Files.readString(temporaryFolder.resolve("addressBook.json"));
+        for (String text : List.of("Not available", "---", "phone", "未知", "＋（）", "①", "²")) {
+            assertCommandFailure("add n/Bob p/" + text, ParseException.class,
+                    Phone.MESSAGE_MISSING_DIGIT, expectedModel);
+            assertCommandFailure("edit 1 p/" + text, ParseException.class,
+                    Phone.MESSAGE_MISSING_DIGIT, expectedModel);
+            assertEquals(savedData, Files.readString(temporaryFolder.resolve("addressBook.json")));
+        }
+    }
+
+    @Test
+    public void execute_legacyDigitlessPhone_canFindEditOtherFieldsAndCorrectAfterReload() throws Exception {
+        AddressBook legacy = new AddressBook();
+        Person legacyMember = new PersonBuilder(AMY).withName("Legacy").withPhone("Not available").build();
+        legacy.addPerson(legacyMember);
+        Path membersFile = temporaryFolder.resolve("addressBook.json");
+        JsonAddressBookStorage membersStorage = new JsonAddressBookStorage(membersFile);
+        membersStorage.saveAddressBook(legacy);
+        model.setAddressBook(membersStorage.readAddressBook().orElseThrow());
+        logic.execute("find p/Not available");
+        assertEquals(1, model.getFilteredPersonList().size());
+        logic.execute("edit 1 n/Legacy Renamed");
+        assertEquals("Not available", model.getSelectedPerson().orElseThrow().getPhone().value);
+        assertEquals(model.getAddressBook(), membersStorage.readAddressBook().orElseThrow());
+        logic.execute("find p/Not available");
+        logic.execute("edit 1 p/9123 4567");
+        Person corrected = model.getSelectedPerson().orElseThrow();
+        assertEquals("91234567", corrected.getPhone().value);
+        assertEquals(legacyMember.getScore(), corrected.getScore());
+        assertEquals(legacyMember.getOrderHistory(), corrected.getOrderHistory());
+        assertEquals(legacyMember.getRedeemedMilestoneRewardHistory(), corrected.getRedeemedMilestoneRewardHistory());
+        assertEquals(model.getAddressBook(), membersStorage.readAddressBook().orElseThrow());
     }
 
     @Test

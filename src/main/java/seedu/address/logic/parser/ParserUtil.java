@@ -89,8 +89,11 @@ public class ParserUtil {
      */
     public static Phone parsePhone(String phone) throws ParseException {
         requireNonNull(phone);
-        if (!Phone.isValidPhone(phone)) {
+        if (!Phone.isStorablePhone(phone)) {
             throw new ParseException(Phone.MESSAGE_CONSTRAINTS);
+        }
+        if (!Phone.isValidPhone(phone)) {
+            throw new ParseException(Phone.MESSAGE_MISSING_DIGIT);
         }
         return new Phone(phone);
     }

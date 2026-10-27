@@ -35,6 +35,7 @@ public class MemberLoadingTest {
         AddressBook saved = new AddressBook();
         saved.addPerson(new PersonBuilder().withPhone("9482424").build());
         saved.addPerson(new PersonBuilder().withPhone("（86）12345678").build());
+        saved.addPerson(new PersonBuilder().withPhone("Not available").build());
         new JsonAddressBookStorage(testFolder.resolve("members.json")).saveAddressBook(saved);
         ReadOnlyAddressBook loaded = new MainApp().initMembers(createStorage());
         assertEquals(saved, loaded);
