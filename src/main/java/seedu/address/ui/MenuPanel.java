@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import seedu.address.model.menu.FoodItem;
@@ -50,16 +51,20 @@ public class MenuPanel extends UiPart<Region> {
         private void createFilledRow(FoodItem foodItem) {
             Label code = new Label(foodItem.getCode());
             code.getStyleClass().add("menu-item-code");
+            code.setTextOverrun(OverrunStyle.ELLIPSIS);
+            code.setWrapText(false);
 
             Label name = new Label(foodItem.getName());
             name.getStyleClass().add("menu-item-name");
-            name.setWrapText(true);
+            name.setTextOverrun(OverrunStyle.ELLIPSIS);
+            name.setWrapText(false);
 
             Label price = new Label(formatPrice(foodItem.getPriceInCents()));
             price.getStyleClass().add("menu-item-price");
 
             VBox item = new VBox(code, name, price);
             item.getStyleClass().add("menu-item");
+            item.prefWidthProperty().bind(widthProperty().subtract(20));
             setGraphic(item);
         }
     }

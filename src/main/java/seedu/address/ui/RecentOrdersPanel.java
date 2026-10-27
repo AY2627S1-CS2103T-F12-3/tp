@@ -54,13 +54,14 @@ public class RecentOrdersPanel extends UiPart<Region> {
     }
 
     /**
-     * Adds order rows from newest to oldest, retaining each order's one-based history index.
+     * Adds order rows from newest to oldest, numbering them in displayed order.
      *
      * @param recentOrders The member's orders in oldest-to-newest order.
      */
     private void showRecentOrders(List<Order> recentOrders) {
         for (int i = recentOrders.size(); i >= 1; i--) {
-            orders.getChildren().add(createOrderRow(i, recentOrders.get(i - 1)));
+            int displayedIndex = recentOrders.size() - i + 1;
+            orders.getChildren().add(createOrderRow(displayedIndex, recentOrders.get(i - 1)));
         }
     }
 

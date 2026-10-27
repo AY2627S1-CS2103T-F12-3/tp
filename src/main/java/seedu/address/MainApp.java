@@ -121,12 +121,13 @@ public class MainApp extends Application {
     }
 
     /**
-     * Loads the saved milestone catalog, or starts with an empty catalog if the file is missing or cannot be loaded.
+     * Loads the saved milestone catalog, or starts with sample milestones if the file is missing.
+     * An unreadable milestone file results in an empty catalog.
      */
     protected ReadOnlyMilestoneCatalog initMilestoneCatalog(Storage storage) {
         logger.info("Using milestone catalog file : " + storage.getMilestoneCatalogFilePath());
         try {
-            return storage.readMilestoneCatalog().orElseGet(MilestoneCatalog::new);
+            return storage.readMilestoneCatalog().orElseGet(SampleDataUtil::getSampleMilestoneCatalog);
         } catch (DataLoadingException e) {
             logger.log(Level.WARNING, "Milestone catalog file at " + storage.getMilestoneCatalogFilePath()
                     + " could not be loaded. Will be starting with an empty milestone catalog.", e);

@@ -91,11 +91,19 @@ class JsonAdaptedPerson {
      * @throws IllegalValueException if there were any data constraints violated in the adapted person.
      */
     public Person toModelType() throws IllegalValueException {
-        final List<Tag> personTags = new ArrayList<>();
-        for (JsonAdaptedTag tag : tags) {
-            personTags.add(tag.toModelType());
-        }
+        return new Person(
+                toModelName(),
+                toModelPhone(),
+                toModelTags(),
+                toModelScore(),
+                toModelOrderHistory(),
+                toModelRedeemedMilestoneRewardHistory());
+    }
 
+    /**
+     * Converts and validates the adapted name.
+     */
+    private Name toModelName() throws IllegalValueException {
         if (name == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Name.class.getSimpleName()));
         }
@@ -105,45 +113,73 @@ class JsonAdaptedPerson {
         if (!Name.containsLetter(name)) {
             throw new IllegalValueException(Name.MESSAGE_CONSTRAINTS_MISSING_LETTER);
         }
-        final Name modelName = new Name(name);
+        return new Name(name);
+    }
 
+    /**
+     * Converts and validates the adapted phone number.
+     */
+    private Phone toModelPhone() throws IllegalValueException {
         if (phone == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName()));
         }
         if (!Phone.isValidPhone(phone)) {
             throw new IllegalValueException(Phone.MESSAGE_CONSTRAINTS);
         }
-        final Phone modelPhone = new Phone(phone);
+        return new Phone(phone);
+    }
 
-        final Set<Tag> modelTags = new HashSet<>(personTags);
-
-        final Score modelScore;
-        if (score == null) {
-            modelScore = Score.DEFAULT;
-        } else if (!Score.isValidScore(score)) {
-            throw new IllegalValueException(Score.MESSAGE_CONSTRAINTS);
-        } else {
-            modelScore = new Score(Integer.parseInt(score));
+    /**
+     * Converts and validates the adapted tags.
+     */
+    private Set<Tag> toModelTags() throws IllegalValueException {
+        Set<Tag> modelTags = new HashSet<>();
+        for (JsonAdaptedTag tag : tags) {
+            modelTags.add(tag.toModelType());
         }
+        return modelTags;
+    }
+
+    /**
+     * Converts and validates the adapted score, using the default when it is missing.
+     */
+    private Score toModelScore() throws IllegalValueException {
+        if (score == null) {
+            return Score.DEFAULT;
+        }
+        if (!Score.isValidScore(score)) {
+            throw new IllegalValueException(Score.MESSAGE_CONSTRAINTS);
+        }
+        return new Score(Integer.parseInt(score));
+    }
+
+    /**
+     * Converts the adapted orders into an order history.
+     */
+    private OrderHistory toModelOrderHistory() throws IllegalValueException {
         OrderHistory modelOrderHistory = new OrderHistory();
         for (JsonAdaptedOrder adaptedOrder : orderHistory) {
             modelOrderHistory = modelOrderHistory.addOrder(adaptedOrder.toModelType());
         }
-        RedeemedMilestoneRewardHistory modelRedeemedMilestoneRewardHistory =
-                new RedeemedMilestoneRewardHistory();
+        return modelOrderHistory;
+    }
+
+    /**
+     * Converts the adapted rewards into a redeemed milestone reward history.
+     */
+    private RedeemedMilestoneRewardHistory toModelRedeemedMilestoneRewardHistory()
+            throws IllegalValueException {
+        RedeemedMilestoneRewardHistory modelHistory = new RedeemedMilestoneRewardHistory();
         for (JsonAdaptedRedeemedMilestoneReward adaptedReward : redeemedMilestoneRewardHistory) {
             if (adaptedReward == null) {
                 throw new IllegalValueException(JsonAdaptedRedeemedMilestoneReward.MESSAGE_CONSTRAINTS);
             }
             try {
-                modelRedeemedMilestoneRewardHistory = modelRedeemedMilestoneRewardHistory
-                        .addRedeemedMilestoneReward(adaptedReward.toModelType());
+                modelHistory = modelHistory.addRedeemedMilestoneReward(adaptedReward.toModelType());
             } catch (IllegalArgumentException exception) {
                 throw new IllegalValueException(RedeemedMilestoneRewardHistory.MESSAGE_DUPLICATE_MILESTONE);
             }
         }
-
-        return new Person(modelName, modelPhone, modelTags, modelScore, modelOrderHistory,
-                modelRedeemedMilestoneRewardHistory);
+        return modelHistory;
     }
 }

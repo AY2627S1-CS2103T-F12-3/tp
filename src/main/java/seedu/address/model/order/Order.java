@@ -88,7 +88,9 @@ public class Order {
         return test > 0;
     }
 
-    /** Returns true if the score gained is non-negative. */
+    /**
+     * Returns true if the score gained is non-negative.
+     */
     public static boolean isValidScoreGained(int test) {
         return test >= 0;
     }
@@ -115,6 +117,14 @@ public class Order {
         } catch (DateTimeParseException e) {
             return false;
         }
+    }
+
+    /**
+     * Formats the given instant as a day, full month, and year.
+     */
+    private static String formatTime(Instant time) {
+        return time.atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("d MMMM uuuu"));
     }
 
     @Override
@@ -146,11 +156,4 @@ public class Order {
                 + ", +" + scoreGained + " score, on " + formatTime(recordedAt) + "]";
     }
 
-    /**
-     * Formats the given instant as a day, full month, and year.
-     */
-    private String formatTime(Instant time) {
-        return time.atZone(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("d MMMM uuuu"));
-    }
 }

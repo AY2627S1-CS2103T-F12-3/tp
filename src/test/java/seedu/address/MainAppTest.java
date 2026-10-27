@@ -59,10 +59,33 @@ public class MainAppTest {
     }
 
     @Test
-    public void initMilestoneCatalog_missingFile_returnsEmptyCatalog() {
+    public void initMilestoneCatalog_missingFile_returnsSampleCatalog() {
         StorageManager storage = createStorage();
-        assertTrue(new MainApp().initMilestoneCatalog(storage).getMilestoneList().isEmpty());
+        assertEquals(List.of(new Milestone("DRINK100", "Free drink", 100),
+                new Milestone("SNACK200", "Free snack", 200), new Milestone("MEAL500", "Free meal", 500)),
+                new MainApp().initMilestoneCatalog(storage).getMilestoneList());
         assertFalse(Files.exists(storage.getMilestoneCatalogFilePath()));
+    }
+
+    @Test
+    public void initMilestoneCatalog_savedEmptyCatalog_doesNotRestoreSamples() throws Exception {
+        StorageManager storage = createStorage();
+        storage.saveMilestoneCatalog(new MilestoneCatalog());
+
+        assertTrue(new MainApp().initMilestoneCatalog(storage).getMilestoneList().isEmpty());
+    }
+
+    @Test
+    public void sampleMilestones_saveAndReload_retainsSamplesAfterRestart() throws Exception {
+        StorageManager storage = createStorage();
+        MainApp app = new MainApp();
+        ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage),
+                app.initMilestoneCatalog(storage));
+
+        new LogicManager(model, storage).execute("list-milestones");
+
+        assertEquals(model.getMilestoneList(), reloadModel(storage).getMilestoneList());
+        assertEquals(model.getMilestoneList(), storage.readMilestoneCatalog().orElseThrow().getMilestoneList());
     }
 
     @Test
@@ -105,6 +128,7 @@ public class MainAppTest {
     @Test
     public void milestoneCommands_saveAndReload_persistChangesAfterRestart() throws Exception {
         StorageManager storage = createStorage();
+        storage.saveMilestoneCatalog(new MilestoneCatalog());
         MainApp app = new MainApp();
         ModelManager model = new ModelManager(new AddressBook(), new UserPrefs(), app.initMenu(storage),
                 app.initMilestoneCatalog(storage));

@@ -136,7 +136,7 @@ public class JsonMilestoneCatalogStorageTest {
         JsonMilestoneCatalogStorage storage = new JsonMilestoneCatalogStorage(path);
         MilestoneCatalog catalog = new MilestoneCatalog();
         catalog.setMilestones(List.of(FREE_DRINK,
-                new Milestone("DESSERT500", "Ice Cream", Integer.MAX_VALUE)));
+                new Milestone("DESSERT500", "Free Dessert", 999999999)));
 
         storage.saveMilestoneCatalog(catalog);
         assertEquals(catalog, new MilestoneCatalog(storage.readMilestoneCatalog().orElseThrow()));

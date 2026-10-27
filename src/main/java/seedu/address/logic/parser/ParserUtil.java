@@ -13,6 +13,7 @@ import seedu.address.model.menu.FoodItem;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Score;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -22,7 +23,7 @@ public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
     public static final String MESSAGE_INVALID_REQUIRED_SCORE =
-            "Required score must be a positive whole number no greater than 2147483647.";
+            "Required score must be a positive whole number no greater than 999999999.";
     private static final String REQUIRED_SCORE_VALIDATION_REGEX = "[0-9]+";
 
     /**
@@ -53,7 +54,7 @@ public class ParserUtil {
 
         try {
             int parsedRequiredScore = Integer.parseInt(trimmedRequiredScore);
-            if (parsedRequiredScore <= 0) {
+            if (parsedRequiredScore <= 0 || parsedRequiredScore > Score.MAX_SCORE) {
                 throw new ParseException(MESSAGE_INVALID_REQUIRED_SCORE);
             }
             return parsedRequiredScore;
