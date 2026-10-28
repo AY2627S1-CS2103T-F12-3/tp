@@ -3,6 +3,8 @@ package seedu.address.storage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalMilestones.FREE_DESSERT;
+import static seedu.address.testutil.TypicalMilestones.FREE_DRINK;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +23,6 @@ import seedu.address.model.milestone.MilestoneCatalog;
 public class JsonMilestoneCatalogStorageTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data",
             "JsonMilestoneCatalogStorageTest");
-    private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
 
     @TempDir
     public Path testFolder;
@@ -55,7 +56,7 @@ public class JsonMilestoneCatalogStorageTest {
     public void readMilestoneCatalog_validFile_loadsCatalog() throws Exception {
         Path path = TEST_DATA_FOLDER.resolve("validMilestoneCatalog.json");
         MilestoneCatalog expected = new MilestoneCatalog();
-        expected.setMilestones(List.of(FREE_DRINK, new Milestone("DESSERT500", "Free dessert", 500)));
+        expected.setMilestones(List.of(FREE_DRINK, FREE_DESSERT));
 
         assertEquals(expected, new MilestoneCatalog(
                 new JsonMilestoneCatalogStorage(path).readMilestoneCatalog().orElseThrow()));

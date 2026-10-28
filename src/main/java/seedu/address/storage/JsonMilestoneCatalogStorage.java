@@ -6,13 +6,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
-import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.FileUtil;
@@ -23,7 +20,6 @@ import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
  * Accesses milestone catalog data stored as a JSON file on disk.
  */
 public class JsonMilestoneCatalogStorage {
-    private static final Logger logger = LogsCenter.getLogger(JsonMilestoneCatalogStorage.class);
     private final Path filePath;
 
     /**
@@ -67,7 +63,6 @@ public class JsonMilestoneCatalogStorage {
             }
             return Optional.of(savedCatalog.toModelType());
         } catch (IOException | IllegalValueException e) {
-            logger.log(Level.INFO, "Could not load milestone catalog from " + filePath, e);
             throw new DataLoadingException(e);
         }
     }

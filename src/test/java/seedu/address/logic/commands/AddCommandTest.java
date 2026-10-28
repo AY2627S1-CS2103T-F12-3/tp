@@ -27,6 +27,7 @@ import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 import seedu.address.testutil.PersonBuilder;
 
 public class AddCommandTest {
@@ -55,7 +56,8 @@ public class AddCommandTest {
         AddCommand addCommand = new AddCommand(validPerson);
         ModelStub modelStub = new ModelStubWithPerson(validPerson);
 
-        assertThrows(CommandException.class, AddCommand.MESSAGE_DUPLICATE_PERSON, () -> addCommand.execute(modelStub));
+        String expectedMessage = String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(validPerson));
+        assertThrows(CommandException.class, expectedMessage, () -> addCommand.execute(modelStub));
     }
 
     @Test
@@ -164,6 +166,16 @@ public class AddCommandTest {
         }
 
         @Override
+        public List<Person> findPersonsWithSimilarPhone(Phone phone) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public Optional<Person> findPersonByPhone(Phone phone) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public void deletePerson(Person target) {
             throw new AssertionError("This method should not be called.");
         }
@@ -241,9 +253,9 @@ public class AddCommandTest {
         }
 
         @Override
-        public boolean hasPerson(Person person) {
-            requireNonNull(person);
-            return this.person.isSamePerson(person);
+        public Optional<Person> findPersonByPhone(Phone phone) {
+            requireNonNull(phone);
+            return person.getPhone().equals(phone) ? Optional.of(person) : Optional.empty();
         }
     }
 
@@ -255,9 +267,14 @@ public class AddCommandTest {
         private Person personSelected;
 
         @Override
-        public boolean hasPerson(Person person) {
-            requireNonNull(person);
-            return personsAdded.stream().anyMatch(person::isSamePerson);
+        public Optional<Person> findPersonByPhone(Phone phone) {
+            requireNonNull(phone);
+            return personsAdded.stream().filter(person -> person.getPhone().equals(phone)).findFirst();
+        }
+
+        @Override
+        public List<Person> findPersonsWithSimilarPhone(Phone phone) {
+            return personsAdded.stream().filter(person -> phone.hasPossibleNumberInCommon(person.getPhone())).toList();
         }
 
         @Override

@@ -21,6 +21,44 @@ public class UniquePersonListTest {
     private final UniquePersonList uniquePersonList = new UniquePersonList();
 
     @Test
+    public void add_sameNameDifferentPhone_success() {
+        Person sameNamePerson = new PersonBuilder(ALICE).withPhone(BOB.getPhone().value).build();
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(sameNamePerson);
+
+        assertEquals(List.of(ALICE, sameNamePerson), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void add_samePhoneDifferentName_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        Person duplicatePerson = new PersonBuilder(ALICE).withName(BOB.getName().fullName).build();
+
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.add(duplicatePerson));
+        assertEquals(List.of(ALICE), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPerson_sameNameDuplicatePhone_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(BOB);
+        Person duplicatePerson = new PersonBuilder(ALICE).withPhone(BOB.getPhone().value).build();
+
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPerson(ALICE, duplicatePerson));
+        assertEquals(List.of(ALICE, BOB), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPersons_samePhoneDifferentNames_throwsDuplicatePersonException() {
+        uniquePersonList.add(BOB);
+        Person duplicatePerson = new PersonBuilder(ALICE).withName(BOB.getName().fullName).build();
+
+        assertThrows(DuplicatePersonException.class, () ->
+                uniquePersonList.setPersons(List.of(ALICE, duplicatePerson)));
+        assertEquals(List.of(BOB), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
     public void contains_nullPerson_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> uniquePersonList.contains(null));
     }
