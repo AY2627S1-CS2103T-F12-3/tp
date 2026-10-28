@@ -494,251 +494,439 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `App` and the **Actor** is the `user`, unless specified otherwise)
+The high-level workflows come first. Underlined UC references indicate included use cases.
 
-**Use case: Search for a member**
+### High-level use cases
 
-**MSS**
-
-1.  User requests to search for members using name keywords or an exact eight-digit phone number.
-2.  App shows a numbered list of matching members.
-
-    Use case ends.
-
-**Extensions**
-
-* 1a. No member matches the given search term.
-
-    * 1a1. App shows an empty list and informs the user that no members were found.
-
-      Use case ends.
-    * 2a3. App shows the selected member's details.
-
-      Use case ends.
-
-**Use case: Add a new member**
+**UC01: Customer orders food**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to add a new member, providing the member's phone number and name.
-2.  App adds the member and shows a confirmation.
-
-    Use case ends.
-
-**Extensions**
-
-* 1a. The given phone number or name is invalid in format.
-
-    * 1a1. App shows an error message.
-
-      Use case ends.
-
-* 1b. The given phone number already exists as a member.
-
-    * 1b1. App shows an error message identifying the existing member.
-
-      Use case ends.
-
-**Use case: Add a menu item**
-
-**MSS**
-
-1. User requests to add a menu item, providing its code, name, and price.
-2. App adds the item, saves the data, and shows a confirmation.
+1. User <u>finds the member (UC06)</u>.
+2. User <u>records the member's order (UC09)</u>.
+3. Ratatouille shows the updated order history and membership score.
 
    Use case ends.
 
 **Extensions**
 
-* 1a. Required details are missing or invalid, or the code already exists.
+* 1a. No matching member is found and the returning customer agrees to sign up.
+    * 1a1. User <u>signs up the returning customer (UC07)</u>.
 
-    * 1a1. App shows an error and leaves the menu unchanged.
+      Use case resumes at step 2.
+* 1b. No matching member is found and the customer declines to sign up.
+    * 1b1. User serves the customer without recording the order in Ratatouille.
 
-      Use case resumes at step 1.
+      Use case ends.
+* 3a. The member also wants to claim an eligible reward.
+    * 3a1. User <u>redeems a milestone reward (UC18)</u>.
 
-* 2a. Saving fails after the item has been added in memory.
+      Use case ends.
 
-    * 2a1. App shows a save error. The item remains in memory.
-    * 2a2. User resolves the file-access problem and requests another command, such as `list`,
-      other than `help` or `exit`.
-    * 2a3. App executes that command and attempts to save all three data files again.
-
-      Use case ends if saving succeeds; otherwise, extension 2a repeats.
-
-**Use case: Log an order for a member**
+**UC02: Stall owner corrects a recorded order**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to log an order for a member, specifying the member's index in the displayed list, menu item code, and quantity.
-2.  App records the current menu item name and calculated points earned, adds the order to that member's order
-    history, increases the member's score, and shows a confirmation.
+1. User <u>finds the member (UC06)</u>.
+2. User <u>deletes the mistaken order (UC10)</u>.
+3. Ratatouille shows the corrected order history and membership score.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 1a. The index is invalid or does not refer to a member in the displayed list.
-
-    * 1a1. App shows an error message and does not add an order.
-
-      Use case ends.
-
-* 1b. The item code is blank or contains characters other than letters and digits.
-
-    * 1b1. App shows an error message and does not add an order.
+* 3a. User needs to record the correct order.
+    * 3a1. User <u>records a replacement order (UC09)</u>.
 
       Use case ends.
 
-* 1c. The item code is not in the menu.
-
-    * 1c1. App shows an error message and does not add an order.
-
-      Use case ends.
-
-* 1d. The quantity is not a positive whole number.
-
-    * 1d1. App shows an error message and does not add an order.
-
-      Use case ends.
-
-* 1e. The earned points would increase the member's score beyond `999999999`.
-
-    * 1e1. App shows an error message and does not add an order or change the score.
-
-      Use case ends.
-
-**Use case: Delete an order from a member's order history**
+**UC03: Stall owner updates a member's record**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to delete an order, specifying the member's index in the displayed list and the order's index in
-    that member's order history.
-2.  App deletes the order, subtracts its saved points earned from the member's score, and shows a confirmation.
+1. User <u>finds the member (UC06)</u>.
+2. User <u>edits the member's details (UC08)</u>.
+3. Ratatouille shows the updated member record.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 1a. The member index is invalid or does not refer to a member in the displayed list.
-
-    * 1a1. App shows an error message and does not delete an order.
-
-      Use case ends.
-
-* 1b. The order index is invalid or does not refer to an order in that member's order history.
-
-    * 1b1. App shows an error message and does not delete an order.
+* 2a. User needs to correct the membership score instead of the member's details.
+    * 2a1. User <u>adjusts the membership score (UC11)</u>.
+    * 2a2. Ratatouille shows the updated score.
 
       Use case ends.
 
-* 1c. Subtracting the order's saved points would make the member's score negative.
-
-    * 1c1. App shows an error message and does not delete the order or change the score.
-
-      Use case ends.
-
-**Use case: Update membership points for a member**
+**UC04: Stall owner corrects a reward claim**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to search for a member by phone number.
-2.  App shows the member's details, including their current membership points.
-3.  User requests to update the member's membership points, specifying the points change.
-4.  App applies the change and shows the member's previous and new membership points.
+1. User <u>finds the member (UC06)</u>.
+2. User <u>cancels the mistaken redemption (UC19)</u>.
+3. Ratatouille shows the corrected redemption status.
 
-    Use case ends.
+   Use case ends.
 
-**Extensions**
-
-* 1a. No member matches the given phone number.
-
-    * 1a1. App shows an error message.
-
-      Use case ends.
-
-* 3a. The given membership points change is invalid in format or exceeds the allowed range.
-
-    * 3a1. App shows an error message.
-
-      Use case resumes at step 3.
-
-* 3b. Applying the membership points change would bring the member's membership points below zero.
-
-    * 3b1. App shows an error message and does not apply the change.
-
-      Use case resumes at step 3.
-
-**Use case: Redeem a milestone reward for a member**
+**UC05: Stall owner prepares the app for real use**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1. User requests to redeem a milestone reward, specifying the member's index and current milestone index.
-2. App verifies that the member has sufficient membership points and has not redeemed the milestone before.
-3. App adds the milestone to the member's redeemed milestone reward history and shows a confirmation.
+1. User requests to clear the sample data.
+2. Ratatouille clears all stored members, menu items, and milestone rewards and confirms the action.
+3. User <u>adds a menu item (UC12)</u>.
+4. User <u>adds a milestone reward (UC15)</u>.
 
-    Use case ends.
+   Use case ends.
 
-**Extensions**
+### Detailed use cases
 
-* 1a. The member or milestone index is invalid.
-
-    * 1a1. App shows an error message and does not change the member.
-
-      Use case ends.
-
-* 2a. The member has insufficient membership points or has already redeemed the milestone.
-
-    * 2a1. App shows an error message and does not change the member.
-
-      Use case ends.
-
-**Use case: Cancel a redeemed milestone reward for a member**
+**UC06: Find a member**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1. User requests to cancel a redeemed milestone reward, specifying the member's index and current milestone index.
-2. App verifies that the current milestone has the same code as a milestone in the member's redemption history.
-3. App removes that milestone from the member's redeemed milestone reward history and shows a confirmation.
+1. User requests a search using one or more name keywords or a valid phone number.
+2. Ratatouille shows the matching members.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 1a. The member or current milestone index is invalid.
+* 1a. No member matches the search.
+    * 1a1. Ratatouille shows an empty result and reports that no members were found.
 
-    * 1a1. App shows an error message and does not change the member.
+      Use case ends.
+* 1b. Exactly one member matches.
+    * 1b1. Ratatouille shows that member and their details.
+
+      Use case ends.
+* 1c. User provides no search term.
+    * 1c1. Ratatouille reports the required search format.
 
       Use case ends.
 
-* 2a. The selected milestone was not redeemed by the member.
-
-    * 2a1. App shows `Unable to unredeem because it was not redeemed.` and does not change the member.
-
-      Use case ends.
-
-* 2b. The milestone was deleted from the catalog after redemption.
-
-    * 2b1. The historical redemption cannot be selected by `cancel-redeem`, because the command uses the current
-      milestone catalog index by design.
-
-      Use case ends.
-
-**Use case: Delete a member**
+**UC07: Sign up a returning customer as a member**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to search for a member by phone number.
-2.  App shows the member's details.
-3.  User requests to delete the member.
-4.  App deletes the member and shows a confirmation.
+1. User provides the returning customer's name and phone number, and optionally tags.
+2. Ratatouille adds the member, shows their details, and confirms the addition.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 1a. No member matches the given phone number.
+* 1a. Required details are missing or a provided value has an invalid format.
+    * 1a1. Ratatouille reports the problem without adding a member.
 
-    * 1a1. App shows an error message.
+      Use case ends.
+* 1b. A member with the same name already exists.
+    * 1b1. Ratatouille reports the duplicate and does not add the member.
+
+      Use case ends.
+
+**UC08: Edit a member's details**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and supplies a new name, phone number, or tags.
+2. Ratatouille updates the supplied details, keeps the member's score, orders, and redeemed rewards, and confirms
+   the change.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The member identifier does not refer to a member in the current list.
+    * 1a1. Ratatouille reports the invalid identifier without changing a member.
+
+      Use case ends.
+* 1b. User supplies no changes or a supplied value has an invalid format.
+    * 1b1. Ratatouille reports the problem without changing a member.
+
+      Use case ends.
+* 1c. The new name belongs to another member.
+    * 1c1. Ratatouille reports the duplicate without changing either member.
+
+      Use case ends.
+
+**UC09: Record an order for a member**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list, an existing menu item, and the quantity ordered.
+2. Ratatouille records the order, increases the member's membership score using the item's current price and
+   quantity, and confirms the result.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The member identifier does not refer to a member in the current list.
+    * 1a1. Ratatouille reports the invalid identifier without recording an order.
+
+      Use case ends.
+* 1b. The item identifier is invalid or does not refer to an existing menu item.
+    * 1b1. Ratatouille reports the problem without recording an order.
+
+      Use case ends.
+* 1c. The quantity is missing or is not a positive whole number.
+    * 1c1. Ratatouille reports the invalid quantity without recording an order.
+
+      Use case ends.
+* 1d. The resulting membership score would exceed its allowed maximum.
+    * 1d1. Ratatouille reports the score limit without recording the order or changing the member's score.
+
+      Use case ends.
+
+**UC10: Delete an order from a member's history**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and an order from that member's order history.
+2. Ratatouille removes the order, subtracts the score earned by that order from the member's membership score,
+   and confirms the deletion.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The member identifier does not refer to a member in the current list.
+    * 1a1. Ratatouille reports the invalid identifier without deleting an order.
+
+      Use case ends.
+* 1b. The order identifier does not refer to an order in that member's history.
+    * 1b1. Ratatouille reports the invalid identifier without deleting an order.
+
+      Use case ends.
+* 1c. Subtracting the order's earned score would make the member's membership score negative.
+    * 1c1. Ratatouille reports the problem and leaves the order and score unchanged.
+
+      Use case ends.
+
+**UC11: Adjust a member's membership score manually**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and specifies a signed score change.
+2. Ratatouille applies the change and shows the previous and new membership scores.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The member identifier does not refer to a member in the current list.
+    * 1a1. Ratatouille reports the invalid identifier without changing a score.
+
+      Use case ends.
+* 1b. The score change is missing or has an invalid format.
+    * 1b1. Ratatouille reports the problem without changing the score.
+
+      Use case ends.
+* 1c. The result would be negative or exceed the allowed maximum.
+    * 1c1. Ratatouille reports the score limit without changing the score.
+
+      Use case ends.
+
+**UC12: Add a menu item**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User supplies a code, name, and price for a new menu item.
+2. Ratatouille adds the item to the menu and confirms the addition.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. A required detail is missing or invalid.
+    * 1a1. Ratatouille reports the problem and leaves the menu unchanged.
+
+      Use case ends.
+* 1b. Another menu item already uses the code.
+    * 1b1. Ratatouille reports the duplicate code and leaves the menu unchanged.
+
+      Use case ends.
+
+**UC13: Edit a menu item**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies an existing menu item by its code and supplies a new code, name, or price.
+2. Ratatouille updates the supplied fields and confirms the change. Existing orders retain the details recorded
+   when those orders were placed.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The given code does not identify a menu item.
+    * 1a1. Ratatouille reports that the item does not exist and leaves the menu unchanged.
+
+      Use case ends.
+* 1b. User supplies no changes or a new value has an invalid format.
+    * 1b1. Ratatouille reports the problem and leaves the menu unchanged.
+
+      Use case ends.
+* 1c. The new code belongs to another menu item.
+    * 1c1. Ratatouille reports the duplicate code and leaves the menu unchanged.
+
+      Use case ends.
+
+**UC14: Delete a menu item**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a menu item by its code and requests deletion.
+2. Ratatouille removes the item and confirms the deletion. Existing member orders remain unchanged.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The supplied code has an invalid format.
+    * 1a1. Ratatouille reports the problem and leaves the menu unchanged.
+
+      Use case ends.
+* 1b. No menu item has the supplied code.
+    * 1b1. Ratatouille reports that the item does not exist and leaves the menu unchanged.
+
+      Use case ends.
+
+**UC15: Add a milestone reward**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User supplies a reward description and required membership score.
+2. Ratatouille adds the milestone to the reward catalog and confirms the addition.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. A required detail is missing or invalid.
+    * 1a1. Ratatouille reports the problem and leaves the catalog unchanged.
+
+      Use case ends.
+
+**UC16: Edit a milestone reward**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a milestone from the current catalog and supplies a new reward description or required
+   membership score.
+2. Ratatouille updates the supplied details and confirms the change. A changed requirement may alter the
+   milestone's position in the catalog.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The identifier does not refer to a milestone in the current catalog.
+    * 1a1. Ratatouille reports the invalid identifier without changing a milestone.
+
+      Use case ends.
+* 1b. User supplies no changes or a supplied value has an invalid format.
+    * 1b1. Ratatouille reports the problem without changing a milestone.
+
+      Use case ends.
+
+**UC17: Delete a milestone reward**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a milestone from the current catalog and requests deletion.
+2. Ratatouille removes the milestone and confirms the deletion. Member scores and recorded redemptions remain
+   unchanged.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The identifier does not refer to a milestone in the current catalog.
+    * 1a1. Ratatouille reports the invalid identifier and leaves the catalog unchanged.
+
+      Use case ends.
+
+**UC18: Redeem a milestone reward for a member**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and a milestone from the current catalog to redeem.
+2. Ratatouille records the redemption and confirms it. The member's membership score stays unchanged.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Either identifier does not refer to a current member or milestone.
+    * 1a1. Ratatouille reports the invalid identifier without recording a redemption.
+
+      Use case ends.
+* 1b. The member's membership score is below the milestone's requirement.
+    * 1b1. Ratatouille reports insufficient score without recording a redemption.
+
+      Use case ends.
+* 1c. The member has already redeemed that milestone.
+    * 1c1. Ratatouille reports the existing redemption without changing the member.
+
+      Use case ends.
+
+**UC19: Cancel a member's milestone redemption**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and a redeemed milestone still present in the current catalog.
+2. Ratatouille removes that redemption and confirms the cancellation. The member's membership score stays unchanged.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Either identifier does not refer to a current member or milestone.
+    * 1a1. Ratatouille reports the invalid identifier without cancelling a redemption.
+
+      Use case ends.
+* 1b. The member has not redeemed the selected milestone.
+    * 1b1. Ratatouille reports that there is no redemption to cancel and leaves the member unchanged.
 
       Use case ends.
 
