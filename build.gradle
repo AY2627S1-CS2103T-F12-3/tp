@@ -76,7 +76,7 @@ dependencies {
 }
 
 shadowJar {
-    archiveFileName = 'addressbook.jar'
+    archiveFileName = 'ratatouille.jar'
 }
 
 defaultTasks 'clean', 'test'
