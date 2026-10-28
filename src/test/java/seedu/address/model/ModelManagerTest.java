@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalMilestones.EDITED_FREE_DRINK;
+import static seedu.address.testutil.TypicalMilestones.FREE_DESSERT;
+import static seedu.address.testutil.TypicalMilestones.FREE_DRINK;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 
@@ -17,7 +20,6 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.menu.FoodItem;
 import seedu.address.model.menu.Menu;
 import seedu.address.model.menu.ReadOnlyMenu;
-import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.MilestoneCatalog;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
@@ -27,9 +29,6 @@ import seedu.address.testutil.AddressBookBuilder;
 import seedu.address.testutil.PersonBuilder;
 
 public class ModelManagerTest {
-    private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
-    private static final Milestone EDITED_FREE_DRINK = new Milestone("FREE500", "Free drink and snack", 600);
-    private static final Milestone FREE_DESSERT = new Milestone("DESSERT500", "Free dessert", 500);
 
     private ModelManager modelManager = new ModelManager();
 
