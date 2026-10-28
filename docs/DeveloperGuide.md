@@ -494,10 +494,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-The high-level workflows come first. Underlined UC references indicate included use cases.
-
-### High-level use cases
-
 **UC01: Customer orders food**<br>
 **Software system:** Ratatouille<br>
 **Actor:** Food stall owner
@@ -517,9 +513,8 @@ The high-level workflows come first. Underlined UC references indicate included 
 
       Use case resumes at step 2.
 * 1b. No matching member is found and the customer declines to sign up.
-    * 1b1. User serves the customer without recording the order in Ratatouille.
+    * 1b1. Use case ends.
 
-      Use case ends.
 * 3a. The member also wants to claim an eligible reward.
     * 3a1. User <u>redeems a milestone reward (UC18)</u>.
 
@@ -588,8 +583,6 @@ The high-level workflows come first. Underlined UC references indicate included 
 4. User <u>adds a milestone reward (UC15)</u>.
 
    Use case ends.
-
-### Detailed use cases
 
 **UC06: Find a member**<br>
 **Software system:** Ratatouille<br>
@@ -870,8 +863,7 @@ The high-level workflows come first. Underlined UC references indicate included 
 **MSS**
 
 1. User identifies a milestone from the current catalog and requests deletion.
-2. Ratatouille removes the milestone and confirms the deletion. Member scores and recorded redemptions remain
-   unchanged.
+2. Ratatouille removes the milestone and confirms the deletion.
 
    Use case ends.
 
