@@ -497,19 +497,22 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 Action | Format, Examples
 --------|------------------
 **Add member** | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/22224444 t/friend t/colleague`
-**Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
-**Edit menu item** | `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `edit-menu-item 12A c/12B p/4.00`
-**Add milestone** | `add-milestone r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone r/Free drink s/500`
-**Clear** | `clear`
+**Add milestone** | `add-milestone r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone r/10% OFF s/250`
+**Add order** | `add-order INDEX o/ITEM_CODE q/QUANTITY`<br> e.g., `add-order 1 o/12A q/3`
 **Delete member** | `delete-member INDEX`<br> e.g., `delete-member 3`
+**Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Delete milestone** | `delete-milestone INDEX`<br> e.g., `delete-milestone 1`
+**Delete order** | `delete-order INDEX o/ORDER_INDEX`<br> e.g., `delete-order 1 o/2`
 **Edit member** | `edit-member INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit-member 2 n/James Lee`
 **Edit milestone** | `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`<br> e.g., `edit-milestone 1 s/600`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**List** | `list`
-**List milestones** | `list-milestones`
-**Update score** | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
+**Edit menu item** | `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `edit-menu-item 12A c/12B`
 **Redeem milestone** | `redeem INDEX m/MILESTONE_INDEX`<br> e.g., `redeem 1 m/2`
 **Cancel redeemed milestone** | `cancel-redeem INDEX m/MILESTONE_INDEX`<br> e.g., `cancel-redeem 1 m/2`
+**Update score** | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
+**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`, `find 98765432`
+**List** | `list`
+**List milestones** | `list-milestones`
+**Clear all data** | `clear`
 **Help** | `help`
+**Exit** | `exit`
