@@ -91,6 +91,69 @@ Format: `help`
 
 Adds a person to the address book.
 
+* A phone entry is required. Empty or whitespace-only entries are rejected. New entries supplied to `add-member` or
+  the `p/` field of `edit-member` must contain at least one decimal digit (including full-width digits). Inputs such as `Not available`
+  and `---` are rejected with `Phone numbers must contain at least one digit`.
+* Recognized Singapore numbers contain eight digits starting with 6, 8 or 9. Spaces and hyphens between
+  digit groups are accepted. A country prefix of `+65`, `65`, `(+65)` or `(65)` is also accepted.
+  These entries are saved as the same eight-digit number; full-width versions of these characters are accepted too.
+  A bare `65` is treated as a country prefix only when followed by an otherwise recognized eight-digit number.
+* Other entries containing digits, including overseas numbers, unusual lengths, notes and multiple numbers, are saved
+  as entered apart from surrounding whitespace. They show the same **nonblocking warning** after a successful
+  add or edit. The app does not verify whether any number is assigned or reachable. Hover over a phone label to read the full
+  entry if it is shortened in the member list or profile.
+* Each saved phone entry identifies one person. People can share a name if their phone entries differ.
+  If the entry is already registered, the command rejects it and identifies the existing person, even if that
+  person is hidden by a search. Recognized Singapore formats are compared after normalization.
+* For all other entries, only an exact, case-sensitive text match (apart from surrounding whitespace) blocks a
+  duplicate. A separate **possible duplicate warning** checks complete number segments of at least six digits
+  against all existing members, including members hidden by a search. Spaces, parentheses, dots and common
+  dashes are ignored for this advisory comparison; a recognized Singapore `65` prefix is also ignored.
+  For example, `（86）12345678` and `+8612345678` remain different saved entries but trigger a warning.
+* A possible duplicate warning lists each related member once, with their name and phone entry. The new entry
+  is still saved: check whether the records represent separate memberships, and use `delete-member INDEX` to remove an
+  unintended extra record after checking the displayed list. No records, points or order histories are merged.
+  When editing, the member being edited is excluded; this warning is checked only when `p/` is supplied.
+* Letters and delimiters such as `/`, `,`, `;` and `+` separate number segments. Explicit extension values
+  introduced by `ext`, `extension` or `x` are excluded from this warning. Complete sequences of adjacent eight-digit
+  Singapore numbers are checked as separate numbers. Shorter segments, partial digit matches and inferred foreign
+  country codes are not checked. For example, `+86 138119828111` matches a compact
+  `+86138119828111` for a warning, but the app does not guess that `138119828111` belongs to country code `86`.
+  Other numbers separated only by spaces or dashes can still be treated as one segment; use `/` or a label to
+  make their boundaries clear. The absence of a warning does not establish that two entries belong to different people.
+* Command prefixes such as `n/`, `p/` and `t/` still delimit fields and cannot be embedded literally in a phone
+  value when preceded by whitespace.
+
+Phone input examples (assuming the saved entry is not already registered):
+
+| Value after `p/` | Saved phone entry | Result |
+|---|---|---|
+| `91234567`, `9123 4567`, `9123-4567` | `91234567` | Success |
+| `+6591234567`, `+65 9123 4567`, `65 9123 4567`, `6591234567` | `91234567` | Success |
+| `(+65) 9123 4567`, `（＋６５）９１２３－４５６７` | `91234567` | Success |
+| `12345678`, `911`, `912345678` | Unchanged | Success with warning |
+| `+86 138119828111`, `（86）12345678` | Unchanged | Success with warning |
+| `91234567 (HP)`, `1234 5678 (HP) 1111-3333 (Office)` | Unchanged | Success with warning |
+| `006591234567`, `+65 12345678` | Unchanged | Success with warning |
+| `Not available`, `---`, `phone` | Not saved | Error: `Phone numbers must contain at least one digit` |
+| Empty or only whitespace | Not saved | Error: `Phone numbers must not be blank` |
+
+The nonstandard-format warning is:
+
+> Warning: This phone entry was not recognized as a standard Singapore number. It has been saved; please check it.
+> You may ignore this warning for an overseas number or an intentional special format.
+> Only exact text duplicates are blocked for these entries.
+
+Duplicate-check examples:
+
+| Existing entry | New input | Result |
+|---|---|---|
+| `92345678` | `+6592345678` | Rejected as an exact normalized duplicate |
+| `92345678` | `92345678 (HP)` | Saved; format warning and possible duplicate warning identify the existing member |
+| `92345678 (HP)` | `92345678` | Saved; possible duplicate warning identifies the existing member |
+| `+86 138119828111` | `+86138119828111` | Saved; format warning and possible duplicate warning |
+| `92345678` and `81234567` in separate members | `92345678 (HP) / 81234567 (Office)` | Saved; possible duplicate warning identifies both members |
+
 Format: `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
@@ -99,7 +162,7 @@ A person can have any number of tags, including zero.
 
 Examples:
 * `add-member n/John Doe p/98765432`
-* `add-member n/Betsy Crowe t/friend p/1234567 t/criminal`
+* `add-member n/Betsy Crowe t/friend p/81234567 t/criminal`
 
 ### Listing all persons: `list`
 
@@ -116,6 +179,8 @@ Format: `edit-member INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* Phone numbers follow the same format and uniqueness rules as `add-member`. Changing a phone number to one already
+  registered to another person is rejected; keeping the person's current number is allowed.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 
@@ -390,21 +455,28 @@ the person's redeemed milestone reward history.
 
 ### Locating persons by name or phone number: `find`
 
-Finds persons whose names contain any of the given keywords, or whose phone number exactly matches an eight-digit
-keyword.
+Finds persons by name keywords or an exact phone entry.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Formats: `find KEYWORD [MORE_KEYWORDS]` or `find p/PHONE_ENTRY`
 
-* Name searches are case-insensitive; for example, `hans` matches `Hans`.
-* Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* A keyword containing exactly eight digits searches phone numbers instead of names, and the whole phone number must
-  match; for example, `98765432` matches only a person whose phone number is `98765432`.
-* Other keywords search only names, and only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* Name searches are case-insensitive and match whole words; `hans` matches `Hans`, but `Han` does not.
+* Without `p/`, each keyword searches names and complete phone entries. Matching at least one keyword is enough
+  (an `OR` search); `Hans Bo` returns `Hans Gruber` and `Bo Yang`, regardless of keyword order.
+* If the whole unprefixed query is a recognized Singapore phone format, it is treated as a single normalized
+  phone keyword. For example, `find 9123 4567` searches for `91234567`.
+* Use `find p/PHONE_ENTRY` to search only phone entries, including an overseas number or a note containing spaces.
+  Everything after this first `p/` belongs to one phone query. Recognized Singapore formats are normalized as for
+  `add-member`; other entries require an exact, case-sensitive match, including internal spaces and punctuation.
+  Partial phone entries do not match.
+* Searches do not change the stored phone entry or show a phone-format warning. Previously saved entries without
+  digits still load and can be found with `find p/Not available`, for example. You can edit their other fields
+  or replace the phone entry with one containing digits; supplying digitless text in the `p/` field of `edit-member` is rejected.
 
 Examples:
-* `find John` returns `john` and `John Doe`
-* `find 98765432` returns the person whose phone number is exactly `98765432`
+* `find John` returns `john` and `John Doe`.
+* `find +65 9876 5432` finds the member whose saved phone entry is `98765432`.
+* `find p/+86 138119828111` finds that exact overseas entry.
+* `find p/（86）12345678` finds that exact entry, not `+8612345678`.
 * `find alex david` returns `Alex Yeoh` and `David Li`.
 
 ### Deleting a member: `delete-member`
@@ -471,11 +543,13 @@ string `rewardDescription`, and a positive integer `requiredScore`. Existing mil
 loading older data. The internal codes are case-insensitive, saved in uppercase, and must be unique.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If the customer file is invalid, the app starts with an empty address book. A missing customer file loads sample
-contacts, and a missing menu or milestone file loads the sample menu. An invalid menu file starts with an empty menu or milestone catalog respectively. Loading does not replace
-an invalid file, but the next successfully executed command other than `help` or `exit` attempts to save all three
-files and can overwrite the invalid data. Back up all three files before editing them, and restore
-a valid backup before running commands if you need to recover existing records.<br>
+If an existing customer file cannot be loaded, startup stops to protect it from being overwritten. Back it up,
+then restore a valid copy or correct the invalid fields before restarting. Old nonblank phone entries still load,
+but entries that normalize to the same Singapore number conflict: resolve those duplicate member records in a
+backup copy, preserving their points and histories, before upgrading. The app does not merge records automatically.
+A missing customer file loads sample contacts. Missing menu or milestone files load their sample data; invalid
+menu or milestone files use empty catalogs. The next successfully executed command other than `help` or `exit` attempts to save all three files
+and can overwrite those invalid catalog files, so back up all three files before editing them.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -504,7 +578,7 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 
 Action | Format, Examples
 --------|------------------
-**Add member** | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/22224444 t/friend t/colleague`
+**Add member** | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/82224444 t/friend t/colleague`
 **Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
 **Edit menu item** | `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `edit-menu-item 12A c/12B p/4.00`

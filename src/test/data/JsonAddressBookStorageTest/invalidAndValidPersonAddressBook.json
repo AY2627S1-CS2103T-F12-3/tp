@@ -10,7 +10,7 @@
     },
     {
       "name": "Person With Invalid Phone Field",
-      "phone": "948asdf2424",
+      "phone": " ",
       "tags": [],
       "score": "0",
       "orderHistory": [],

@@ -40,10 +40,32 @@ public class AddCommandIntegrationTest {
     }
 
     @Test
+    public void execute_sameNameDifferentPhone_success() {
+        Person personInList = model.getAddressBook().getPersonList().get(0);
+        Person newPerson = new PersonBuilder(personInList).withPhone("61234567").build();
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.addPerson(newPerson);
+        expectedModel.selectPerson(newPerson);
+
+        assertCommandSuccess(new AddCommand(newPerson), model,
+                String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(newPerson)), expectedModel);
+    }
+
+    @Test
+    public void execute_samePhoneDifferentNameFilteredList_failure() {
+        Person personInList = model.getAddressBook().getPersonList().get(0);
+        Person duplicatePerson = new PersonBuilder(personInList).withName("Another Person").build();
+        model.updateFilteredPersonList(person -> false);
+
+        assertCommandFailure(new AddCommand(duplicatePerson), model,
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(personInList)));
+    }
+
+    @Test
     public void execute_duplicatePerson_throwsCommandException() {
         Person personInList = model.getAddressBook().getPersonList().get(0);
         assertCommandFailure(new AddCommand(personInList), model,
-                AddCommand.MESSAGE_DUPLICATE_PERSON);
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, Messages.format(personInList)));
     }
 
 }

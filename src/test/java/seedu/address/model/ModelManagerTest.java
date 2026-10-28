@@ -20,8 +20,11 @@ import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.MilestoneCatalog;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
+import seedu.address.model.person.Phone;
 import seedu.address.testutil.AddressBookBuilder;
+import seedu.address.testutil.PersonBuilder;
 
 public class ModelManagerTest {
     private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
@@ -143,6 +146,41 @@ public class ModelManagerTest {
     public void hasPerson_personInAddressBook_returnsTrue() {
         modelManager.addPerson(ALICE);
         assertTrue(modelManager.hasPerson(ALICE));
+    }
+
+    @Test
+    public void findPersonByPhone_nullPhone_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> modelManager.findPersonByPhone(null));
+    }
+
+    @Test
+    public void findPersonByPhone_noMatchingPerson_returnsEmpty() {
+        assertEquals(Optional.empty(), modelManager.findPersonByPhone(ALICE.getPhone()));
+    }
+
+    @Test
+    public void findPersonByPhone_personHiddenByFilter_returnsPersonWithoutChangingFilter() {
+        modelManager.addPerson(ALICE);
+        modelManager.updateFilteredPersonList(person -> false);
+
+        assertEquals(Optional.of(ALICE), modelManager.findPersonByPhone(ALICE.getPhone()));
+        assertTrue(modelManager.getFilteredPersonList().isEmpty());
+    }
+
+    @Test
+    public void findPersonsWithSimilarPhone_hiddenMembers_returnsAllMatchesWithoutChangingView() {
+        Person annotated = new PersonBuilder(ALICE).withPhone(ALICE.getPhone().value + " (HP)").build();
+        modelManager.addPerson(ALICE);
+        modelManager.addPerson(annotated);
+        modelManager.selectPerson(ALICE);
+        modelManager.updateFilteredPersonList(person -> false);
+
+        assertEquals(List.of(ALICE, annotated), modelManager.findPersonsWithSimilarPhone(
+                new Phone(ALICE.getPhone().value + " ext 123")));
+        assertEquals(List.of(annotated), modelManager.findPersonsWithSimilarPhone(ALICE.getPhone()));
+        assertTrue(modelManager.getFilteredPersonList().isEmpty());
+        assertEquals(Optional.of(ALICE), modelManager.getSelectedPerson());
+        assertThrows(NullPointerException.class, () -> modelManager.findPersonsWithSimilarPhone(null));
     }
 
     @Test

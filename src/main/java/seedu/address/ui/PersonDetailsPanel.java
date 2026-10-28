@@ -1,6 +1,7 @@
 package seedu.address.ui;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import seedu.address.model.person.Person;
 
@@ -21,6 +22,7 @@ public class PersonDetailsPanel extends VBox {
         name.setWrapText(true);
 
         Label phone = new Label(person.getPhone().value);
+        phone.setTooltip(new Tooltip(person.getPhone().value));
         phone.getStyleClass().add("profile-phone");
 
         String indexText = displayedIndex == 0 ? "Not in current list" : "List index: " + displayedIndex;

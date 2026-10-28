@@ -1,6 +1,7 @@
 package seedu.address.model.person;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.StringUtil;
@@ -8,12 +9,11 @@ import seedu.address.commons.util.ToStringBuilder;
 
 /**
  * Tests whether a {@code Person} matches any of the given keywords.
- * An eight-digit keyword is matched exactly against the phone number; other keywords are matched against the name.
+ * Matches name keywords or complete phone values, with an optional explicit phone-only search.
  */
 public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
-    private static final String EIGHT_DIGIT_PHONE_REGEX = "\\d{8}";
-
     private final List<String> keywords;
+    private final Optional<Phone> phoneQuery;
 
     /**
      * Constructs a predicate that matches a person against any of the given keywords.
@@ -21,22 +21,32 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * @param keywords Keywords to match against a person's name or phone number.
      */
     public PersonMatchesKeywordsPredicate(List<String> keywords) {
-        this.keywords = keywords;
+        this.keywords = List.copyOf(keywords);
+        this.phoneQuery = Optional.empty();
     }
 
     /**
-     * Returns true if the person matches at least one keyword by name or exact eight-digit phone number.
+     * Creates a search for an exact phone entry, including spaces and annotations.
+     */
+    public PersonMatchesKeywordsPredicate(Phone phoneQuery) {
+        this.keywords = List.of();
+        this.phoneQuery = Optional.of(phoneQuery);
+    }
+
+    /**
+     * Returns true if the person matches the explicit phone query or at least one name/phone keyword.
      */
     @Override
     public boolean test(Person person) {
+        if (phoneQuery.isPresent()) {
+            return person.getPhone().equals(phoneQuery.get());
+        }
         return keywords.stream().anyMatch(keyword -> matchesKeyword(person, keyword));
     }
 
     private static boolean matchesKeyword(Person person, String keyword) {
-        if (keyword.matches(EIGHT_DIGIT_PHONE_REGEX)) {
-            return person.getPhone().value.equals(keyword);
-        }
-        return StringUtil.containsWordIgnoreCase(person.getName().fullName, keyword);
+        return person.getPhone().value.equals(Phone.normalize(keyword))
+                || StringUtil.containsWordIgnoreCase(person.getName().fullName, keyword);
     }
 
     @Override
@@ -50,11 +60,12 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return false;
         }
 
-        return keywords.equals(otherPersonMatchesKeywordsPredicate.keywords);
+        return keywords.equals(otherPersonMatchesKeywordsPredicate.keywords)
+                && phoneQuery.equals(otherPersonMatchesKeywordsPredicate.phoneQuery);
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).add("keywords", keywords).toString();
+        return new ToStringBuilder(this).add("keywords", keywords).add("phoneQuery", phoneQuery).toString();
     }
 }

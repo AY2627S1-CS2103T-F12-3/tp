@@ -20,15 +20,32 @@ import seedu.address.model.tag.Tag;
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
     private static final String NAME_WITHOUT_LETTER = "12345678";
-    private static final String INVALID_PHONE = "+651234";
+    private static final String INVALID_PHONE = " ";
     private static final String INVALID_TAG = "#friend";
 
     private static final String VALID_NAME = "Rachel Walker";
-    private static final String VALID_PHONE = "123456";
+    private static final String VALID_PHONE = "91234567";
     private static final String VALID_TAG_1 = "friend";
     private static final String VALID_TAG_2 = "neighbour";
 
     private static final String WHITESPACE = " \t\r\n";
+
+    @Test
+    public void parsePhone_nonstandardEntries_acceptsWithoutChangingText() throws Exception {
+        for (String input : List.of("911", "9123456", "12345678", "+86 138119828111", "（86）12345678")) {
+            assertEquals(input, ParserUtil.parsePhone(input).value);
+        }
+        assertEquals("91234567", ParserUtil.parsePhone("+65 9123 4567").value);
+        assertEquals("91234567", ParserUtil.parsePhone("\u300091234567\u3000").value);
+        assertThrows(ParseException.class, Phone.MESSAGE_CONSTRAINTS, () -> ParserUtil.parsePhone("\u00a0"));
+    }
+
+    @Test
+    public void parsePhone_digitlessText_throwsSpecificError() {
+        for (String text : List.of("Not available", "---", "phone", "未知", "＋（）", "①", "²")) {
+            assertThrows(ParseException.class, Phone.MESSAGE_MISSING_DIGIT, () -> ParserUtil.parsePhone(text));
+        }
+    }
 
     @Test
     public void parseIndex_invalidInput_throwsParseException() {

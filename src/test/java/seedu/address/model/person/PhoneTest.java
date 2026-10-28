@@ -1,8 +1,11 @@
 package seedu.address.model.person;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,30 +23,121 @@ public class PhoneTest {
     }
 
     @Test
-    public void isValidPhone() {
-        // null phone number
+    public void isValidPhone_blankInput_rejected() {
         assertThrows(NullPointerException.class, () -> Phone.isValidPhone(null));
+        for (String blank : List.of("", " ", "\t\r\n", "\u00a0", "\u3000", " \u2003 ")) {
+            assertFalse(Phone.isValidPhone(blank), blank);
+            assertThrows(IllegalArgumentException.class, Phone.MESSAGE_CONSTRAINTS, () -> new Phone(blank));
+        }
+    }
 
-        // invalid phone numbers
-        assertFalse(Phone.isValidPhone("")); // empty string
-        assertFalse(Phone.isValidPhone(" ")); // spaces only
-        assertFalse(Phone.isValidPhone("91")); // less than 3 numbers
-        assertFalse(Phone.isValidPhone("phone")); // non-numeric
-        assertFalse(Phone.isValidPhone("9011p041")); // alphabets within digits
-        assertFalse(Phone.isValidPhone("9312 1534")); // spaces within digits
+    @Test
+    public void constructor_recognizedSingaporeFormats_normalizesWithoutWarning() {
+        for (String input : List.of("91234567", " 91234567 ", "9123 4567", "9123   4567", "9123-4567",
+                "9123 - 4567", "+6591234567", "+65 9123 4567", "+65-9123-4567", "(+65) 9123 4567",
+                "(65) 9123 4567", "65 9123 4567", "6591234567", "65-9123-4567", "９１２３４５６７",
+                "＋６５　９１２３　４５６７", "（＋６５）９１２３－４５６７", "9123\u00a04567",
+                "\u300091234567\u3000")) {
+            Phone phone = new Phone(input);
+            assertEquals("91234567", phone.value, input);
+            assertTrue(phone.isStandardSingaporeNumber(), input);
+            assertEquals(phone, new Phone(phone.value), input);
+            assertEquals(phone.hashCode(), new Phone("91234567").hashCode(), input);
+        }
+        for (String boundary : List.of("60000000", "65000000", "69999999", "80000000",
+                "89999999", "90000000", "99999999")) {
+            assertTrue(new Phone(boundary).isStandardSingaporeNumber(), boundary);
+        }
+    }
 
-        // valid phone numbers
-        assertTrue(Phone.isValidPhone("911")); // exactly 3 numbers
-        assertTrue(Phone.isValidPhone("93121534"));
-        assertTrue(Phone.isValidPhone("124293842033123")); // long phone numbers
+    @Test
+    public void constructor_unrecognizedEntries_preservesTextAndNeedsWarning() {
+        for (String input : List.of("91", "911", "9123456", "912345678", "12345678", "72345678",
+                "+86 138119828111", "（86）12345678", "(86)12345678", "86 138119828111", "006591234567",
+                "+65 12345678", "+65 6591234567", "(+65) 6591234567", "65 12345678",
+                "9011p041", "91234567 (HP)", "91234567 ext 123", "91234567 / 81234567",
+                "1234 5678 (HP) 1111-3333 (Office)", "(91234567", "91234567)", "++6591234567",
+                "-91234567", "91234567-")) {
+            assertTrue(Phone.isValidPhone(input), input);
+            Phone phone = new Phone(" " + input + " ");
+            assertEquals(input, phone.value, input);
+            assertFalse(phone.isStandardSingaporeNumber(), input);
+            assertEquals(phone, new Phone(phone.value), input);
+        }
+    }
+
+    @Test
+    public void isValidPhone_digitlessText_rejectedForNewInputButRetainedForLegacyData() {
+        for (String text : List.of("Not available", "---", "phone", "未知", "＋（）", "①", "²")) {
+            assertFalse(Phone.isValidPhone(text), text);
+            assertTrue(Phone.isStorablePhone(text), text);
+            assertEquals(text, new Phone(text).value, text);
+        }
+        for (String text : List.of("0", "９", "١", "1234 (HP)", "+86 138119828111")) {
+            assertTrue(Phone.isValidPhone(text), text);
+        }
+    }
+
+    @Test
+    public void hasPossibleNumberInCommon_completeFormattedSegments_returnsTrueSymmetrically() {
+        for (List<String> pair : List.of(
+                List.of("92345678", "92345678 (HP)"),
+                List.of("92345678", "+65 9234 5678 ext 123"),
+                List.of("92345678", "９２３４５６７８ (HP)"),
+                List.of("92345678", "٩٢٣٤٥٦٧٨ (HP)"),
+                List.of("+86 138119828111", "+86138119828111"),
+                List.of("（86）12345678", "+8612345678"),
+                List.of("92345678 / 81234567", "81234567"),
+                List.of("92345678 +81234567", "81234567"),
+                List.of("92345678, 81234567; 94351253", "94351253"),
+                List.of("1234 5678 (HP) 1111-3333 (Office)", "11113333"),
+                List.of("92345678 ext 12381234567 ext 123", "92345678"),
+                List.of("9234567892345678 81234567", "81234567"),
+                List.of("9234567892345678 81234567", "92345678"),
+                List.of("123456 Office", "123456"),
+                List.of("9234.5678", "92345678"),
+                List.of("1234567 Office", "1234567"))) {
+            Phone first = new Phone(pair.get(0));
+            Phone second = new Phone(pair.get(1));
+            assertTrue(first.hasPossibleNumberInCommon(second), pair.toString());
+            assertTrue(second.hasPossibleNumberInCommon(first), pair.toString());
+        }
+    }
+
+    @Test
+    public void hasPossibleNumberInCommon_unrelatedOrAmbiguousEntries_returnsFalse() {
+        for (List<String> pair : List.of(
+                List.of("123456789", "23456789"),
+                List.of("92345678 ext 123", "92345678123"),
+                List.of("92345678 ext 123456", "81234567 ext 123456"),
+                List.of("9234 / 5678", "92345678"),
+                List.of("+86 92345678", "92345678"),
+                List.of("+86 138119828111", "+44 138119828111"),
+                List.of("+86 138119828111", "138119828111"),
+                List.of("12345 Office", "12345"),
+                List.of("Not available", "---"))) {
+            Phone first = new Phone(pair.get(0));
+            Phone second = new Phone(pair.get(1));
+            assertFalse(first.hasPossibleNumberInCommon(second), pair.toString());
+            assertFalse(second.hasPossibleNumberInCommon(first), pair.toString());
+        }
+        assertThrows(NullPointerException.class, () -> new Phone("92345678").hasPossibleNumberInCommon(null));
+    }
+
+    @Test
+    public void equals_unrecognizedEntries_comparesExactText() {
+        assertFalse(new Phone("（86）12345678").equals(new Phone("+8612345678")));
+        assertFalse(new Phone("+86 138119828111").equals(new Phone("+86138119828111")));
+        assertFalse(new Phone("91234567 (HP)").equals(new Phone("91234567")));
+        assertFalse(new Phone("Office").equals(new Phone("office")));
     }
 
     @Test
     public void equals() {
-        Phone phone = new Phone("999");
+        Phone phone = new Phone("99999999");
 
         // same values -> returns true
-        assertTrue(phone.equals(new Phone("999")));
+        assertTrue(phone.equals(new Phone("99999999")));
 
         // same object -> returns true
         assertTrue(phone.equals(phone));
@@ -55,6 +149,6 @@ public class PhoneTest {
         assertFalse(phone.equals(5.0f));
 
         // different values -> returns false
-        assertFalse(phone.equals(new Phone("995")));
+        assertFalse(phone.equals(new Phone("99500000")));
     }
 }

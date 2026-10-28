@@ -1,5 +1,6 @@
 package seedu.address.model;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -10,6 +11,7 @@ import seedu.address.model.menu.ReadOnlyMenu;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 
 /**
  * The API of the Model component.
@@ -45,6 +47,23 @@ public interface Model {
      * Returns true if a person with the same identity as {@code person} exists in the address book.
      */
     boolean hasPerson(Person person);
+
+    /**
+     * Returns the person with the given phone number, or an empty optional if no person matches.
+     * Searches all persons regardless of the current display filter.
+     *
+     * @throws NullPointerException if {@code phone} is null.
+     */
+    Optional<Person> findPersonByPhone(Phone phone);
+
+    /**
+     * Returns members with different phone entries that may contain a common number.
+     * Searches the complete member list without changing the display filter or selection.
+     * This advisory query does not establish duplicate member identities.
+     *
+     * @throws NullPointerException if {@code phone} is null.
+     */
+    List<Person> findPersonsWithSimilarPhone(Phone phone);
 
     /**
      * Deletes the given person.

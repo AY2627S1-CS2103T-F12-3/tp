@@ -123,6 +123,37 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
+* identifies each person by their saved phone entry using `Person.isSamePerson`. Different people can share a name.
+  `Phone` rejects only blank entries, trims surrounding whitespace and normalizes recognized Singapore formats
+  to eight digits starting with 6, 8 or 9. It accepts spaces, hyphens, full-width ASCII characters and the country
+  prefixes `+65`, `65`, `(+65)` and `(65)`. A bare `65` is removed only from ten digits whose last eight match
+  the expected Singapore format. Other entries retain their spelling and use exact, case-sensitive equality.
+* uses the same `Phone` constructor to normalize parsed commands and JSON data. `Phone.isStorablePhone` accepts
+  nonblank legacy entries; `Phone.isValidPhone` additionally requires a Unicode decimal digit for new phone
+  values in `ParserUtil.parsePhone`. Blank and digitless input have separate error messages. Storage and lookup
+  use the storable rule so users can retrieve and repair previously saved digitless notes without losing members.
+  `add-member` and `edit-member` append the shared `Messages.formatPhoneWarning` after successful changes for nonstandard
+  entries containing digits. Editing other fields on a legacy digitless entry also remains possible.
+  No country-specific validity or reachability check is performed for foreign numbers. Annotated or multiple
+  numbers do not establish exact member identity.
+* provides `Model.findPersonsWithSimilarPhone` as a separate advisory query over the full member list.
+  `Phone.hasPossibleNumberInCommon` extracts complete digit segments separated by text or delimiters, ignores
+  explicit extension values and compares segments of at least six digits. Unicode decimal digits are mapped to
+  ASCII for comparison, and a recognized Singapore `65` prefix is removed. Complete sequences whose total digit
+  count is a multiple of eight are checked as separate eight-digit Singapore numbers. The check never uses
+  arbitrary substring matching, infers other country codes, or joins numbers across text, slashes or plus signs.
+  Adjacent digits separated only by formatting characters form one segment, so not every multi-number spelling can
+  be identified.
+  Exact matches are handled by the existing blocking identity check; potential matches are formatted by
+  `Messages.formatPossiblePhoneDuplicates` after a successful add or phone edit. Editing excludes the original
+  member from this query, and edits without a phone field do not trigger another overlap warning.
+  The advisory query itself does not change phone equality, stored text, scores, histories, filters or selection.
+* searches phone entries through the same normalization rules. `find p/PHONE_ENTRY` constructs a phone-only
+  predicate so spaces and annotations are retained; ordinary queries keep name-keyword OR matching and exact
+  phone matching. A whole recognized Singapore query is normalized before keyword splitting.
+* is initialized by `MainApp` only if existing member data can be loaded. A read failure, including a collision
+  between normalized legacy numbers, stops startup and preserves the file rather than exposing an empty list
+  that a later command could save over it.
 * stores each person's name, phone, tags, score, and order history. Editing a person's details preserves
   their existing score and order history.
 * stores each person's redeemed milestone rewards in a `RedeemedMilestoneRewardHistory`. The history is immutable:
@@ -496,7 +527,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User requests to search for members using name keywords or an exact eight-digit phone number.
+1.  User requests to search for members using name keywords or a complete phone entry.
 2.  App shows a numbered list of matching members.
 
     Use case ends.
@@ -523,7 +554,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions**
 
-* 1a. The given phone number or name is invalid in format.
+* 1a. The name is invalid, or the supplied phone entry is blank or contains no decimal digits.
 
     * 1a1. App shows an error message.
 
@@ -754,7 +785,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * **Customer**: Anyone who buys food from the stall. A customer is not tracked by Ratatouille unless they sign up as a *member*.
 * **Hawker centres**: Open-air food complexes in Singapore housing many small, independently run food stalls.
-* **Member**: A customer enrolled in the stall's *rewards program*, uniquely identified by their *Singapore phone number*.
+* **Member**: A customer enrolled in the stall's *rewards program*, uniquely identified by their saved *phone entry*.
 * **Membership points**: A non-negative whole number representing a member's standing in the rewards program, used to determine eligibility for *milestone rewards*.
 * **Rewards program**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
 * **Menu item**: A dish or drink sold by the stall, recorded with a unique case-sensitive code, name, and price.
@@ -765,7 +796,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Pre-order**: An order recorded in advance for later collection. It is *pending* until marked *completed*.
 * **Reversible command**: A command that changes stored data and can therefore be undone (e.g. `add-order`). Commands that only read or display data (e.g. `find`) or close the app (`exit`) are not reversible.
 * **Sample data**: Placeholder members loaded when Ratatouille is launched for the first time, so new users can try out commands.
-* **Singapore phone number**: An 8-digit number starting with 6, 8 or 9, with no spaces, dashes or country code (e.g. `91234567`).
+* **Phone entry**: A nonblank contact value identifying a member. Recognized Singapore formats are saved as eight
+  digits starting with 6, 8 or 9. New entries must contain a decimal digit; other digit-containing formats receive
+  a nonblocking warning. Legacy digitless notes can still be loaded and corrected.
 * **Stall owner**: The main user of Ratatouille, who runs a food stall at a hawker centre. Also covers staff operating the app on the owner's behalf.
 
 --------------------------------------------------------------------------------------------------------------------
@@ -797,7 +830,61 @@ testers are expected to do more *exploratory* testing.
 
 1. _{ more test cases …​ }_
 
-### Deleting a member
+### Adding and editing phone numbers
+
+1. Prerequisites: Launch in a fresh folder with sample data. The numbers below must not be registered.
+
+1. Test case: `add-member n/PhoneCheck p/61234567`, then `add-member n/PhoneCheck p/81234567`.<br>
+   Expected: Both people are added despite sharing a name.
+
+1. Test case: `add-member n/OtherCheck p/61234567`.<br>
+   Expected: An error identifies the existing PhoneCheck person. No person is added.
+
+1. Test case: `find 81234567`, then `edit-member 1 p/61234567`.<br>
+   Expected: An error identifies the existing person even though that person is hidden by the search.
+   The displayed person's number remains `81234567`.
+
+1. Test case: `edit-member 1 p/81234567`, then `find 81234567`, then `edit-member 1 p/91234567`.<br>
+   Expected: Keeping the current number succeeds and restores the full list. Search again to select the intended
+   person before changing their number. Changing to an unused valid number also succeeds.
+
+1. Test case: `find +65 9123 4567`, then `edit-member 1 p/(+65)9123-4567`.<br>
+   Expected: Search finds the member with `91234567`. The edit succeeds without a warning and keeps that number.
+
+1. Test case: `add-member n/DuplicateCheck p/65 9123 4567`.<br>
+   Expected: A duplicate error identifies the existing member; the formatted alias does not create a new member.
+
+1. Test cases: `add-member n/OverseasCheck p/+86 138119828111`, `add-member n/SpecialCheck p/（86）12345678`,
+   and `add-member n/LegacyCheck p/911`.<br>
+   Expected: All three succeed with the same nonblocking warning, preserving each phone entry.
+
+1. Test case: `find p/（86）12345678`, then `edit-member 1 p/12345678`.<br>
+   Expected: Search selects SpecialCheck. The edit saves `12345678` and shows the shared warning.
+
+1. Test cases: `add-member n/BlankCheck p/` and `edit-member 1 p/`.<br>
+   Expected: Both report that phone numbers must not be blank without changing any member.
+
+1. Test case: `add-member n/NoteCheck p/91234567 (HP)`.<br>
+   Expected: The entry is saved unchanged. In addition to the format warning, a possible duplicate warning
+   identifies the PhoneCheck member with `91234567`. Neither member's points or history are merged.
+
+1. Test case: `find Nobody`, then `add-member n/OverseasAlias p/+86138119828111`.<br>
+   Expected: The compact entry is saved and a possible duplicate warning identifies OverseasCheck, even though
+   the search hid that member. The original overseas entry remains unchanged.
+
+1. Test cases: `add-member n/NoPhone p/Not available` and `edit-member 1 p/---`.<br>
+   Expected: Both report `Phone numbers must contain at least one digit`, with no change to any member.
+
+1. Close and relaunch the app, then run `find PhoneCheck`.<br>
+   Expected: Both people remain, with phone numbers `61234567` and `91234567`.
+   `find p/+86 138119828111` and `find p/12345678` still find the saved nonstandard entries.
+
+1. In a disposable copy of the saved member file, give two distinct members the phone entries `91234567`
+   and `6591234567`, then launch against that copy.<br>
+   Expected: Startup stops with a member-file recovery message. The file is unchanged; no members or histories
+   are silently merged. Restore the original copy before continuing.
+
+### Deleting a person
 
 1. Deleting a person while all persons are being shown
 
