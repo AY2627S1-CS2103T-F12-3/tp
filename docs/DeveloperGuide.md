@@ -924,15 +924,14 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Non-Functional Requirements
 
-1.  Should work on Windows, Linux, and macOS computers with Java `25` or above installed.
-2.  Should support up to 1000 members and their associated records without noticeable sluggishness during typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-4.  Should be portable and work without requiring installation. It should be distributed as a single JAR file, or as a single ZIP file if additional files are required.
-5.  Should operate as a single-user application without depending on a remote server or a database management system.
-6.  Should store member, order, and membership data locally in a human-editable text file.
-7.  Should save changes made by successful data-modifying commands automatically. A failed command or save operation should not corrupt previously saved data.
-8.  Common commands, such as finding a member, recording an order, and updating membership points, should complete without noticeable delay under typical usage.
-9.  Invalid commands should provide clear error messages that identify the problem without modifying existing data.
+1. Should run on Windows, Linux, and macOS with only Java `25` installed, using the same executable JAR without a separate installer. The release JAR should not exceed 100 MB.
+2. Should be used by one person on one computer, without shared data files. 
+3. Should work without a network connection, remote server, or database management system.
+4. Should store member, order, menu, and milestone data locally in human-editable text files. The application should access files only within its home folder (the folder containing the JAR) and its subfolders, and should not change operating-system settings.
+5. With 1000 members and up to 20 orders per member, at least 95% of attempts to find a member, record an order, or update a membership score should finish within 3 seconds on a computer with a four-core processor, 8 GB of RAM, a local SSD, and Java `25`.
+6. After launch, all documented workflows should be usable with a keyboard alone, without requiring a mouse. The primary way to enter data should be typed commands.
+7. At 1920 × 1080 or higher with 100% or 125% display scaling, command input and results should remain visible and readable without overlapping or being cut off. At 1280 × 720 or higher with 150% display scaling, every documented workflow should remain completable, including access to its input and results by scrolling where necessary.
+8. In the current production versions of desktop Chrome and Firefox on Windows, Linux, and macOS, the online HTML versions of the User Guide and Developer Guide should keep all text, examples, tables, and diagrams readable and reachable by scrolling at the display resolutions and scaling levels in NFR 6.
 
 ### Glossary
 
