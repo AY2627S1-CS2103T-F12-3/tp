@@ -72,6 +72,7 @@ public class JsonUtil {
     /**
      * Saves the Json object to the specified file.
      * Overwrites existing file if it exists, creates a new file if it doesn't.
+     * Serializes before writing and replaces the file atomically to avoid partial saved files.
      * @param jsonFile cannot be null
      * @param filePath cannot be null
      * @throws IOException if there was an error during writing to the file

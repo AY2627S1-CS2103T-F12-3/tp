@@ -25,6 +25,8 @@ import javafx.collections.ObservableList;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.ExitCommand;
+import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -86,6 +88,31 @@ public class LogicManagerTest {
     public void execute_validCommand_success() throws Exception {
         String listCommand = ListCommand.COMMAND_WORD;
         assertCommandSuccess(listCommand, ListCommand.MESSAGE_SUCCESS, model);
+    }
+
+    @Test
+    public void execute_helpWhileSavingFails_returnsHelpWithoutSaving() throws Exception {
+        assertCommandSkipsSaving(HelpCommand.COMMAND_WORD,
+                new CommandResult(HelpCommand.SHOWING_HELP_MESSAGE, true, false));
+    }
+
+    @Test
+    public void execute_exitWhileSavingFails_returnsExitWithoutSaving() throws Exception {
+        assertCommandSkipsSaving(ExitCommand.COMMAND_WORD,
+                new CommandResult(ExitCommand.MESSAGE_EXIT_ACKNOWLEDGEMENT, false, true));
+    }
+
+    private void assertCommandSkipsSaving(String input, CommandResult expectedResult) throws Exception {
+        FailingStorageManager storage = new FailingStorageManager();
+        logic = new LogicManager(model, storage);
+
+        assertEquals(expectedResult, logic.execute(input));
+        assertEquals(0, storage.saveAttempts);
+        assertEquals(new ModelManager(), model);
+
+        String expectedMessage = String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage());
+        assertThrows(CommandException.class, expectedMessage, () -> logic.execute(ListCommand.COMMAND_WORD));
+        assertEquals(1, storage.saveAttempts);
     }
 
     @Test
@@ -427,5 +454,35 @@ public class LogicManagerTest {
         expectedModel.addPerson(expectedPerson);
         expectedModel.selectPerson(expectedPerson);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
+    }
+
+    /** Storage that counts and rejects every attempt to save domain data. */
+    private class FailingStorageManager extends StorageManager {
+        private int saveAttempts;
+
+        FailingStorageManager() {
+            super(new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")),
+                    new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json")),
+                    new JsonMenuStorage(temporaryFolder.resolve("menu.json")),
+                    new JsonMilestoneCatalogStorage(temporaryFolder.resolve("milestones.json")));
+        }
+
+        @Override
+        public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+            saveAttempts++;
+            throw DUMMY_IO_EXCEPTION;
+        }
+
+        @Override
+        public void saveMenu(ReadOnlyMenu menu) throws IOException {
+            saveAttempts++;
+            throw DUMMY_IO_EXCEPTION;
+        }
+
+        @Override
+        public void saveMilestoneCatalog(ReadOnlyMilestoneCatalog milestoneCatalog) throws IOException {
+            saveAttempts++;
+            throw DUMMY_IO_EXCEPTION;
+        }
     }
 }

@@ -99,7 +99,6 @@ public class JsonMenuStorage {
         requireNonNull(filePath);
 
         JsonSerializableMenu savedMenu = new JsonSerializableMenu(menu);
-        FileUtil.createIfMissing(filePath);
         JsonUtil.saveJsonFile(savedMenu, filePath);
     }
 }

@@ -471,10 +471,17 @@ Format: `exit`
 ### Saving the data
 
 The app automatically saves customer records, the menu, and the milestone catalog after every command that executes
-successfully. You do not need to save manually. All three are loaded again at startup.
+successfully, except `help` and `exit`. These two commands remain available even when data cannot be saved.
+You do not need to save manually. All three are loaded again at startup.
 
 If a save fails, an error is shown instead of the normal success feedback. Changes already made remain in memory;
 after fixing the file-access problem, run a command such as `list` to attempt saving again before closing the app.
+The `exit` command does not retry saving; closing the app loses any changes that have not been saved successfully.
+
+Each file is replaced only after its new contents have been fully written, so a failed write does not leave that
+file half-written. The three data files are saved separately: if a later file fails to save, earlier files may
+already contain the latest changes. If your storage location does not support safe file replacement, use a
+different location that does.
 
 ### Editing the data file
 
@@ -501,7 +508,8 @@ loading older data. The internal codes are case-insensitive, saved in uppercase,
 If the customer file is invalid, the app starts with an empty address book. A missing customer file loads sample
 contacts, a missing menu file loads the sample menu, and a missing milestone file loads the sample milestone catalog.
 An invalid menu file starts with an empty menu or milestone catalog respectively. Loading does not replace
-an invalid file, but the next successfully executed command attempts to save all three files and can overwrite the invalid data. Back up all three files before editing them, and restore
+an invalid file, but the next successfully executed command other than `help` or `exit` attempts to save all three
+files and can overwrite the invalid data. Back up all three files before editing them, and restore
 a valid backup before running commands if you need to recover existing records.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
