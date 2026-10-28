@@ -442,14 +442,14 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* Small food stall owner in hawker centres
-* Prefers using CLI over GUI
-* Record rewards program for customers
+* A small hawker stall owner who serves many customers and wants to run a loyalty program.
+* Comfortable with CLI and needs to record transactions and retrieve customer information quickly during service.
 
 **Value proposition**:
-* Fast access to member's contact, order history and membership status
-* CLI optimised for faster retrieval and updates of customer information than GUI
 
+* Keep customer, menu, order, and reward information in one desktop application.
+* Enter and retrieve information quickly using typed commands and visible records during service.
+* Save data locally between sessions.
 
 ### User stories
 
