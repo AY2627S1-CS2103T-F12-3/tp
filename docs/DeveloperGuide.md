@@ -216,13 +216,24 @@ loaded `ReadOnlyMenu`; the existing two-argument constructor initializes an empt
 `MainApp` configures `data/menu.json` relative to the launch directory. Its `initMenu` method loads the saved menu,
 uses `SampleDataUtil.getSampleMenu()` if the file is missing, or logs a warning and supplies an empty menu if loading
 fails. Sample menu codes match the sample members' order histories. Loading alone leaves an invalid file untouched;
-the next successfully executed command can overwrite it,
+the next successfully executed command other than `help` or `exit` can overwrite it,
 matching the existing address-book fallback policy.
 
-All three domain data files are saved after every successfully executed command, including read-only commands. A
-save error does not roll back changes already made in memory. The address-book file is written first, followed by
+All three domain data files are saved after every successfully executed command, including read-only commands
+such as `list`, except `help` and `exit`. `LogicManager` returns results requesting help or exit before saving,
+so storage failures cannot prevent either action. A save error does not roll back changes already made in memory.
+The address-book file is written first, followed by
 the menu and milestone catalog, so an earlier file may already be saved if a later write fails; the three writes
-are not a transaction. A later successful command attempts all three saves again through the same flow.
+are not a transaction. A later successful command other than `help` or `exit` attempts all three saves again
+through the same flow. Exiting does not retry domain-data saves, so unsaved in-memory changes are lost on exit.
+
+Each JSON save serializes its contents before writing a unique temporary file in the destination directory.
+Only after writing completes does `FileUtil` atomically replace the destination. A failed write or unsupported
+atomic replacement leaves the existing destination intact; a failed first save does not leave an empty JSON file.
+Missing parent directories are created as needed. Temporary files are removed after saving or failure where
+possible; cleanup errors are logged without hiding the save result. There is no non-atomic fallback, so a file
+system that cannot atomically replace the destination reports a save error. This protects individual files
+against partial writes, but does not provide a transaction across files or guarantee recovery after power loss.
 
 #### Testing
 
@@ -250,7 +261,8 @@ stable by delegating them to its catalog.
 
 `MainApp` configures `data/milestones.json` relative to the launch directory. A valid file is loaded into
 `ModelManager`; a missing or invalid file produces an empty catalog, with invalid file contents left untouched until
-the next successfully executed command saves the model. Legacy `milestones` properties in `memberlist.json` are
+the next successfully executed command other than `help` or `exit` saves the model.
+Legacy `milestones` properties in `memberlist.json` are
 ignored, so the address-book file remains responsible only for customer data.
 
 The `list-milestones`, `add-milestone`, `edit-milestone`, and `delete-milestone` commands expose catalog access and
@@ -543,8 +555,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 2a. Saving fails after the item has been added in memory.
 
     * 2a1. App shows a save error. The item remains in memory.
-    * 2a2. User resolves the file-access problem and requests another command.
-    * 2a3. App executes that command and attempts to save both data files again.
+    * 2a2. User resolves the file-access problem and requests another command, such as `list`,
+      other than `help` or `exit`.
+    * 2a3. App executes that command and attempts to save all three data files again.
 
       Use case ends if saving succeeds; otherwise, extension 2a repeats.
 

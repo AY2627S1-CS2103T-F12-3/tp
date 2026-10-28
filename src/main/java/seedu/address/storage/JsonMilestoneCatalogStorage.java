@@ -101,7 +101,6 @@ public class JsonMilestoneCatalogStorage {
         requireNonNull(filePath);
 
         JsonSerializableMilestoneCatalog savedCatalog = new JsonSerializableMilestoneCatalog(milestoneCatalog);
-        FileUtil.createIfMissing(filePath);
         JsonUtil.saveJsonFile(savedCatalog, filePath);
     }
 }
