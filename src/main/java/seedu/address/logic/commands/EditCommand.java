@@ -43,7 +43,8 @@ public class EditCommand extends Command {
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_DUPLICATE_PERSON =
+            "This phone number already belongs to a person in the address book: %1$s";
 
     private final Index index;
     private final EditPersonDescriptor editPersonDescriptor;
@@ -72,14 +73,29 @@ public class EditCommand extends Command {
         Person personToEdit = lastShownList.get(index.getZeroBased());
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
 
-        if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
-            throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+        Optional<Person> conflictingPerson = model.findPersonByPhone(editedPerson.getPhone())
+                .filter(person -> !person.isSamePerson(personToEdit));
+        if (conflictingPerson.isPresent()) {
+            throw new CommandException(String.format(MESSAGE_DUPLICATE_PERSON,
+                    Messages.format(conflictingPerson.get())));
         }
 
+        List<Person> possibleDuplicates = findPossiblePhoneDuplicates(model, personToEdit, editedPerson);
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(editedPerson);
-        return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)));
+        return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson))
+                + Messages.formatPhoneWarning(editedPerson.getPhone())
+                + Messages.formatPossiblePhoneDuplicates(possibleDuplicates));
+    }
+
+    private List<Person> findPossiblePhoneDuplicates(Model model, Person original, Person edited) {
+        if (editPersonDescriptor.getPhone().isEmpty()) {
+            return List.of();
+        }
+        return model.findPersonsWithSimilarPhone(edited.getPhone()).stream()
+                .filter(person -> !person.isSamePerson(original))
+                .toList();
     }
 
     /**

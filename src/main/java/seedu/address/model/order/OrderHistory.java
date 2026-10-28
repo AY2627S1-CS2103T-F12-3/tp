@@ -55,9 +55,9 @@ public class OrderHistory {
      * Returns a new history without the order at the given zero-based index.
      * This history is not modified.
      *
-     * @param zeroBasedIndex the zero-based index of the order to delete
-     * @return a new {@code OrderHistory} without the specified order
-     * @throws IndexOutOfBoundsException if {@code zeroBasedIndex} is outside this history
+     * @param zeroBasedIndex the zero-based index of the order to delete.
+     * @return a new {@code OrderHistory} without the specified order.
+     * @throws IndexOutOfBoundsException if {@code zeroBasedIndex} is outside this history.
      */
     public OrderHistory deleteOrder(int zeroBasedIndex) {
         ArrayList<Order> updatedOrders = new ArrayList<>(orders);

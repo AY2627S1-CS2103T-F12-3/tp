@@ -2,6 +2,8 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalMilestones.FREE_DESSERT;
+import static seedu.address.testutil.TypicalMilestones.FREE_DRINK;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,8 +24,6 @@ import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 public class JsonSerializableMilestoneCatalogTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data",
             "JsonSerializableMilestoneCatalogTest");
-    private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
-    private static final Milestone FREE_DESSERT = new Milestone("DESSERT500", "Free dessert", 500);
 
     @Test
     public void constructor_nullSource_throwsNullPointerException() {

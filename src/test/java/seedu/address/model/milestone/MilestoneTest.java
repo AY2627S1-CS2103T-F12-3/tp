@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalMilestones.FREE_DRINK;
 
 import org.junit.jupiter.api.Test;
 
 public class MilestoneTest {
-    private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
 
     @Test
     public void constructor_validFields_preservesValues() {

@@ -22,32 +22,45 @@ public class EditMilestoneCommandParser implements Parser<EditMilestoneCommand> 
         ArgumentMultimap argMultimap = MilestoneCommandParserUtil.tokenize(args,
                 EditMilestoneCommand.MESSAGE_USAGE, PREFIX_REWARD, PREFIX_REQUIRED_SCORE);
 
-        Index index;
+        Index index = parseMilestoneIndex(argMultimap.getPreamble());
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_REWARD, PREFIX_REQUIRED_SCORE);
+        EditMilestoneDescriptor descriptor = parseEditDescriptor(argMultimap);
+        return new EditMilestoneCommand(index, descriptor);
+    }
+
+    /**
+     * Parses the milestone index and adds the command usage to invalid-index errors.
+     */
+    private Index parseMilestoneIndex(String preamble) throws ParseException {
         try {
-            index = ParserUtil.parseIndex(argMultimap.getPreamble());
+            return ParserUtil.parseIndex(preamble);
         } catch (ParseException e) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
                     EditMilestoneCommand.MESSAGE_USAGE), e);
         }
+    }
 
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_REWARD, PREFIX_REQUIRED_SCORE);
-        EditMilestoneDescriptor editMilestoneDescriptor = new EditMilestoneDescriptor();
+    /**
+     * Parses the supplied editable fields and rejects an edit with no fields.
+     */
+    private EditMilestoneDescriptor parseEditDescriptor(ArgumentMultimap argMultimap) throws ParseException {
+        EditMilestoneDescriptor descriptor = new EditMilestoneDescriptor();
         if (argMultimap.getValue(PREFIX_REWARD).isPresent()) {
             String reward = argMultimap.getValue(PREFIX_REWARD).get();
             if (!Milestone.isValidRewardDescription(reward)) {
                 throw new ParseException(Milestone.MESSAGE_REWARD_DESCRIPTION_CONSTRAINTS);
             }
-            editMilestoneDescriptor.setRewardDescription(reward);
+            descriptor.setRewardDescription(reward);
         }
         if (argMultimap.getValue(PREFIX_REQUIRED_SCORE).isPresent()) {
             int requiredScore = ParserUtil.parseRequiredScore(
                     argMultimap.getValue(PREFIX_REQUIRED_SCORE).get());
-            editMilestoneDescriptor.setRequiredScore(requiredScore);
+            descriptor.setRequiredScore(requiredScore);
         }
 
-        if (!editMilestoneDescriptor.isAnyFieldEdited()) {
+        if (!descriptor.isAnyFieldEdited()) {
             throw new ParseException(EditMilestoneCommand.MESSAGE_NOT_EDITED);
         }
-        return new EditMilestoneCommand(index, editMilestoneDescriptor);
+        return descriptor;
     }
 }

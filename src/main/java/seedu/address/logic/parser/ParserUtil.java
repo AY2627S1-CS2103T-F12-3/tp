@@ -89,11 +89,13 @@ public class ParserUtil {
      */
     public static Phone parsePhone(String phone) throws ParseException {
         requireNonNull(phone);
-        String trimmedPhone = phone.trim();
-        if (!Phone.isValidPhone(trimmedPhone)) {
+        if (!Phone.isStorablePhone(phone)) {
             throw new ParseException(Phone.MESSAGE_CONSTRAINTS);
         }
-        return new Phone(trimmedPhone);
+        if (!Phone.isValidPhone(phone)) {
+            throw new ParseException(Phone.MESSAGE_MISSING_DIGIT);
+        }
+        return new Phone(phone);
     }
 
     /**

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
+import seedu.address.model.person.Phone;
 
 public class FindCommandParserTest {
 
@@ -37,6 +38,24 @@ public class FindCommandParserTest {
                 new FindCommand(new PersonMatchesKeywordsPredicate(List.of("98765432")));
 
         assertParseSuccess(parser, "98765432", expectedFindCommand);
+    }
+
+    @Test
+    public void parse_formattedSingaporePhone_normalizesQuery() {
+        FindCommand expected = new FindCommand(new PersonMatchesKeywordsPredicate(List.of("91234567")));
+        for (String input : List.of("9123 4567", "+6591234567", "65 9123 4567", "（＋６５）９１２３－４５６７")) {
+            assertParseSuccess(parser, input, expected);
+        }
+    }
+
+    @Test
+    public void parse_explicitPhone_preservesWholeEntry() {
+        for (String input : List.of("+86 138119828111", "（86）12345678", "91234567 (HP)", "Not available")) {
+            FindCommand expected = new FindCommand(new PersonMatchesKeywordsPredicate(new Phone(input)));
+            assertParseSuccess(parser, "p/" + input, expected);
+        }
+        assertParseFailure(parser, "p/ ", Phone.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "\u00a0", String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
     }
 
 }
