@@ -14,7 +14,7 @@ import seedu.address.model.menu.FoodItem;
  * Updates the name, code, and/or price of an existing menu item.
  */
 public class UpdateMenuItemCommand extends Command {
-    public static final String COMMAND_WORD = "update-menu-item";
+    public static final String COMMAND_WORD = "edit-menu-item";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Updates the details of a menu item identified by its code.\n"
