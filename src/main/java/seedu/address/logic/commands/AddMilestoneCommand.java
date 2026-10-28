@@ -1,13 +1,11 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_CODE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REQUIRED_SCORE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REWARD;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
-import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.milestone.Milestone;
 
@@ -20,18 +18,15 @@ public class AddMilestoneCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Adds a milestone reward to the milestone catalog.\n"
             + "Parameters: "
-            + PREFIX_CODE + "CODE "
             + PREFIX_REWARD + "REWARD "
             + PREFIX_REQUIRED_SCORE + "REQUIRED_SCORE\n"
             + "Example: " + COMMAND_WORD + " "
-            + PREFIX_CODE + "FREE500 "
             + PREFIX_REWARD + "Free drink "
             + PREFIX_REQUIRED_SCORE + "500";
 
     public static final String MESSAGE_SUCCESS = "New milestone added: %s";
-    public static final String MESSAGE_DUPLICATE_MILESTONE = "A milestone with this code already exists.";
 
-    private final Milestone toAdd;
+    private Milestone toAdd;
 
     /**
      * Creates a command to add the specified milestone.
@@ -41,11 +36,12 @@ public class AddMilestoneCommand extends Command {
     }
 
     @Override
-    public CommandResult execute(Model model) throws CommandException {
+    public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        if (model.hasMilestone(toAdd)) {
-            throw new CommandException(MESSAGE_DUPLICATE_MILESTONE);
+        // retry until unique UUID is generated
+        while (model.hasMilestone(toAdd)) {
+            toAdd = new Milestone(toAdd.getRewardDescription(), toAdd.getRequiredScore());
         }
 
         model.addMilestone(toAdd);

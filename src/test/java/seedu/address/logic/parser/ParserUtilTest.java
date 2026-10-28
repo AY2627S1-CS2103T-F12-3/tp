@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Score;
 import seedu.address.model.tag.Tag;
 
 public class ParserUtilTest {
@@ -51,7 +52,8 @@ public class ParserUtilTest {
 
     @Test
     public void parseRequiredScore_invalidInput_throwsParseException() {
-        for (String input : List.of("", "0", "-1", "+500", "1.5", "1e3", "2147483648")) {
+        for (String input : List.of("", "0", "-1", "+500", "1.5", "1e3", "1000000000",
+                "2147483647")) {
             assertThrows(ParseException.class, ParserUtil.MESSAGE_INVALID_REQUIRED_SCORE, () ->
                     ParserUtil.parseRequiredScore(input));
         }
@@ -61,7 +63,7 @@ public class ParserUtilTest {
     public void parseRequiredScore_validInput_returnsScore() throws Exception {
         assertEquals(1, ParserUtil.parseRequiredScore("1"));
         assertEquals(500, ParserUtil.parseRequiredScore(" 00500 "));
-        assertEquals(Integer.MAX_VALUE, ParserUtil.parseRequiredScore("2147483647"));
+        assertEquals(Score.MAX_SCORE, ParserUtil.parseRequiredScore("999999999"));
     }
 
     @Test

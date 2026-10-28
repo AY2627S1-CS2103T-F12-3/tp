@@ -80,14 +80,18 @@ public class Person {
         return score;
     }
 
-    /** Returns the person's immutable order history. */
+    /**
+     * Returns the person's immutable order history.
+     */
     public OrderHistory getOrderHistory() {
         return orderHistory;
     }
 
-    /** Returns the person's immutable redeemed milestone reward history. */
+    /**
+     * Returns the person's immutable redeemed milestone reward history.
+     */
     public RedeemedMilestoneRewardHistory getRedeemedMilestoneRewardHistory() {
-        return this.redeemedMilestoneRewardHistory;
+        return redeemedMilestoneRewardHistory;
     }
 
     /**
@@ -138,7 +142,6 @@ public class Person {
 
     @Override
     public int hashCode() {
-        // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(name,
                 phone,
                 tags,

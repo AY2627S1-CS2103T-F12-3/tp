@@ -19,11 +19,9 @@ import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.order.OrderHistory;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
-import seedu.address.model.person.Score;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -95,14 +93,12 @@ public class EditCommand extends Command {
         Phone updatedPhone = editPersonDescriptor.getPhone().orElse(personToEdit.getPhone());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
 
-        //TODO update when introducing editing of score
-        Score updatedScore = personToEdit.getScore();
-        //TODO update when introducing editing of orders
-        OrderHistory updatedOrderHistory = personToEdit.getOrderHistory();
         return new Person(
-                updatedName, updatedPhone,
-                updatedTags, updatedScore,
-                updatedOrderHistory,
+                updatedName,
+                updatedPhone,
+                updatedTags,
+                personToEdit.getScore(),
+                personToEdit.getOrderHistory(),
                 personToEdit.getRedeemedMilestoneRewardHistory()
         );
     }

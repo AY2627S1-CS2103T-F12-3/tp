@@ -40,7 +40,6 @@ import seedu.address.logic.commands.UpdateMenuItemCommand;
 import seedu.address.logic.commands.UpdateScoreCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.menu.FoodItem;
-import seedu.address.model.milestone.Milestone;
 import seedu.address.model.order.Order;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
@@ -77,9 +76,8 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_addMilestone() throws Exception {
-        assertEquals(new AddMilestoneCommand(new Milestone("FREE500", "Free drink", 500)),
-                parser.parseCommand(AddMilestoneCommand.COMMAND_WORD
-                        + " c/FREE500 r/Free drink s/500"));
+        assertTrue(parser.parseCommand(AddMilestoneCommand.COMMAND_WORD
+                + " r/Free drink s/500") instanceof AddMilestoneCommand);
     }
 
     @Test

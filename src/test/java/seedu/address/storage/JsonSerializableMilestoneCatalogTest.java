@@ -3,6 +3,8 @@ package seedu.address.storage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.testutil.Assert.assertThrows;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,8 @@ import seedu.address.model.milestone.MilestoneCatalog;
 import seedu.address.model.milestone.ReadOnlyMilestoneCatalog;
 
 public class JsonSerializableMilestoneCatalogTest {
+    private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data",
+            "JsonSerializableMilestoneCatalogTest");
     private static final Milestone FREE_DRINK = new Milestone("FREE500", "Free drink", 500);
     private static final Milestone FREE_DESSERT = new Milestone("DESSERT500", "Free dessert", 500);
 
@@ -29,15 +33,14 @@ public class JsonSerializableMilestoneCatalogTest {
 
     @Test
     public void toModelType_emptyCatalog_returnsEmptyCatalog() throws Exception {
-        assertEquals(new MilestoneCatalog(), new JsonSerializableMilestoneCatalog(List.of()).toModelType());
+        assertEquals(new MilestoneCatalog(), readCatalog("emptyMilestoneCatalog.json").toModelType());
         assertEquals(new MilestoneCatalog(),
                 new JsonSerializableMilestoneCatalog(new MilestoneCatalog()).toModelType());
     }
 
     @Test
     public void toModelType_validMilestones_preservesValuesAndSorts() throws Exception {
-        JsonSerializableMilestoneCatalog saved = new JsonSerializableMilestoneCatalog(List.of(
-                new JsonAdaptedMilestone(FREE_DRINK), new JsonAdaptedMilestone(FREE_DESSERT)));
+        JsonSerializableMilestoneCatalog saved = readCatalog("validMilestoneCatalog.json");
 
         assertEquals(List.of(FREE_DESSERT, FREE_DRINK), saved.toModelType().getMilestoneList());
     }
@@ -77,9 +80,8 @@ public class JsonSerializableMilestoneCatalogTest {
 
     @Test
     public void toModelType_missingOrNullMilestoneList_throwsIllegalValueException() throws Exception {
-        for (String json : List.of("{}", "{\"milestones\":null}")) {
-            JsonSerializableMilestoneCatalog saved =
-                    JsonUtil.fromJsonString(json, JsonSerializableMilestoneCatalog.class);
+        for (String fileName : List.of("missingMilestones.json", "nullMilestones.json")) {
+            JsonSerializableMilestoneCatalog saved = readCatalog(fileName);
             assertThrows(IllegalValueException.class,
                     JsonSerializableMilestoneCatalog.MESSAGE_MISSING_MILESTONES, saved::toModelType);
         }
@@ -87,8 +89,7 @@ public class JsonSerializableMilestoneCatalogTest {
 
     @Test
     public void toModelType_nullMilestone_throwsIllegalValueException() throws Exception {
-        JsonSerializableMilestoneCatalog saved = JsonUtil.fromJsonString(
-                "{\"milestones\":[null]}", JsonSerializableMilestoneCatalog.class);
+        JsonSerializableMilestoneCatalog saved = readCatalog("nullMilestone.json");
         assertThrows(IllegalValueException.class,
                 JsonSerializableMilestoneCatalog.MESSAGE_NULL_MILESTONE, saved::toModelType);
     }
@@ -96,7 +97,7 @@ public class JsonSerializableMilestoneCatalogTest {
     @Test
     public void toModelType_invalidMilestone_throwsIllegalValueException() {
         List<JsonAdaptedMilestone> invalidMilestones = List.of(
-                new JsonAdaptedMilestone("!", "Reward", 100),
+                new JsonAdaptedMilestone(" ", "Reward", 100),
                 new JsonAdaptedMilestone("FREE500", " ", 100),
                 new JsonAdaptedMilestone("FREE500", "Reward", 0));
         List<String> messages = List.of(Milestone.MESSAGE_CODE_CONSTRAINTS,
@@ -139,5 +140,10 @@ public class JsonSerializableMilestoneCatalogTest {
             assertThrows(JsonProcessingException.class, () ->
                     JsonUtil.fromJsonString(json, JsonSerializableMilestoneCatalog.class));
         }
+    }
+
+    private JsonSerializableMilestoneCatalog readCatalog(String fileName) throws Exception {
+        return JsonUtil.readJsonFile(TEST_DATA_FOLDER.resolve(fileName),
+                JsonSerializableMilestoneCatalog.class).orElseThrow();
     }
 }

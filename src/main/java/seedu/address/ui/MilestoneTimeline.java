@@ -2,9 +2,12 @@ package seedu.address.ui;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -21,22 +24,28 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.milestone.Milestone;
 import seedu.address.model.person.Person;
 
-/** Displays equally spaced milestones on a scrollable timeline, with member progress when available. */
+/** Displays milestones on a scrollable timeline, with member progress when available. */
 public class MilestoneTimeline extends ScrollPane {
     private static final Logger logger = LogsCenter.getLogger(MilestoneTimeline.class);
-    private static final double LINE_X = 94;
+    private static final double LINE_X = 108;
     private static final double LINE_START_Y = 22;
     private static final double FIRST_MILESTONE_Y = 92;
     private static final double MILESTONE_SPACING = 87.2;
     private static final double END_PADDING = 64;
-    private static final double REWARD_X = 118;
+    private static final double REWARD_X = 135;
+    private static final double REWARD_RIGHT_PADDING = 12;
+    private static final double MILESTONE_DETAILS_OFFSET_Y = 20;
+    private static final double MILESTONE_ROW_GAP = 20;
     private static final double MILESTONE_NUMBER_SIZE = 34;
     private static final double SCORE_INDICATOR_SHIFT_X = -6;
-    private static final double SCORE_LABEL_WIDTH = 58;
+    private static final double SCORE_LABEL_WIDTH = 72;
     private static final double SCORE_ARROW_WIDTH = 8;
     private static final double SCORE_ARROW_HALF_HEIGHT = 5;
 
     private final Pane timeline = new Pane();
+    private final DoubleBinding rewardWidth = Bindings.max(1.0,
+            timeline.widthProperty().subtract(REWARD_X + REWARD_RIGHT_PADDING));
+    private final List<VBox> milestoneDetails = new ArrayList<>();
     /** Null when the timeline is shown without a selected member. */
     private final Person selectedPerson;
 
@@ -75,6 +84,7 @@ public class MilestoneTimeline extends ScrollPane {
     private void configureScrolling() {
         getStyleClass().add("milestone-scroll");
         setFitToWidth(true);
+        timeline.setMinWidth(0);
         setHbarPolicy(ScrollBarPolicy.NEVER);
         setPannable(true);
         setContent(timeline);
@@ -92,16 +102,51 @@ public class MilestoneTimeline extends ScrollPane {
 
     /** Draws the timeline, milestone rows, and selected member's score when available. */
     private void showMilestones(List<Milestone> milestones) {
-        double timelineHeight = calculateMilestoneY(milestones.size() - 1) + END_PADDING;
-        timeline.setPrefHeight(timelineHeight);
-        addTimelineLine(timelineHeight);
         addMilestoneRows(milestones);
+        updateTimeline(milestones);
+        timeline.widthProperty().addListener((observable, oldWidth, newWidth) -> updateTimeline(milestones));
+    }
+
+    /** Repositions rows and progress indicators after the available text width changes. */
+    private void updateTimeline(List<Milestone> milestones) {
+        timeline.applyCss();
+        layoutMilestoneRows();
+        double timelineHeight = calculateTimelineHeight();
+        timeline.setPrefHeight(timelineHeight);
+        redrawTimeline(milestones, timelineHeight);
+    }
+
+    /** Positions rows with enough space for their wrapped reward and status text. */
+    private void layoutMilestoneRows() {
+        double y = FIRST_MILESTONE_Y;
+        for (VBox details : milestoneDetails) {
+            details.setLayoutY(y - MILESTONE_DETAILS_OFFSET_Y);
+            double height = details.prefHeight(rewardWidth.get());
+            y += Math.max(MILESTONE_SPACING, height + MILESTONE_ROW_GAP);
+        }
+    }
+
+    /** Returns a height that accommodates the last marker and the full final reward row. */
+    private double calculateTimelineHeight() {
+        VBox lastDetails = milestoneDetails.get(milestoneDetails.size() - 1);
+        double lastRowBottom = lastDetails.getLayoutY() + lastDetails.prefHeight(rewardWidth.get());
+        return Math.max(calculateMilestoneY(milestoneDetails.size() - 1) + END_PADDING,
+                lastRowBottom + MILESTONE_ROW_GAP);
+    }
+
+    /** Redraws markers and member progress at the newly calculated row positions. */
+    private void redrawTimeline(List<Milestone> milestones, double timelineHeight) {
+        timeline.getChildren().clear();
+        addTimelineLine(timelineHeight);
+        for (int i = 0; i < milestones.size(); i++) {
+            timeline.getChildren().addAll(createMilestoneNumber(i, calculateMilestoneY(i)), milestoneDetails.get(i));
+        }
         if (selectedPerson != null) {
             addScoreIndicator(selectedPerson.getScore().value, milestones);
         }
     }
 
-    /** Adds a numbered row for each milestone in catalog order. */
+    /** Creates the detail rows in catalog order. */
     private void addMilestoneRows(List<Milestone> milestones) {
         for (int i = 0; i < milestones.size(); i++) {
             addMilestoneRow(milestones.get(i), i);
@@ -120,11 +165,11 @@ public class MilestoneTimeline extends ScrollPane {
         timeline.getChildren().addAll(line, start, arrow);
     }
 
-    /** Adds one milestone's number, reward, and status at its timeline position. */
+    /** Creates one milestone's reward and status at its initial timeline position. */
     private void addMilestoneRow(Milestone milestone, int index) {
-        double y = calculateMilestoneY(index);
-        timeline.getChildren().addAll(createMilestoneNumber(index, y),
-                createMilestoneDetails(milestone, y));
+        VBox details = createMilestoneDetails(milestone, FIRST_MILESTONE_Y + index * MILESTONE_SPACING);
+        milestoneDetails.add(details);
+        timeline.getChildren().add(details);
     }
 
     /** Creates a numbered marker centered on the timeline line at {@code y}. */
@@ -144,19 +189,21 @@ public class MilestoneTimeline extends ScrollPane {
         TextFlow title = createMilestoneTitle(milestone);
         Label status = createMilestoneStatus(milestone, title);
         VBox details = new VBox(4, title, status);
+        details.setMinWidth(0);
+        details.prefWidthProperty().bind(title.prefWidthProperty());
+        details.maxWidthProperty().bind(title.prefWidthProperty());
         details.setLayoutX(REWARD_X);
-        details.setLayoutY(y - 23);
+        details.setLayoutY(y - MILESTONE_DETAILS_OFFSET_Y);
         return details;
     }
 
-    /** Creates a wrapping reward title containing its description and code. */
+    /** Creates a wrapping reward title containing its description. */
     private TextFlow createMilestoneTitle(Milestone milestone) {
         Text description = new Text(milestone.getRewardDescription());
         description.getStyleClass().add("milestone-reward");
-        Text code = new Text(" [" + milestone.getCode() + "]");
-        code.getStyleClass().add("milestone-code");
-        TextFlow title = new TextFlow(description, code);
-        title.prefWidthProperty().bind(timeline.widthProperty().subtract(REWARD_X + 12));
+        TextFlow title = new TextFlow(description);
+        title.setMinWidth(0);
+        title.prefWidthProperty().bind(rewardWidth);
         return title;
     }
 
@@ -255,11 +302,12 @@ public class MilestoneTimeline extends ScrollPane {
             return calculateMilestoneY(nextIndex);
         }
         double progress = (double) ((long) score - previous.getRequiredScore()) / scoreRange;
-        return calculateMilestoneY(nextIndex - 1) + progress * MILESTONE_SPACING;
+        double previousY = calculateMilestoneY(nextIndex - 1);
+        return previousY + progress * (calculateMilestoneY(nextIndex) - previousY);
     }
 
     /** Returns the center position for the milestone at {@code index}. */
     private double calculateMilestoneY(int index) {
-        return FIRST_MILESTONE_Y + index * MILESTONE_SPACING;
+        return milestoneDetails.get(index).getLayoutY() + MILESTONE_DETAILS_OFFSET_Y;
     }
 }

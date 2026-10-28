@@ -9,6 +9,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 public class Score {
 
     public static final String MESSAGE_CONSTRAINTS = "Score should be a non-negative integer";
+    public static final int MAX_SCORE = 999999999;
     public static final String VALIDATION_REGEX = "\\d{1,9}";
     public static final Score DEFAULT = new Score(0);
 

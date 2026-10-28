@@ -3,7 +3,6 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ORDER;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class DeleteOrderCommand extends Command {
      * Creates a {@code DeleteOrderCommand} to delete an order from a person.
      *
      * @param targetIndex index of the person in the filtered person list
-     * @param orderIndex index of the order in the person's order history
+     * @param orderIndex displayed index of the order in the person's newest-first order history
      */
     public DeleteOrderCommand(Index targetIndex, Index orderIndex) {
         requireAllNonNull(targetIndex, orderIndex);
@@ -63,24 +62,37 @@ public class DeleteOrderCommand extends Command {
             throw new CommandException(MESSAGE_INVALID_ORDER_INDEX);
         }
 
-        Order orderToDelete = orders.get(orderIndex.getZeroBased());
-        Person editedPerson = createPersonWithoutOrder(person, orderToDelete);
+        int historyIndex = toHistoryIndex(orderIndex.getZeroBased(), orders.size());
+        Order orderToDelete = orders.get(historyIndex);
+        Person editedPerson = createPersonWithoutOrder(person, orderToDelete, historyIndex);
 
         model.setPerson(person, editedPerson);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(editedPerson);
 
         return new CommandResult(String.format(MESSAGE_DELETE_ORDER_SUCCESS, orderToDelete));
     }
 
+    /**
+     * Converts a newest-first UI index into the corresponding oldest-first index used by {@link OrderHistory}.
+     * OrderHistory appends new orders, while RecentOrdersPanel displays the newest order at the top.
+     *
+     * @param displayedIndex zero-based index shown by the UI
+     * @param orderCount number of orders in the history
+     * @return the zero-based index used by OrderHistory
+     */
+    private static int toHistoryIndex(int displayedIndex, int orderCount) {
+        return orderCount - displayedIndex - 1;
+    }
+
     /** Creates the updated member after removing the selected order and its earned points. */
-    private Person createPersonWithoutOrder(Person person, Order orderToDelete) throws CommandException {
+    private Person createPersonWithoutOrder(Person person, Order orderToDelete, int historyIndex)
+            throws CommandException {
         long updatedScore = (long) person.getScore().value - orderToDelete.scoreGained;
         if (updatedScore < 0) {
             throw new CommandException(MESSAGE_SCORE_BELOW_ZERO);
         }
 
-        OrderHistory updatedOrderHistory = person.getOrderHistory().deleteOrder(orderIndex.getZeroBased());
+        OrderHistory updatedOrderHistory = person.getOrderHistory().deleteOrder(historyIndex);
         return new Person(
                 person.getName(),
                 person.getPhone(),

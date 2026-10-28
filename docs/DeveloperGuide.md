@@ -259,7 +259,10 @@ indexes used by edit and delete discoverable. `AddressBookParser` routes each mu
 parser. The milestone parsers share strict tokenization that normalizes tabs, rejects unsupported single-letter
 prefixes, and rejects control characters other than tabs.
 
-`AddMilestoneCommandParser` requires a code, reward description, and required score in any order.
+`AddMilestoneCommandParser` requires a reward description and required score in any order. `Milestone` generates a
+UUID for its internal code when the parser creates it. The parser passes the milestone to `AddMilestoneCommand`, which
+creates a replacement milestone if its code already exists. The UUID is stored with the milestone and redemption
+snapshots but omitted from user-facing output.
 `EditMilestoneCommandParser` requires a displayed index and at least one editable field; its
 `EditMilestoneDescriptor` is defensively copied by `EditMilestoneCommand`. Codes are excluded from the descriptor
 because they are stable identities. `DeleteMilestoneCommandParser` accepts only a displayed index. Required scores
@@ -272,7 +275,7 @@ required-score order with code as the tie-breaker. Editing a required score can 
 displayed index. None of these commands reads or modifies a person's score or reward-claim records.
 
 The milestone model tests cover validation, sorting, uniqueness, mutation, and read-only views. Command and parser
-tests cover numbered listing, empty catalogs, successful mutations, duplicate codes, defensive descriptor copying,
+tests cover numbered listing, empty catalogs, generated code persistence, successful mutations, defensive descriptor copying,
 reordered edits, index boundaries, arbitrary prefix order, duplicate and unsupported prefixes, control characters,
 and required-score boundaries.
 `AddressBookParserTest` checks command routing. The JSON adapter, serializable catalog, storage, `MainApp`, and
@@ -311,8 +314,8 @@ person and current milestone indexes, checks that the selected milestone is pres
 replaces the person with a copy containing the history returned by `deleteRedeemedMilestoneReward(Milestone)`.
 
 Both commands identify the milestone through the current `MilestoneCatalog` index. Consequently, cancelling a
-historical redemption requires the current catalog to contain a milestone with the same code. Deleting the milestone
-or changing its code makes that historical redemption unavailable to `cancel-redeem` by design; changing other
+   historical redemption requires the current catalog to contain a milestone with the same code. Deleting the milestone
+   makes that historical redemption unavailable to `cancel-redeem` by design; changing other
 milestone details while preserving its code does not change its identity.
 
 The command parsers use the shared `m/` prefix and `ParserUtil.parseIndex`, so person and milestone arguments must be
@@ -696,7 +699,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
-* 2b. The milestone was deleted from the catalog or its code was changed after redemption.
+* 2b. The milestone was deleted from the catalog after redemption.
 
     * 2b1. The historical redemption cannot be selected by `cancel-redeem`, because the command uses the current
       milestone catalog index by design.
@@ -881,29 +884,29 @@ Use a disposable app home folder for these tests. Start with no `data/menu.json`
 
 ### Managing milestone rewards
 
-Use a disposable app home folder for these tests. Start with no `data/milestones.json`, so the milestone codes are
-unused. The milestone list is sorted by required score, then by code.
+Use a disposable app home folder for these tests. Start with no `data/milestones.json`. The milestone list is sorted
+by required score; equal-score order is arbitrary.
 
 1. Test case: `list-milestones` before adding a milestone<br>
    Expected: `No milestones found.`
-1. Test case: `add-milestone c/FREE500 r/Free drink s/500`<br>
-   Expected: `New milestone added: [FREE500] Free drink (Required score: 500)` and `data/milestones.json` contains the
-   milestone.
-1. Test case: `add-milestone s/1000 c/VOUCHER1000 r/$10 voucher`<br>
+1. Test case: `add-milestone r/Free drink s/500`<br>
+   Expected: `New milestone added: Free drink (Required score: 500)` and `data/milestones.json` contains the
+   milestone with a generated internal code.
+1. Test case: `add-milestone s/1000 r/$10 voucher`<br>
    Expected: The milestone is added even though the prefixes are in a different order.
 1. Test case: `list-milestones`<br>
-   Expected: Both milestones are shown with numbered indexes. `FREE500` appears first because its required score is
-   lower.
-1. Test case: `add-milestone c/free500 r/Different reward s/700`<br>
-   Expected: The duplicate-code error is shown because codes are case-insensitive. The original milestone remains.
-1. Test cases: `add-milestone c/INVALID r/Reward s/+500`, `add-milestone c/INVALID r/Reward s/0`, and
-   `add-milestone c/INVALID r/Reward s/2147483648`.<br>
+   Expected: Both milestones are shown with numbered indexes and no codes. The drink appears first because its
+   required score is lower.
+1. Test case: `add-milestone r/Free drink s/500` again<br>
+   Expected: A second milestone is added with a different internal code.
+1. Test cases: `add-milestone r/Reward s/+500`, `add-milestone r/Reward s/0`, and
+   `add-milestone r/Reward s/2147483648`.<br>
    Expected: The required-score constraint is shown and no milestone is added.
 1. Test case: `edit-milestone 1 r/Free drink and snack s/1500`<br>
-   Expected: The milestone retains code `FREE500`, both editable fields change, and it moves after `VOUCHER1000` in
+   Expected: The milestone retains its generated code, both editable fields change, and it moves after the voucher in
    the sorted list.
 1. Test case: `edit-milestone 1 c/NEWCODE`<br>
-   Expected: The command-format error is shown because codes cannot be edited.
+   Expected: The command-format error is shown because internal codes cannot be edited.
 1. Test case: `delete-milestone 1`<br>
    Expected: The milestone currently shown at index 1 is deleted without changing member scores.
 1. Test cases: `edit-milestone 999 r/Reward` and `delete-milestone 999`.<br>

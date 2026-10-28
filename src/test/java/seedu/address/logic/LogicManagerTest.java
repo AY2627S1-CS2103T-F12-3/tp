@@ -23,6 +23,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import javafx.collections.ObservableList;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -149,6 +150,28 @@ public class LogicManagerTest {
         FoodItem chickenRice = new FoodItem("CR01", "Chicken Rice", 450);
 
         assertThrows(UnsupportedOperationException.class, () -> logic.getFoodItemList().add(chickenRice));
+    }
+
+    @Test
+    public void execute_clearCommand_persistsEmptyCustomersMenuAndMilestones() throws Exception {
+        model.addPerson(AMY);
+        model.selectPerson(AMY);
+        model.addFoodItem(new FoodItem("CR01", "Chicken Rice", 450));
+        model.addMilestone(FREE_DRINK);
+        logic.execute("list");
+        ObservableList<FoodItem> displayedMenu = logic.getFoodItemList();
+        ObservableList<Milestone> displayedMilestones = logic.getMilestoneList();
+
+        assertCommandSuccess("clear", ClearCommand.MESSAGE_SUCCESS, new ModelManager());
+
+        assertTrue(displayedMenu.isEmpty());
+        assertTrue(displayedMilestones.isEmpty());
+        assertTrue(new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow().getPersonList().isEmpty());
+        assertTrue(new JsonMenuStorage(temporaryFolder.resolve("menu.json"))
+                .readMenu().orElseThrow().getFoodItemList().isEmpty());
+        assertTrue(new JsonMilestoneCatalogStorage(temporaryFolder.resolve("milestones.json"))
+                .readMilestoneCatalog().orElseThrow().getMilestoneList().isEmpty());
     }
 
     @Test

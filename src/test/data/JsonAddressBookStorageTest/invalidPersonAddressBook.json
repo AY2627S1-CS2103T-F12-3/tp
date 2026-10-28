@@ -1,6 +1,12 @@
 {
-  "persons": [ {
-    "name": "Person with invalid name field: Ha!ns Mu@ster",
-    "phone": "9482424"
-  } ]
+  "persons": [
+    {
+      "name": "Person with invalid name field: Ha!ns Mu@ster",
+      "phone": "9482424",
+      "tags": [],
+      "score": "0",
+      "orderHistory": [],
+      "redeemedMilestoneRewardHistory": []
+    }
+  ]
 }

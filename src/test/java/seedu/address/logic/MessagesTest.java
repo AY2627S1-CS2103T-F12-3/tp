@@ -16,8 +16,8 @@ public class MessagesTest {
     }
 
     @Test
-    public void format_milestone_displaysAllFields() {
-        String expected = "[FREE500] Free drink (Required score: 500)";
+    public void format_milestone_displaysPublicFields() {
+        String expected = "Free drink (Required score: 500)";
 
         assertEquals(expected, Messages.format(FREE_DRINK));
     }

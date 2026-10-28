@@ -1,5 +1,7 @@
 package seedu.address.storage;
 
+import static java.util.Objects.requireNonNull;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -20,6 +22,7 @@ class JsonAdaptedRedeemedMilestoneReward {
      * @param reward the redeemed milestone to adapt
      */
     public JsonAdaptedRedeemedMilestoneReward(Milestone reward) {
+        requireNonNull(reward);
         this.reward = new JsonAdaptedMilestone(reward);
     }
 

@@ -37,6 +37,8 @@ public class FindCommand extends Command {
         // If there is only one person found, display that person's details.
         if (model.getFilteredPersonList().size() == 1) {
             model.selectPerson(model.getFilteredPersonList().getFirst());
+        } else {
+            model.deselectPerson();
         }
 
         return new CommandResult(

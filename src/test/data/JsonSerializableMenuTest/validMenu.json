@@ -1,0 +1,6 @@
+{
+  "foodItems": [
+    {"code": "CF01", "name": "Coffee", "priceInCents": 150},
+    {"code": "CR01", "name": "Chicken Rice", "priceInCents": 450}
+  ]
+}

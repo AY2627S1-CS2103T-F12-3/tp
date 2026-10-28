@@ -16,8 +16,8 @@ public class MilestoneTest {
         assertEquals("Free drink", FREE_DRINK.getRewardDescription());
         assertEquals(500, FREE_DRINK.getRequiredScore());
         assertEquals(1, new Milestone("A", "Small reward", 1).getRequiredScore());
-        assertEquals(Integer.MAX_VALUE,
-                new Milestone("B", "Large reward", Integer.MAX_VALUE).getRequiredScore());
+        assertEquals(999999999,
+                new Milestone("B", "Large reward", 999999999).getRequiredScore());
     }
 
     @Test
@@ -34,10 +34,7 @@ public class MilestoneTest {
     @Test
     public void constructor_invalidCode_throwsIllegalArgumentException() {
         String expectedMessage = Milestone.MESSAGE_CODE_CONSTRAINTS;
-        String[] invalidCodes = {
-            "", " ", "FREE 500", "FREE-500", " FREE500", "FREE500 ", "FREE500\n",
-            "FREE\t500", "ＦＲＥＥ５００", "FREE\u200B500", "免费饮料"
-        };
+        String[] invalidCodes = {"", " ", "\t\n"};
         for (String code : invalidCodes) {
             assertThrows(IllegalArgumentException.class, expectedMessage, () ->
                     new Milestone(code, "Free drink", 500));
@@ -56,7 +53,7 @@ public class MilestoneTest {
     @Test
     public void constructor_nonPositiveRequiredScore_throwsIllegalArgumentException() {
         String expectedMessage = Milestone.MESSAGE_REQUIRED_SCORE_CONSTRAINTS;
-        for (int requiredScore : new int[] {0, -1, Integer.MIN_VALUE}) {
+        for (int requiredScore : new int[] {0, -1, Integer.MIN_VALUE, 1000000000, Integer.MAX_VALUE}) {
             assertThrows(IllegalArgumentException.class, expectedMessage, () ->
                     new Milestone("FREE500", "Free drink", requiredScore));
         }
@@ -66,7 +63,8 @@ public class MilestoneTest {
     public void isValidCode() {
         assertFalse(Milestone.isValidCode(null));
         assertFalse(Milestone.isValidCode(""));
-        assertFalse(Milestone.isValidCode("FREE-500"));
+        assertFalse(Milestone.isValidCode(" "));
+        assertTrue(Milestone.isValidCode("FREE-500"));
         assertTrue(Milestone.isValidCode("FREE500"));
         assertTrue(Milestone.isValidCode("free500"));
         assertTrue(Milestone.isValidCode("500"));
@@ -87,7 +85,8 @@ public class MilestoneTest {
         assertFalse(Milestone.isValidRequiredScore(0));
         assertFalse(Milestone.isValidRequiredScore(-1));
         assertTrue(Milestone.isValidRequiredScore(1));
-        assertTrue(Milestone.isValidRequiredScore(Integer.MAX_VALUE));
+        assertTrue(Milestone.isValidRequiredScore(999999999));
+        assertFalse(Milestone.isValidRequiredScore(1000000000));
     }
 
     @Test
