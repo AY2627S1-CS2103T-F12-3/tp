@@ -442,12 +442,12 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* A small hawker stall owner who serves many customers and wants to run a loyalty program.
-* Comfortable with CLI and needs to record transactions and retrieve customer information quickly during service.
+* A small hawker stall owner who serves many customers and wants to sign up returning customers for a loyalty program.
+* Comfortable with CLI and needs to record transactions and retrieve member information quickly during service.
 
 **Value proposition**:
 
-* Keep customer, menu, order, and reward information in one desktop application.
+* Keep member, menu, order, and reward information in one desktop application.
 * Enter and retrieve information quickly using typed commands and visible records during service.
 * Save data locally between sessions.
 
@@ -455,38 +455,42 @@ _{Explain here how the data archiving feature will be implemented}_
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​             | I want to …​                                            | So that I can…​                                                                                  |
-|----------|---------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| `* * *`  | Food stall owner    | Create a new member                                     | I can enroll a returning customer in the rewards program                                          |
-| `* * *`  | Food stall owner    | Store member information persistently                   | I do not lose customer records when the application closes or crashes                            |
-| `* * *`  | Food stall owner    | View all members                                        | I can review and manage my membership records                                                    |
-| `* * *`  | Food stall owner    | Update a member’s membership points                     | I can keep the member’s progress in the rewards program accurate                                 |
-| `* * *`  | Food stall owner    | View a member’s details                                 | I can check the member’s membership points, purchase history, and reward eligibility             |
-| `* * *`  | Food stall owner    | Delete a member                                         | I can remove duplicate, invalid, or obsolete members                                             |
-| `* * *`  | Food stall owner    | Search a member by name or phone number                 | I can quickly retrieve the correct member while serving the customer                             |
-| `* * *`  | Food stall owner    | Record an order for a member                            | I can update the member’s membership points and maintain an accurate purchase history            |
-| `* * *`  | Food stall owner    | Delete an order from a member's order history           | I can correct an order that was recorded by mistake                                               |
-| `* *`    | Food stall owner    | Create a milestone reward                               | I can encourage customers to return and earn rewards                                             |
-| `* *`    | Food stall owner    | Edit a milestone reward                                 | I can change its membership points requirement or prize                                           |
-| `* *`    | Food stall owner    | Delete a milestone reward                               | Customers are not offered rewards that are no longer available                                   |
-| `* *`    | Food stall owner    | View all milestone rewards                              | I can review the rewards currently available to members                                          |
-| `* *`    | Food stall owner    | Mark a milestone reward as claimed by a member          | I can prevent the same reward from being issued to that member twice                             |
-| `* *`    | Food stall owner    | Cancel a member's redeemed milestone reward             | I can correct a redemption recorded by mistake                                                   |
-| `* *`    | A new user          | Clear all sample data                                   | I can begin using the application with my actual business data                                   |
-| `* *`    | A new user          | View a list of available commands and their usage       | I can learn how to use the application quickly                                                   |
-| `* *`    | Food stall owner    | Configure the number of membership points awarded per dollar spent | I can adjust the rewards program to suit my business                                    |
-| `* *`    | Food stall owner    | Edit a menu item’s details and price                    | I can ensure orders and revenue calculations use accurate information                            |
-| `* *`    | Food stall owner    | Add a menu item                                         | I can record orders containing that item and its price                                           |
-| `* *`    | Food stall owner    | View all menu items                                     | I can check the items and prices currently recorded in the application                           |
-| `* *`    | Food stall owner    | Delete a menu item                                      | Unavailable or discontinued items cannot be added to new orders                                  |
-| `*`      | An experienced user | Create aliases for frequently used commands             | Allow for faster typing to handle more customers                                                 |
-| `*`      | An experienced user | Undo my most recent reversible command                  | I can recover quickly from an input mistake                                                      |
-| `*`      | Food stall owner    | Sort menu items by purchase frequency or total revenue  | I can identify popular and high-earning menu items to make informed business decisions           |
-| `*`      | Food stall owner    | Add a pre-order for a customer                          | I can record an order for later collection                                                       |
-| `*`      | Food stall owner    | View all pre-orders                                     | I can keep track of the orders that I need to prepare                                            |
-| `*`      | Food stall owner    | Edit the pre-order                                      | I can correct the mistakes or change the details of the pre-order                                |
-| `*`      | Food stall owner    | Delete the pre-order                                    | I can delete the pre-order if the customer no longer wants or I cannot provide what he/she wants |
-| `*`      | Food stall owner    | Mark the pre-order as completed                         | I can distinguish the completed orders from pending ones                                         |
+| Priority | As …​             | I want to …​                                                         | So that…​                                                                              |
+|----------|---------------------|----------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `* * *`  | a food stall owner   | Sign up a returning customer as a member                             | I can track their orders and rewards in the loyalty program                            |
+| `* * *`  | a food stall owner   | Edit a member's name, phone number, or tags                          | I can correct their details and keep their record up to date                           |
+| `* * *`  | a food stall owner   | View all members                                                     | I can review and manage my membership records                                          |
+| `* * *`  | a food stall owner   | View a member’s details                                              | I can check the member’s contact details and purchase history                          |
+| `* * *`  | a food stall owner   | Delete a member                                                      | I can remove duplicate, invalid, or obsolete members                                   |
+| `* * *`  | a food stall owner   | Search a member by name or phone number                              | I can quickly retrieve the correct record while serving the member                     |
+| `* * *`  | a food stall owner   | Record an order for a member                                         | I can maintain an accurate purchase history                                            |
+| `* * *`  | a food stall owner   | Delete an order from a member's order history                        | I can remove an order that was recorded by mistake                                     |
+| `* * *`  | a food stall owner   | View a member's membership score                                     | I can check their current progress in the rewards program                              |
+| `* * *`  | a food stall owner   | Update a member's membership score manually                          | I can correct their score when an adjustment is needed                                 |
+| `* * *`  | a food stall owner   | Store member and order information persistently                      | I do not lose member and order records when the application closes or crashes          |
+| `* *`    | a food stall owner   | Have orders automatically update a member's membership score        | I can keep their score consistent when I add or delete orders without calculating adjustments myself |
+| `* *`    | a food stall owner   | Create a milestone reward                                            | I can give members an incentive to return                                               |
+| `* *`    | a food stall owner   | Edit a milestone reward                                              | I can change its membership score requirement or prize                                 |
+| `* *`    | a food stall owner   | Delete a milestone reward                                            | I can stop offering rewards that are no longer available                               |
+| `* *`    | a food stall owner   | View all milestone rewards                                           | I can review the rewards currently available to members                                |
+| `* *`    | a food stall owner   | View a member's progress and redemption status for milestone rewards | I can tell which rewards they can claim and which they have already claimed            |
+| `* *`    | a food stall owner   | Mark an eligible member's milestone reward as redeemed               | I can record that the reward was issued and prevent a duplicate redemption             |
+| `* *`    | a food stall owner   | Unmark a member's milestone reward as redeemed                       | I can correct a redemption recorded by mistake                                         |
+| `* *`    | a food stall owner   | Store milestone reward data persistently                             | I do not lose reward records when the application closes or crashes                    |
+| `* *`    | a new user          | Clear all stored members, menu items, and milestone rewards          | I can replace the sample data with my actual business data                            |
+| `* *`    | a new user          | Access the user guide from the application                           | I can look up available commands and their usage                                       |
+| `* *`    | a food stall owner   | Exit the application using a typed command                           | I can finish my session without switching to the mouse                                 |
+| `* *`    | a food stall owner   | Add a menu item                                                      | I can use that item in orders and award the appropriate membership score                |
+| `* *`    | a food stall owner   | Edit a menu item’s details and price                                 | I can use up-to-date item details and prices when recording orders                     |
+| `* *`    | a food stall owner   | View all menu items                                                  | I can check the items and prices currently recorded in the application                 |
+| `* *`    | a food stall owner   | Delete a menu item                                                   | I can prevent unavailable or discontinued items from being added to new orders         |
+| `* *`    | a food stall owner   | Store menu item data persistently                                    | I do not lose menu item records when the application closes or crashes                 |
+| `*`      | an experienced user | Create aliases for frequently used commands                          | I can type commands faster and serve more customers                                    |
+| `*`      | an experienced user | Undo my most recent reversible command                               | I can recover quickly from an input mistake                                            |
+| `*`      | a food stall owner   | Sort menu items by purchase frequency or total revenue               | I can identify popular and high-earning menu items to make informed business decisions |
+| `*`      | a food stall owner   | Find members who have not ordered recently                           | I can identify members who may need an incentive to return                             |
+| `*`      | a food stall owner   | Export member and order records to a file                            | I can review my business data outside the application                                  |
+| `*`      | a food stall owner   | Configure how much orders increase membership score per dollar spent | I can adjust the rewards program to suit my business                                   |
 
 ### Use cases
 
@@ -762,7 +766,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Order**: A record of a menu item's code and name, quantity, time recorded, and points earned, stored in a
   member's order history.
 * **Order history**: All orders recorded for a member. Also referred to as *purchase history*.
-* **Pre-order**: An order recorded in advance for later collection. It is *pending* until marked *completed*.
 * **Reversible command**: A command that changes stored data and can therefore be undone (e.g. `add-order`). Commands that only read or display data (e.g. `find`) or close the app (`exit`) are not reversible.
 * **Sample data**: Placeholder members loaded when Ratatouille is launched for the first time, so new users can try out commands.
 * **Singapore phone number**: An 8-digit number starting with 6, 8 or 9, with no spaces, dashes or country code (e.g. `91234567`).
