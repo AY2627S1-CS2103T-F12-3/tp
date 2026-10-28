@@ -935,20 +935,16 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Glossary
 
-* **Customer**: Anyone who buys food from the stall. A customer is not tracked by Ratatouille unless they sign up as a *member*.
-* **Hawker centres**: Open-air food complexes in Singapore housing many small, independently run food stalls.
-* **Member**: A customer enrolled in the stall's *rewards program*, uniquely identified by their *Singapore phone number*.
-* **Membership points**: A non-negative whole number representing a member's standing in the rewards program, used to determine eligibility for *milestone rewards*.
-* **Rewards program**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
+* **Member**: A customer who has signed up for the stall's *rewards program* and whose details Ratatouille tracks, including their name and phone number.
+* **Membership score**: A non-negative integer associated with a member. Orders can change this score, and it determines eligibility for *milestone rewards*.
 * **Menu item**: A dish or drink sold by the stall, recorded with a unique case-sensitive code, name, and price.
-* **Milestone reward**: A prize a member becomes eligible for upon reaching a set number of membership points. Each milestone reward can be claimed at most once per member.
-* **Order**: A record of a menu item's code and name, quantity, time recorded, and points earned, stored in a
+* **Milestone catalog**: The collection of milestone rewards offered by the stall.
+* **Milestone reward**: A reward with a required membership score. A member whose score meets that requirement can redeem the reward once.
+* **Order**: A record of a menu item's code and name, quantity, time recorded, and membership score gained, stored in a
   member's order history.
 * **Order history**: All orders recorded for a member. Also referred to as *purchase history*.
-* **Reversible command**: A command that changes stored data and can therefore be undone (e.g. `add-order`). Commands that only read or display data (e.g. `find`) or close the app (`exit`) are not reversible.
-* **Sample data**: Placeholder members loaded when Ratatouille is launched for the first time, so new users can try out commands.
-* **Singapore phone number**: An 8-digit number starting with 6, 8 or 9, with no spaces, dashes or country code (e.g. `91234567`).
-* **Stall owner**: The main user of Ratatouille, who runs a food stall at a hawker centre. Also covers staff operating the app on the owner's behalf.
+* **Redemption**: A record that a member has received a milestone reward. Recording or cancelling a redemption does not change the member's membership score.
+* **Sample data**: Placeholder members, menu items, and milestone rewards available when Ratatouille is launched for the first time, so new users can try out commands.
 
 --------------------------------------------------------------------------------------------------------------------
 
