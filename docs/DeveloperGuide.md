@@ -512,8 +512,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1a1. User <u>signs up the returning customer (UC07)</u>.
 
       Use case resumes at step 2.
-* 1b. No matching member is found and the customer declines to sign up.
-    * 1b1. Use case ends.
+* 1b. No matching member is found and the returning customer declines to sign up.
+
+    Use case ends.
 
 * 3a. The member also wants to claim an eligible reward.
     * 3a1. User <u>redeems a milestone reward (UC18)</u>.
@@ -821,7 +822,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS**
 
 1. User supplies a reward description and required membership score.
-2. Ratatouille adds the milestone to the reward catalog and confirms the addition.
+2. Ratatouille adds the milestone to the milestone catalog and confirms the addition.
 
    Use case ends.
 
@@ -925,10 +926,10 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 ### Non-Functional Requirements
 
 1. Should run on Windows, Linux, and macOS with only Java `25` installed, using the same executable JAR without a separate installer. The release JAR should not exceed 100 MB.
-2. Should be used by one person on one computer, without shared data files. 
+2. Should support one person using one local data set without requiring user accounts, concurrent access, or shared data files.
 3. Should work without a network connection, remote server, or database management system.
 4. Should store member, order, menu, and milestone data locally in human-editable text files. The application should access files only within its home folder (the folder containing the JAR) and its subfolders, and should not change operating-system settings.
-5. With 1000 members and up to 20 orders per member, at least 95% of attempts to find a member, record an order, or update a membership score should finish within 3 seconds on a computer with a four-core processor, 8 GB of RAM, a local SSD, and Java `25`.
+5. With 1000 members, up to 20 orders per member, 100 menu items, and 100 milestone rewards, at least 95% of 30 attempts each to find a member, record an order, or update a membership score should finish within 3 seconds on a computer with a four-core processor, 8 GB of RAM, a local SSD, and Java `25`.
 6. After launch, all documented workflows should be usable with a keyboard alone, without requiring a mouse. The primary way to enter data should be typed commands.
 7. At 1920 × 1080 or higher with 100% or 125% display scaling, command input and results should remain visible and readable without overlapping or being cut off. At 1280 × 720 or higher with 150% display scaling, every documented workflow should remain completable, including access to its input and results by scrolling where necessary.
 8. In the current production versions of desktop Chrome and Firefox on Windows, Linux, and macOS, the online HTML versions of the User Guide and Developer Guide should keep all text, examples, tables, and diagrams readable and reachable by scrolling at the display resolutions and scaling levels in NFR 6.
@@ -944,6 +945,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   member's order history.
 * **Order history**: All orders recorded for a member. Also referred to as *purchase history*.
 * **Redemption**: A record that a member has received a milestone reward. Recording or cancelling a redemption does not change the member's membership score.
+* **Rewards program**: The stall's loyalty scheme in which members earn membership score from orders and can redeem eligible milestone rewards.
 * **Sample data**: Placeholder members, menu items, and milestone rewards available when Ratatouille is launched for the first time, so new users can try out commands.
 
 --------------------------------------------------------------------------------------------------------------------
