@@ -28,11 +28,11 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432` : Adds a contact named `John Doe` to the Address Book.
+   * `add-member n/John Doe p/98765432` : Adds a contact named `John Doe` to the Address Book.
 
    * `add-menu-item c/12A n/Dessert p/3.50` : Adds Dessert to the menu at $3.50.
 
-   * `update-menu-item 12A c/12B p/4.00` : Updates Dessert's code and price.
+   * `edit-menu-item 12A c/12B p/4.00` : Updates Dessert's code and price.
 
    * `add-milestone r/Free drink s/500` : Adds a milestone reward that requires 500 points.
 
@@ -42,11 +42,11 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
 
-   * `delete 3` : Deletes the 3rd contact shown in the current list.
+   * `delete-member 3` : Deletes the 3rd contact shown in the current list.
 
    * `update-score 1 s/10` increases the score of the 1st person shown by 10.
 
-   * `clear` : Deletes all contacts.
+   * `clear` : Deletes all customers, menu items, and milestone rewards.
 
    * `exit` : Exits the app.
 
@@ -61,7 +61,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 **:information_source: Notes about the command format:**<br>
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
-  For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
+  For example, in `add-member n/NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
   For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
@@ -87,12 +87,12 @@ Shows a message explaining how to access the help page.
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a member: `add-member`
 
 Adds a person to the address book.
 
-* A phone entry is required. Empty or whitespace-only entries are rejected. New entries supplied to `add` or
-  the `p/` field of `edit` must contain at least one decimal digit (including full-width digits). Inputs such as `Not available`
+* A phone entry is required. Empty or whitespace-only entries are rejected. New entries supplied to `add-member` or
+  the `p/` field of `edit-member` must contain at least one decimal digit (including full-width digits). Inputs such as `Not available`
   and `---` are rejected with `Phone numbers must contain at least one digit`.
 * Recognized Singapore numbers contain eight digits starting with 6, 8 or 9. Spaces and hyphens between
   digit groups are accepted. A country prefix of `+65`, `65`, `(+65)` or `(65)` is also accepted.
@@ -111,7 +111,7 @@ Adds a person to the address book.
   dashes are ignored for this advisory comparison; a recognized Singapore `65` prefix is also ignored.
   For example, `（86）12345678` and `+8612345678` remain different saved entries but trigger a warning.
 * A possible duplicate warning lists each related member once, with their name and phone entry. The new entry
-  is still saved: check whether the records represent separate memberships, and use `delete INDEX` to remove an
+  is still saved: check whether the records represent separate memberships, and use `delete-member INDEX` to remove an
   unintended extra record after checking the displayed list. No records, points or order histories are merged.
   When editing, the member being edited is excluded; this warning is checked only when `p/` is supplied.
 * Letters and delimiters such as `/`, `,`, `;` and `+` separate number segments. Explicit extension values
@@ -154,15 +154,15 @@ Duplicate-check examples:
 | `+86 138119828111` | `+86138119828111` | Saved; format warning and possible duplicate warning |
 | `92345678` and `81234567` in separate members | `92345678 (HP) / 81234567 (Office)` | Saved; possible duplicate warning identifies both members |
 
-Format: `add n/NAME p/PHONE_NUMBER [t/TAG]…​`
+Format: `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, including zero.
 </div>
 
 Examples:
-* `add n/John Doe p/98765432`
-* `add n/Betsy Crowe t/friend p/81234567 t/criminal`
+* `add-member n/John Doe p/98765432`
+* `add-member n/Betsy Crowe t/friend p/81234567 t/criminal`
 
 ### Listing all persons: `list`
 
@@ -170,23 +170,23 @@ Shows a list of all persons in the address book.
 
 Format: `list`
 
-### Editing a person: `edit`
+### Editing a member: `edit-member`
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
+Format: `edit-member INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* Phone numbers follow the same format and uniqueness rules as `add`. Changing a phone number to one already
+* Phone numbers follow the same format and uniqueness rules as `add-member`. Changing a phone number to one already
   registered to another person is rejected; keeping the person's current number is allowed.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 
 Examples:
-*  `edit 1 p/91234567` Edits the phone number of the 1st person to be `91234567`.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+*  `edit-member 1 p/91234567` Edits the phone number of the 1st person to be `91234567`.
+*  `edit-member 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 
 ### Adding a menu item: `add-menu-item`
 
@@ -213,7 +213,7 @@ Examples:
 * `add-menu-item p/1.20 n/Coffee c/12B`
 
 The first example shows `New menu item added: Dessert` after saving succeeds. The customer list stays as it is;
-`list` displays customers, not the menu. Menu items are stored separately, and `clear` does not delete them.
+`list` displays customers, not the menu. Menu items are stored separately; `clear` deletes them along with all customers and milestone rewards.
 
 Common errors:
 
@@ -240,11 +240,11 @@ Format: `delete-menu-item c/CODE`
 
 Example: `delete-menu-item c/CR01`
 
-### Updating a menu item: `update-menu-item`
+### Editing a menu item: `edit-menu-item`
 
 Updates an existing menu item using its current code. The item is saved for future sessions.
 
-Format: `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`
+Format: `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`
 
 * `CURRENT_CODE` identifies the existing menu item. It must contain one or more letters (`A`–`Z`, `a`–`z`) or
   digits (`0`–`9`), without spaces or punctuation.
@@ -256,18 +256,18 @@ Format: `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`
 
 Examples:
 
-* `update-menu-item 12A n/Chocolate Cake` changes only the name.
-* `update-menu-item 12A p/4.00` changes only the price.
-* `update-menu-item 12A c/12B n/Chocolate Cake p/4.00` changes the code, name, and price.
+* `edit-menu-item 12A n/Chocolate Cake` changes only the name.
+* `edit-menu-item 12A p/4.00` changes only the price.
+* `edit-menu-item 12A c/12B n/Chocolate Cake p/4.00` changes the code, name, and price.
 
 Common errors:
 
 | Input | Result and recovery |
 |---|---|
-| `update-menu-item UNKNOWN n/Dish` | `A menu item with this code does not exist.` Enter the current code of an existing item. |
-| `update-menu-item 12A c/3A` | `A menu item with the new code already exists.` Choose a code that is not already in the menu. |
-| `update-menu-item 12A` | The command format is shown. Supply at least one field to update. |
-| `update-menu-item 12A p/4.001` | The price constraint is shown. Use at most two decimal places. |
+| `edit-menu-item UNKNOWN n/Dish` | `A menu item with this code does not exist.` Enter the current code of an existing item. |
+| `edit-menu-item 12A c/3A` | `A menu item with the new code already exists.` Choose a code that is not already in the menu. |
+| `edit-menu-item 12A` | The command format is shown. Supply at least one field to update. |
+| `edit-menu-item 12A p/4.001` | The price constraint is shown. Use at most two decimal places. |
 
 Validation failures leave the existing menu item unchanged.
 
@@ -350,7 +350,7 @@ Common milestone-command errors:
 | `delete-milestone 999` | The milestone-index error is shown. Use an index in the displayed milestone list. |
 
 Failed milestone commands leave the milestone catalog unchanged. Successful commands are saved in
-`data/milestones.json`; `clear` removes customers but does not remove milestone rewards.
+`data/milestones.json`; `clear` removes all customers, menu items, and milestone rewards.
 
 ### Recording an order: `add-order`
 
@@ -466,11 +466,11 @@ Formats: `find KEYWORD [MORE_KEYWORDS]` or `find p/PHONE_ENTRY`
   phone keyword. For example, `find 9123 4567` searches for `91234567`.
 * Use `find p/PHONE_ENTRY` to search only phone entries, including an overseas number or a note containing spaces.
   Everything after this first `p/` belongs to one phone query. Recognized Singapore formats are normalized as for
-  `add`; other entries require an exact, case-sensitive match, including internal spaces and punctuation.
+  `add-member`; other entries require an exact, case-sensitive match, including internal spaces and punctuation.
   Partial phone entries do not match.
 * Searches do not change the stored phone entry or show a phone-format warning. Previously saved entries without
   digits still load and can be found with `find p/Not available`, for example. You can edit their other fields
-  or replace the phone entry with one containing digits; supplying digitless text in the `p/` field of `edit` is rejected.
+  or replace the phone entry with one containing digits; supplying digitless text in the `p/` field of `edit-member` is rejected.
 
 Examples:
 * `find John` returns `john` and `John Doe`.
@@ -479,23 +479,24 @@ Examples:
 * `find p/（86）12345678` finds that exact entry, not `+8612345678`.
 * `find alex david` returns `Alex Yeoh` and `David Li`.
 
-### Deleting a person: `delete`
+### Deleting a member: `delete-member`
 
 Deletes the specified person from the address book.
 
-Format: `delete INDEX`
+Format: `delete-member INDEX`
 
 * Deletes the person at the specified `INDEX`.
 * The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `list` followed by `delete-member 2` deletes the 2nd person in the address book.
+* `find Betsy` followed by `delete-member 1` deletes the 1st person in the results of the `find` command.
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the address book.
+Clears all customers, menu items, and milestone rewards, and deselects the current customer.
+This also saves the empty data files, so the cleared data stays empty after restarting the application.
 
 Format: `clear`
 
@@ -508,10 +509,17 @@ Format: `exit`
 ### Saving the data
 
 The app automatically saves customer records, the menu, and the milestone catalog after every command that executes
-successfully. You do not need to save manually. All three are loaded again at startup.
+successfully, except `help` and `exit`. These two commands remain available even when data cannot be saved.
+You do not need to save manually. All three are loaded again at startup.
 
 If a save fails, an error is shown instead of the normal success feedback. Changes already made remain in memory;
 after fixing the file-access problem, run a command such as `list` to attempt saving again before closing the app.
+The `exit` command does not retry saving; closing the app loses any changes that have not been saved successfully.
+
+Each file is replaced only after its new contents have been fully written, so a failed write does not leave that
+file half-written. The three data files are saved separately: if a later file fails to save, earlier files may
+already contain the latest changes. If your storage location does not support safe file replacement, use a
+different location that does.
 
 ### Editing the data file
 
@@ -540,8 +548,8 @@ then restore a valid copy or correct the invalid fields before restarting. Old n
 but entries that normalize to the same Singapore number conflict: resolve those duplicate member records in a
 backup copy, preserving their points and histories, before upgrading. The app does not merge records automatically.
 A missing customer file loads sample contacts. Missing menu or milestone files load their sample data; invalid
-menu or milestone files use empty catalogs. A subsequent command can overwrite those invalid catalog files,
-so back up all three files before editing them.<br>
+menu or milestone files use empty catalogs. The next successfully executed command other than `help` or `exit` attempts to save all three files
+and can overwrite those invalid catalog files, so back up all three files before editing them.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -570,15 +578,15 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add n/James Ho p/82224444 t/friend t/colleague`
+**Add member** | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/82224444 t/friend t/colleague`
 **Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
-**Update menu item** | `update-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `update-menu-item 12A c/12B p/4.00`
+**Edit menu item** | `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `edit-menu-item 12A c/12B p/4.00`
 **Add milestone** | `add-milestone r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone r/Free drink s/500`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete member** | `delete-member INDEX`<br> e.g., `delete-member 3`
 **Delete milestone** | `delete-milestone INDEX`<br> e.g., `delete-milestone 1`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
+**Edit member** | `edit-member INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit-member 2 n/James Lee`
 **Edit milestone** | `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`<br> e.g., `edit-milestone 1 s/600`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`

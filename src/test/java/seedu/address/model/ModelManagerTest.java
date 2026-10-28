@@ -34,6 +34,35 @@ public class ModelManagerTest {
     private ModelManager modelManager = new ModelManager();
 
     @Test
+    public void setMenu_validMenu_copiesContentsIndependently() {
+        FoodItem item = new FoodItem("CR01", "Chicken Rice", 450);
+        modelManager.addFoodItem(new FoodItem("T01", "Tea", 150));
+        Menu source = new Menu();
+        source.addFoodItem(item);
+
+        modelManager.setMenu(source);
+        source.removeFoodItem(item);
+
+        assertEquals(List.of(item), modelManager.getMenu().getFoodItemList());
+        assertThrows(NullPointerException.class, () -> modelManager.setMenu(null));
+        assertEquals(List.of(item), modelManager.getMenu().getFoodItemList());
+    }
+
+    @Test
+    public void setMilestoneCatalog_validCatalog_copiesContentsIndependently() {
+        modelManager.addMilestone(FREE_DESSERT);
+        MilestoneCatalog source = new MilestoneCatalog();
+        source.addMilestone(FREE_DRINK);
+
+        modelManager.setMilestoneCatalog(source);
+        source.removeMilestone(FREE_DRINK);
+
+        assertEquals(List.of(FREE_DRINK), modelManager.getMilestoneList());
+        assertThrows(NullPointerException.class, () -> modelManager.setMilestoneCatalog(null));
+        assertEquals(List.of(FREE_DRINK), modelManager.getMilestoneList());
+    }
+
+    @Test
     public void constructor() {
         assertEquals(new UserPrefs(), modelManager.getUserPrefs());
         assertEquals(new GuiSettings(), modelManager.getGuiSettings());

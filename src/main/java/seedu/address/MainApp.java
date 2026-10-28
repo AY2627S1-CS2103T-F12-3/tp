@@ -38,7 +38,7 @@ import seedu.address.ui.UiManager;
  */
 public class MainApp extends Application {
 
-    public static final String VERSION = "V0.5.1";
+    public static final String VERSION = "V1.5";
 
     public static final String MESSAGE_MEMBER_LOAD_FAILURE =
             "Member data could not be loaded. Startup was stopped to protect the saved records. "

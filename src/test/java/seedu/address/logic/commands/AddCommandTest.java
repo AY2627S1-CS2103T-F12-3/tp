@@ -96,6 +96,16 @@ public class AddCommandTest {
      */
     private class ModelStub implements Model {
         @Override
+        public void setMenu(ReadOnlyMenu menu) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void setMilestoneCatalog(ReadOnlyMilestoneCatalog milestoneCatalog) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public void deleteFoodItem(FoodItem target) {
             throw new AssertionError("This method should not be called.");
         }

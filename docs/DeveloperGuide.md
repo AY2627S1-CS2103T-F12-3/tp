@@ -91,9 +91,9 @@ Here's a (partial) class diagram of the `Logic` component:
 
 <img src="images/LogicClassDiagram.png" width="550"/>
 
-The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete 1")` API call as an example.
+The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete-member 1")` API call as an example.
 
-![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
+![Interactions Inside the Logic Component for the `delete-member 1` Command](images/DeleteSequenceDiagram.png)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </div>
@@ -132,7 +132,7 @@ The `Model` component,
   nonblank legacy entries; `Phone.isValidPhone` additionally requires a Unicode decimal digit for new phone
   values in `ParserUtil.parsePhone`. Blank and digitless input have separate error messages. Storage and lookup
   use the storable rule so users can retrieve and repair previously saved digitless notes without losing members.
-  `add` and `edit` append the shared `Messages.formatPhoneWarning` after successful changes for nonstandard
+  `add-member` and `edit-member` append the shared `Messages.formatPhoneWarning` after successful changes for nonstandard
   entries containing digits. Editing other fields on a legacy digitless entry also remains possible.
   No country-specific validity or reachability check is performed for foreign numbers. Annotated or multiple
   numbers do not establish exact member identity.
@@ -247,13 +247,24 @@ loaded `ReadOnlyMenu`; the existing two-argument constructor initializes an empt
 `MainApp` configures `data/menu.json` relative to the launch directory. Its `initMenu` method loads the saved menu,
 uses `SampleDataUtil.getSampleMenu()` if the file is missing, or logs a warning and supplies an empty menu if loading
 fails. Sample menu codes match the sample members' order histories. Loading alone leaves an invalid file untouched;
-the next successfully executed command can overwrite it,
+the next successfully executed command other than `help` or `exit` can overwrite it,
 matching the existing address-book fallback policy.
 
-All three domain data files are saved after every successfully executed command, including read-only commands. A
-save error does not roll back changes already made in memory. The address-book file is written first, followed by
+All three domain data files are saved after every successfully executed command, including read-only commands
+such as `list`, except `help` and `exit`. `LogicManager` returns results requesting help or exit before saving,
+so storage failures cannot prevent either action. A save error does not roll back changes already made in memory.
+The address-book file is written first, followed by
 the menu and milestone catalog, so an earlier file may already be saved if a later write fails; the three writes
-are not a transaction. A later successful command attempts all three saves again through the same flow.
+are not a transaction. A later successful command other than `help` or `exit` attempts all three saves again
+through the same flow. Exiting does not retry domain-data saves, so unsaved in-memory changes are lost on exit.
+
+Each JSON save serializes its contents before writing a unique temporary file in the destination directory.
+Only after writing completes does `FileUtil` atomically replace the destination. A failed write or unsupported
+atomic replacement leaves the existing destination intact; a failed first save does not leave an empty JSON file.
+Missing parent directories are created as needed. Temporary files are removed after saving or failure where
+possible; cleanup errors are logged without hiding the save result. There is no non-atomic fallback, so a file
+system that cannot atomically replace the destination reports a save error. This protects individual files
+against partial writes, but does not provide a transaction across files or guarantee recovery after power loss.
 
 #### Testing
 
@@ -281,7 +292,8 @@ stable by delegating them to its catalog.
 
 `MainApp` configures `data/milestones.json` relative to the launch directory. A valid file is loaded into
 `ModelManager`; a missing or invalid file produces an empty catalog, with invalid file contents left untouched until
-the next successfully executed command saves the model. Legacy `milestones` properties in `memberlist.json` are
+the next successfully executed command other than `help` or `exit` saves the model.
+Legacy `milestones` properties in `memberlist.json` are
 ignored, so the address-book file remains responsible only for customer data.
 
 The `list-milestones`, `add-milestone`, `edit-milestone`, and `delete-milestone` commands expose catalog access and
@@ -373,11 +385,11 @@ Step 1. The user launches the application for the first time. The `VersionedAddr
 
 ![UndoRedoState0](images/UndoRedoState0.png)
 
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+Step 2. The user executes `delete-member 5` command to delete the 5th person in the address book. The `delete-member` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete-member 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
 
 ![UndoRedoState1](images/UndoRedoState1.png)
 
-Step 3. The user executes `add n/David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Step 3. The user executes `add-member n/David …​` to add a new person. The `add-member` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
 
 ![UndoRedoState2](images/UndoRedoState2.png)
 
@@ -416,7 +428,7 @@ Step 5. The user then decides to execute the command `list`. Commands that do no
 
 ![UndoRedoState4](images/UndoRedoState4.png)
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
+Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add-member n/David …​` command. This is the behavior that most modern desktop applications follow.
 
 ![UndoRedoState5](images/UndoRedoState5.png)
 
@@ -434,7 +446,7 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 * **Alternative 2:** Individual command knows how to undo/redo by
   itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
+  * Pros: Will use less memory (e.g. for `delete-member`, just save the person being deleted).
   * Cons: We must ensure that the implementation of each individual command is correct.
 
 _{more aspects and alternatives to be added}_
@@ -494,7 +506,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* *`    | A new user          | Clear all sample data                                   | I can begin using the application with my actual business data                                   |
 | `* *`    | A new user          | View a list of available commands and their usage       | I can learn how to use the application quickly                                                   |
 | `* *`    | Food stall owner    | Configure the number of membership points awarded per dollar spent | I can adjust the rewards program to suit my business                                    |
-| `* *`    | Food stall owner    | Update a menu item’s details and price                  | I can ensure orders and revenue calculations use accurate information                            |
+| `* *`    | Food stall owner    | Edit a menu item’s details and price                    | I can ensure orders and revenue calculations use accurate information                            |
 | `* *`    | Food stall owner    | Add a menu item                                         | I can record orders containing that item and its price                                           |
 | `* *`    | Food stall owner    | View all menu items                                     | I can check the items and prices currently recorded in the application                           |
 | `* *`    | Food stall owner    | Delete a menu item                                      | Unavailable or discontinued items cannot be added to new orders                                  |
@@ -574,8 +586,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 2a. Saving fails after the item has been added in memory.
 
     * 2a1. App shows a save error. The item remains in memory.
-    * 2a2. User resolves the file-access problem and requests another command.
-    * 2a3. App executes that command and attempts to save both data files again.
+    * 2a2. User resolves the file-access problem and requests another command, such as `list`,
+      other than `help` or `exit`.
+    * 2a3. App executes that command and attempts to save all three data files again.
 
       Use case ends if saving succeeds; otherwise, extension 2a repeats.
 
@@ -821,45 +834,45 @@ testers are expected to do more *exploratory* testing.
 
 1. Prerequisites: Launch in a fresh folder with sample data. The numbers below must not be registered.
 
-1. Test case: `add n/PhoneCheck p/61234567`, then `add n/PhoneCheck p/81234567`.<br>
+1. Test case: `add-member n/PhoneCheck p/61234567`, then `add-member n/PhoneCheck p/81234567`.<br>
    Expected: Both people are added despite sharing a name.
 
-1. Test case: `add n/OtherCheck p/61234567`.<br>
+1. Test case: `add-member n/OtherCheck p/61234567`.<br>
    Expected: An error identifies the existing PhoneCheck person. No person is added.
 
-1. Test case: `find 81234567`, then `edit 1 p/61234567`.<br>
+1. Test case: `find 81234567`, then `edit-member 1 p/61234567`.<br>
    Expected: An error identifies the existing person even though that person is hidden by the search.
    The displayed person's number remains `81234567`.
 
-1. Test case: `edit 1 p/81234567`, then `find 81234567`, then `edit 1 p/91234567`.<br>
+1. Test case: `edit-member 1 p/81234567`, then `find 81234567`, then `edit-member 1 p/91234567`.<br>
    Expected: Keeping the current number succeeds and restores the full list. Search again to select the intended
    person before changing their number. Changing to an unused valid number also succeeds.
 
-1. Test case: `find +65 9123 4567`, then `edit 1 p/(+65)9123-4567`.<br>
+1. Test case: `find +65 9123 4567`, then `edit-member 1 p/(+65)9123-4567`.<br>
    Expected: Search finds the member with `91234567`. The edit succeeds without a warning and keeps that number.
 
-1. Test case: `add n/DuplicateCheck p/65 9123 4567`.<br>
+1. Test case: `add-member n/DuplicateCheck p/65 9123 4567`.<br>
    Expected: A duplicate error identifies the existing member; the formatted alias does not create a new member.
 
-1. Test cases: `add n/OverseasCheck p/+86 138119828111`, `add n/SpecialCheck p/（86）12345678`,
-   and `add n/LegacyCheck p/911`.<br>
+1. Test cases: `add-member n/OverseasCheck p/+86 138119828111`, `add-member n/SpecialCheck p/（86）12345678`,
+   and `add-member n/LegacyCheck p/911`.<br>
    Expected: All three succeed with the same nonblocking warning, preserving each phone entry.
 
-1. Test case: `find p/（86）12345678`, then `edit 1 p/12345678`.<br>
+1. Test case: `find p/（86）12345678`, then `edit-member 1 p/12345678`.<br>
    Expected: Search selects SpecialCheck. The edit saves `12345678` and shows the shared warning.
 
-1. Test cases: `add n/BlankCheck p/` and `edit 1 p/`.<br>
+1. Test cases: `add-member n/BlankCheck p/` and `edit-member 1 p/`.<br>
    Expected: Both report that phone numbers must not be blank without changing any member.
 
-1. Test case: `add n/NoteCheck p/91234567 (HP)`.<br>
+1. Test case: `add-member n/NoteCheck p/91234567 (HP)`.<br>
    Expected: The entry is saved unchanged. In addition to the format warning, a possible duplicate warning
    identifies the PhoneCheck member with `91234567`. Neither member's points or history are merged.
 
-1. Test case: `find Nobody`, then `add n/OverseasAlias p/+86138119828111`.<br>
+1. Test case: `find Nobody`, then `add-member n/OverseasAlias p/+86138119828111`.<br>
    Expected: The compact entry is saved and a possible duplicate warning identifies OverseasCheck, even though
    the search hid that member. The original overseas entry remains unchanged.
 
-1. Test cases: `add n/NoPhone p/Not available` and `edit 1 p/---`.<br>
+1. Test cases: `add-member n/NoPhone p/Not available` and `edit-member 1 p/---`.<br>
    Expected: Both report `Phone numbers must contain at least one digit`, with no change to any member.
 
 1. Close and relaunch the app, then run `find PhoneCheck`.<br>
@@ -877,13 +890,13 @@ testers are expected to do more *exploratory* testing.
 
    1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
 
-   1. Test case: `delete 1`<br>
+   1. Test case: `delete-member 1`<br>
       Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
 
-   1. Test case: `delete 0`<br>
+   1. Test case: `delete-member 0`<br>
       Expected: No person is deleted. The status message shows error details.
 
-   1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
+   1. Other incorrect delete commands to try: `delete-member`, `delete-member x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
 
 1. _{ more test cases …​ }_

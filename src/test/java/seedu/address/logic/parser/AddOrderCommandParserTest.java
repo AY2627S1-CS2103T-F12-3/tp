@@ -48,6 +48,28 @@ public class AddOrderCommandParserTest {
     }
 
     @Test
+    public void parse_maximumQuantity_returnsCommandWithExpectedValues() throws ParseException {
+        AddOrderCommand command = parser.parse(VALID_PERSON_INDEX + " " + PREFIX_ORDER + VALID_ITEM_CODE
+                + " " + PREFIX_QUANTITY + Integer.MAX_VALUE);
+
+        assertEquals(INDEX_FIRST_PERSON, command.index);
+        assertEquals(VALID_ITEM_CODE, command.itemCode);
+        assertEquals(Integer.MAX_VALUE, command.quantity);
+    }
+
+    @Test
+    public void parse_quantityAboveIntegerLimit_throwsParseException() {
+        assertParseFailure(parser, VALID_PERSON_INDEX + " " + PREFIX_ORDER + VALID_ITEM_CODE
+                + " " + PREFIX_QUANTITY + "2147483648", Order.QUANTITY_CONSTRAINTS);
+    }
+
+    @Test
+    public void parse_oversizedNumericQuantity_throwsParseException() {
+        assertParseFailure(parser, VALID_PERSON_INDEX + " " + PREFIX_ORDER + VALID_ITEM_CODE
+                + " " + PREFIX_QUANTITY + "999999999999999999999999999999", Order.QUANTITY_CONSTRAINTS);
+    }
+
+    @Test
     public void parse_missingRequiredPrefix_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddOrderCommand.MESSAGE_USAGE);
 

@@ -78,10 +78,15 @@ public class AddOrderCommand extends Command {
     }
 
     /**
-     * Create a valid order using the menu item's current name and price.
+     * Creates a valid order using the menu item's current name and price.
+     *
+     * @throws CommandException if the earned points exceed the maximum allowed score
      */
-    private Order createOrder(FoodItem foodItem) {
+    private Order createOrder(FoodItem foodItem) throws CommandException {
         long scoreGained = Order.calculateScoreGained(foodItem.getPriceInCents(), quantity);
+        if (scoreGained > Score.MAX_SCORE) {
+            throw new CommandException(MESSAGE_SCORE_TOO_LARGE);
+        }
         return new Order(itemCode, foodItem.getName(), quantity, (int) scoreGained);
     }
 
@@ -109,7 +114,7 @@ public class AddOrderCommand extends Command {
      * @throws CommandException if the updated score exceeds the maximum allowed value
      */
     private Score calculateUpdatedScore(Person person, Order order) throws CommandException {
-        long updatedScore = person.getScore().value + order.scoreGained;
+        long updatedScore = (long) person.getScore().value + order.scoreGained;
         if (!Score.isValidScore(String.valueOf(updatedScore))) {
             throw new CommandException(MESSAGE_SCORE_TOO_LARGE);
         }
