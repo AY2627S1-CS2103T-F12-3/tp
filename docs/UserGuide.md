@@ -300,7 +300,7 @@ Format: `add-order INDEX o/ITEM_CODE q/QUANTITY`
 * Provide `o/` and `q/` once each. They can appear in either order.
 * The order earns 10 points for each $1 spent (`price × quantity`), rounded down to a whole point. These points are
   added to the person's score. An order that would raise the score above `999999999` is rejected.
-* After a successful order, the full person list is shown.
+* After a successful order, the current person list is updated and the person is selected.
 
 Examples:
 * With the sample menu, `add-order 1 o/1 q/2` records two Chicken Rice for the 1st person shown and adds 90 points
@@ -312,6 +312,13 @@ the code, the menu item's name at the time of the order, the quantity, the recor
 order history shows the saved name and points gained for each order, even if the menu item's name later changes. The
 saved `scoreGained` also stays the same if the menu price changes.
 
+Common errors:
+
+| Input | Result and recovery                                                                       |
+|---|-------------------------------------------------------------------------------------------|
+| `add-order 1 o/UNKNOWN q/1` | `The item code is not in the menu.` Add the menu item first or use an existing item code. |
+| `add-order 1 o/1 q/0` | The command format is shown. Use a positive whole-number quantity.                        |
+
 ### Deleting an order: `delete-order`
 
 Deletes an order from a person's order history.
@@ -319,15 +326,22 @@ Deletes an order from a person's order history.
 Format: `delete-order INDEX o/ORDER_INDEX`
 
 * `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
-* `ORDER_INDEX` is the positive index number of the order in that person's order history, counted from the oldest order.
+* `ORDER_INDEX` is the positive index number of the order as displayed in that person's order history, counted from the newest order.
 * Provide `o/` exactly once.
 * Deleting an order subtracts its saved `scoreGained` from the person's score. If this would make the score negative,
   the deletion is rejected; update the person's score first if needed.
-* After a successful deletion, the full person list is shown.
+* After a successful deletion, the current person list is updated and the person remains selected.
 
 Examples:
-* `delete-order 1 o/2` deletes the 2nd-oldest order from the 1st person shown.
-* `find Betsy` followed by `delete-order 1 o/1` deletes Betsy's oldest order.
+* `delete-order 1 o/2` deletes the 2nd-newest order from the 1st person shown.
+* `find Betsy` followed by `delete-order 1 o/1` deletes Betsy's newest order.
+
+Common errors:
+
+| Input | Result and recovery |
+|---|---|
+| `delete-order 1 o/99` | `The order index provided is invalid.` Use an index from the person's displayed order history. |
+| Deleting an order that would make the score negative | `Deleting this order would make the score negative.` Update the person's score first if needed. |
 
 ### Updating a person's score: `update-score`
 
@@ -344,6 +358,13 @@ Examples:
 * `update-score 1 s/10` increases the score of the 1st person shown by 10.
 * `update-score 1 s/-5` decreases the score of the 1st person shown by 5.
 
+Common errors:
+
+| Input                         | Result and recovery |
+|-------------------------------|---|
+| `update-score 1 s/-999999999` | `Score cannot be less than zero.` Use a smaller decrease. |
+| `update-score 1 s/1999999999  | `Score cannot exceed 999999999.` Use a smaller increase. |
+
 ### Redeeming a milestone: `redeem`
 
 Redeems an available milestone reward for a person who has sufficient membership points.
@@ -358,8 +379,15 @@ Format: `redeem INDEX m/MILESTONE_INDEX`
   displayed at that position. If milestones are added, deleted, or reordered, the same index may refer to a different
   milestone. This is intentional because the command identifies milestones by their current displayed index.
 
-Example:
+Examples:
 * `redeem 1 m/2` redeems the 2nd milestone for the 1st person shown.
+
+Common errors:
+
+| Input | Result and recovery |
+|---|---|
+| Redeeming without enough points | `Person does not have sufficient score.` Choose a milestone within the person's score. |
+| Redeeming the same milestone twice | `Milestone reward already redeemed.` Choose another milestone. |
 
 ### Cancelling a redeemed milestone: `cancel-redeem`
 
@@ -375,8 +403,11 @@ Format: `cancel-redeem INDEX m/MILESTONE_INDEX`
   be cancelled through this command. This is intentional because the command identifies milestones by their current
   displayed index.
 
-Example:
+Examples:
 * `cancel-redeem 1 m/2` cancels the 2nd currently displayed milestone for the 1st person shown.
+
+Cancellation does not refund or change the person's membership points. It only removes the matching milestone from
+the person's redeemed milestone reward history.
 
 Common errors:
 
@@ -385,15 +416,12 @@ Common errors:
 | `cancel-redeem 1 m/99` | The milestone index is invalid. Use the current milestone list to choose an index. |
 | `cancel-redeem 1 m/2` when milestone 2 was not redeemed by person 1 | `Unable to unredeem because it was not redeemed.` |
 
-Cancellation does not refund or change the person's membership points. It only removes the matching milestone from
-the person's redeemed milestone reward history.
-
 ### Locating persons by name or phone number: `find`
 
 Finds persons whose names contain any of the given keywords, or whose phone number exactly matches an eight-digit
 keyword.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Format: `find KEYWORD [MORE_KEYWORDS]…​`
 
 * Name searches are case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
@@ -420,6 +448,12 @@ Format: `delete-member INDEX`
 Examples:
 * `list` followed by `delete-member 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete-member 1` deletes the 1st person in the results of the `find` command.
+
+Common errors:
+
+| Input | Result and recovery |
+|---|---|
+| `delete-member 99` when fewer than 99 persons are displayed | `The person index provided is invalid.` Use an index from the current person list. |
 
 ### Clearing all entries: `clear`
 
@@ -465,15 +499,13 @@ loading older data. The internal codes are case-insensitive, saved in uppercase,
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If the customer file is invalid, the app starts with an empty address book. A missing customer file loads sample
-contacts, and a missing menu or milestone file loads the sample menu. An invalid menu file starts with an empty menu or milestone catalog respectively. Loading does not replace
+contacts, a missing menu file loads the sample menu, and a missing milestone file loads the sample milestone catalog.
+An invalid menu file starts with an empty menu or milestone catalog respectively. Loading does not replace
 an invalid file, but the next successfully executed command attempts to save all three files and can overwrite the invalid data. Back up all three files before editing them, and restore
 a valid backup before running commands if you need to recover existing records.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
-### Archiving data files `[coming in v2.0]`
-
-_Details coming soon ..._
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -510,7 +542,7 @@ Action | Format, Examples
 **Redeem milestone** | `redeem INDEX m/MILESTONE_INDEX`<br> e.g., `redeem 1 m/2`
 **Cancel redeemed milestone** | `cancel-redeem INDEX m/MILESTONE_INDEX`<br> e.g., `cancel-redeem 1 m/2`
 **Update score** | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`, `find 98765432`
+**Find** | `find KEYWORD [MORE_KEYWORDS]…​`<br> e.g., `find James Jake`, `find 98765432`
 **List** | `list`
 **List milestones** | `list-milestones`
 **Clear all data** | `clear`
