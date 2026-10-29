@@ -62,7 +62,6 @@ public class CancelRedeemCommand extends Command {
 
         Person updatedPerson = createUpdatedPerson(personToUpdate, milestoneToCancel);
         model.setPerson(personToUpdate, updatedPerson);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(updatedPerson);
 
         return new CommandResult(MESSAGE_SUCCESS);
