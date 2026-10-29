@@ -15,7 +15,7 @@ The project uses the following third-party libraries and tools:
 
 * [JavaFX](https://openjfx.io/) for the graphical user interface.
 * [Jackson](https://github.com/FasterXML/jackson) for reading and writing JSON data.
-* [JUnit 5](https://junit.org/junit5/) for automated testing.
+* [JUnit 5](https://docs.junit.org/5.14.4/) for automated testing.
 * [PlantUML](https://plantuml.com/) for generating UML diagrams.
 
 --------------------------------------------------------------------------------------------------------------------
@@ -200,9 +200,9 @@ See the class diagram in [Model component](#model-component) for the catalog str
 
 `MilestoneCatalog` stores the rewards available to all members, separately from the member records in `AddressBook`. `ModelManager` delegates catalog operations to it and exposes an unmodifiable observable list through `ReadOnlyMilestoneCatalog`.
 
-Each milestone has an internal UUID code that is persisted but omitted from user-facing output. Codes are compared case-insensitively and remain unchanged when a milestone is edited, so identity does not depend on its reward description, required score, or displayed index. The catalog sorts milestones by ascending required score, using code as the tie-breaker.
+Each milestone has an internal, nonblank code that is persisted but omitted from user-facing output. `add-milestone` generates this code as a UUID, while sample and loaded milestones may use other nonblank codes. Codes are compared case-insensitively and remain unchanged when a milestone is edited, so identity does not depend on its reward description, required score, or displayed index. The catalog sorts milestones by ascending required score, using code as the tie-breaker.
 
-`list-milestones` displays the numbered catalog. Add commands require a reward description and a positive required score in the Java `int` range. Edit commands require a displayed index and at least one editable field; delete commands require a displayed index. Edit and delete resolve their index against the current catalog during execution. Editing a required score can therefore change a milestone's displayed index. Catalog changes do not modify members' scores or existing redemption histories.
+`list-milestones` displays the numbered catalog. Add commands require a reward description and a positive required score no greater than `999999999`. Edit commands require a displayed index and at least one editable field; delete commands require a displayed index. Edit and delete resolve their index against the current catalog during execution. Editing a required score can therefore change a milestone's displayed index. Catalog changes do not modify members' scores or existing redemption histories.
 
 Tests cover stable codes, sorting after edits, unique identities, index boundaries, and validation of required scores and command arguments.
 
