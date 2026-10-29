@@ -3,7 +3,7 @@ layout: page
 title: User Guide
 ---
 
-AddressBook Level 3 (AB3) is a **desktop application for managing contacts, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, AB3 can help you manage contacts faster than traditional GUI applications.
+Ratatouille is a **desktop application for hawker stall owners to manage customer memberships, orders and loyalty rewards**. It is optimized for typing commands through a Command Line Interface (CLI), with a Graphical User Interface (GUI) for viewing member details, order histories, menu items and milestone rewards. You can register members using their phone numbers, record orders, track membership points and manage reward redemptions while serving customers.
 
 * Table of Contents
 {:toc}
@@ -12,23 +12,24 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
 ## Quick start
 
-1. Ensure that Java `25` or later is installed on your computer.<br>
-   **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
+1. Ensure that Java `25` is installed on your computer. Check with `java -version` in a terminal.
 
-1. Download the latest `.jar` file from [here](https://github.com/se-edu/addressbook-level3/releases).
+1. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-F12-3/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+1. Copy the file to the folder you want to use as the _home folder_ for Ratatouille.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
-   A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
+1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar ratatouille.jar`.<br>
+   A GUI similar to the one below should appear. When no saved data files exist, the app loads sample members,
+   menu items and milestone rewards. The screenshot shows an example session; its values may differ from the initial samples.<br>
    ![Ui](images/Ui.png)
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
-   Some example commands you can try:
+   Some example commands you can try. Examples that refer to members, menu items or orders require those entries
+   to exist. Adding a member requires an unused phone entry, and adding a menu item requires an unused code:
 
-   * `list` : Lists all contacts.
+   * `list` : Lists all members.
 
-   * `add-member n/John Doe p/98765432` : Adds a contact named `John Doe` to the Address Book.
+   * `add-member n/John Doe p/98765432` : Registers a member named `John Doe` with zero points, an empty order history and an empty redemption history.
 
    * `add-menu-item c/12A n/Dessert p/3.50` : Adds Dessert to the menu at $3.50.
 
@@ -38,13 +39,13 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list-milestones` : Lists all milestone rewards with their current indexes.
 
-   * `add-order 1 o/1 q/2` : Records an order of two Chicken Rice for the 1st contact shown.
+   * `add-order 1 o/1 q/2` : With the sample menu, records two Chicken Rice for the 1st member shown and adds 90 points.
 
-   * `delete-order 1 o/2` : Deletes the 2nd order from the 1st contact shown.
+   * `delete-order 1 o/2` : Deletes the 2nd-newest order from the 1st member shown and subtracts its recorded points, provided the resulting score is not negative.
 
-   * `delete-member 3` : Deletes the 3rd contact shown in the current list.
+   * `delete-member 3` : Deletes the 3rd member shown in the current list.
 
-   * `update-score 1 s/10` increases the score of the 1st person shown by 10.
+   * `update-score 1 s/10` : Increases the score of the 1st member shown by 10. The command is rejected if the result exceeds `999999999`.
 
    * `clear` : Deletes all customers, menu items, and milestone rewards.
 
@@ -66,11 +67,19 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 * Items in square brackets are optional.<br>
   For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
 
-* Items followed by `…`​ can appear zero or more times.<br>
-  For example, `[t/TAG]…​` may be omitted, or written as `t/friend` or `t/friend t/family`.
+* Items followed by `…` can appear zero or more times.<br>
+  For example, `[t/TAG]…` may be omitted, or written as `t/friend` or `t/friend t/family`.
 
-* Parameters can be in any order.<br>
+* Prefixed fields for the commands in this section can be in any order. An unprefixed index or current menu-item code must come first.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+  Use `edit-member 1 n/John Doe`, with the index before `n/`.
+
+* Command words and prefixes are case-sensitive. Type them exactly as shown, using ordinary spaces between fields.
+  For example, use `help`, not `Help`.
+
+* Successful commands other than `help` and `exit` automatically save member records, the menu and milestone rewards.
+  If saving fails, an error is shown and changes may remain only in memory. Follow the recovery instructions in
+  [Saving the data](#saving-the-data) before closing the app.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
@@ -80,17 +89,37 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
 ### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
+Opens the help window, which shows the User Guide address and a button to copy it.
+The address is `https://ay2627s1-cs2103t-f12-3.github.io/tp/UserGuide.html`.
+If the window is already open, `help` brings it into focus and restores it if minimized.
+
+**Format:** `help`
+
+**Parameters and constraints:** None. Extra arguments are ignored.
+
+**Example:** `help` opens the help window and displays `Opened help window.`
+
+**Common error and recovery:** `Help` produces `Unknown command.` Use lowercase `help`.
+The command displays the guide address; use **Copy URL** and paste it into your browser to read the guide.
 
 ![help message](images/helpMessage.png)
-
-Format: `help`
 
 
 ### Adding a member: `add-member`
 
-Adds a person to the address book.
+Registers a member and selects their profile. The full member list is shown after a successful addition.
 
+**Format:** `add-member n/NAME p/PHONE_NUMBER [t/TAG]…`
+
+**Parameters and constraints:**
+
+* Supply `n/NAME` and `p/PHONE_NUMBER` exactly once each. Tags are optional and `t/TAG` may be repeated.
+* `NAME` must contain only letters (`A`–`Z`, `a`–`z`), digits and spaces, with at least one letter.
+  Blank names, punctuation and names consisting only of digits are rejected.
+* Each `TAG` must contain one or more letters (`A`–`Z`, `a`–`z`) or digits, without spaces or punctuation.
+  Duplicate tags are stored only once.
+* New members start with zero points, no orders and no redeemed milestones.
+* Leading and trailing ordinary spaces around field values are removed. Internal spaces in a name are preserved.
 * A phone entry is required. Empty or whitespace-only entries are rejected. New entries supplied to `add-member` or
   the `p/` field of `edit-member` must contain at least one decimal digit (including full-width digits). Inputs such as `Not available`
   and `---` are rejected with `Phone numbers must contain at least one digit`.
@@ -115,16 +144,20 @@ Adds a person to the address book.
   unintended extra record after checking the displayed list. No records, points or order histories are merged.
   When editing, the member being edited is excluded; this warning is checked only when `p/` is supplied.
 * Letters and delimiters such as `/`, `,`, `;` and `+` separate number segments. Explicit extension values
-  introduced by `ext`, `extension` or `x` are excluded from this warning. Complete sequences of adjacent eight-digit
+  introduced by `ext`, `extension` or `x` are excluded from this warning when the marker is separated from the
+  preceding number or word, for example `92345678 ext 123456`. Letter case does not matter for these markers.
+  An attached marker such as `92345678x123456` does not exclude the extension from comparison.
+  Complete sequences of adjacent eight-digit
   Singapore numbers are checked as separate numbers. Shorter segments, partial digit matches and inferred foreign
   country codes are not checked. For example, `+86 138119828111` matches a compact
   `+86138119828111` for a warning, but the app does not guess that `138119828111` belongs to country code `86`.
   Other numbers separated only by spaces or dashes can still be treated as one segment; use `/` or a label to
   make their boundaries clear. The absence of a warning does not establish that two entries belong to different people.
 * Command prefixes such as `n/`, `p/` and `t/` still delimit fields and cannot be embedded literally in a phone
-  value when preceded by whitespace.
+  value when preceded by an ordinary space. Use spaces between fields; tabs alone do not separate fields
+  for `add-member` or `edit-member`.
 
-Phone input examples (assuming the saved entry is not already registered):
+Phone input examples (assuming a valid name and tags, and that the saved phone entry is not already registered):
 
 | Value after `p/` | Saved phone entry | Result |
 |---|---|---|
@@ -154,39 +187,75 @@ Duplicate-check examples:
 | `+86 138119828111` | `+86138119828111` | Saved; format warning and possible duplicate warning |
 | `92345678` and `81234567` in separate members | `92345678 (HP) / 81234567 (Office)` | Saved; possible duplicate warning identifies both members |
 
-Format: `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​`
-
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, including zero.
 </div>
 
-Examples:
+**Examples:**
+
+Assuming the phone entries are not already registered:
+
 * `add-member n/John Doe p/98765432`
-* `add-member n/Betsy Crowe t/friend p/81234567 t/criminal`
+* `add-member n/Betsy Crowe t/regular p/81234567 t/vegetarian`
 
-### Listing all persons: `list`
+**Common errors and recovery:**
 
-Shows a list of all persons in the address book.
+| Input or situation | Result and recovery |
+|---|---|
+| `add-member n/John Doe` | The command format is shown. Supply `p/PHONE_NUMBER`. |
+| `add-member n/123 p/98765432` | `Names should contain at least one letter (A-Z or a-z)`. Use a name such as `John Doe`. |
+| `add-member n/John Doe p/phone` | `Phone numbers must contain at least one digit`. Enter a phone entry containing a digit. |
+| The phone entry is already registered | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The addition is rejected. Check that record before entering a different phone entry. |
+| `add-member n/John Doe p/98765432 t/close friend` | `Tag names should be alphanumeric`. Use `t/closeFriend`. |
 
-Format: `list`
+### Listing all members: `list`
+
+Shows all members, clears any search filter, and deselects the current member.
+
+**Format:** `list`
+
+**Parameters and constraints:** None. Extra arguments are ignored.
+
+**Example:** After `find Betsy`, run `list` to show all members again. The feedback is `Listed all persons.`
+
+**Common error and recovery:** `list` displays members. To see milestone rewards and their indexes,
+use `list-milestones`.
 
 ### Editing a member: `edit-member`
 
-Edits an existing person in the address book.
+Edits an existing member's name, phone entry or tags.
 
-Format: `edit-member INDEX [n/NAME] [p/PHONE] [t/TAG]…​`
+**Format:** `edit-member INDEX [n/NAME] [p/PHONE] [t/TAG]…`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+**Parameters and constraints:**
+
+* Edits the member at the specified `INDEX`. Use the index number shown in the current member list,
+  including filtered search results. The index **must be a positive integer** 1, 2, 3, …
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* Names and tags follow the same constraints as `add-member`. Supply `n/` and `p/` at most once each.
 * Phone numbers follow the same format and uniqueness rules as `add-member`. Changing a phone number to one already
   registered to another person is rejected; keeping the person's current number is allowed.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
+* Omitted fields, the member's score, order history and redemption history are preserved.
+  After a successful edit, the full member list is shown and the edited member is selected.
 
-Examples:
-*  `edit-member 1 p/91234567` Edits the phone number of the 1st person to be `91234567`.
-*  `edit-member 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+**Examples:**
+
+Assuming the displayed member list contains at least two members:
+
+* `edit-member 1 p/91234567` changes the 1st displayed member's phone entry to `91234567`, if it is not registered to another member.
+* `edit-member 2 n/Betsy Crower t/` changes the 2nd displayed member's name to `Betsy Crower` and clears their tags.
+
+**Common errors and recovery:**
+
+| Input or situation | Result and recovery |
+|---|---|
+| `edit-member 1` | `At least one field to edit must be provided.` Supply a name, phone entry or tags. |
+| `edit-member 0 n/John Doe` | The command format is shown. Use a positive index from the displayed member list. |
+| The index is beyond the displayed member list | `The person index provided is invalid.` Run `list` and use the correct displayed index. |
+| The new phone entry belongs to another member | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The edit is rejected. Check that record and correct the phone entry. |
 
 ### Adding a menu item: `add-menu-item`
 
@@ -194,7 +263,9 @@ Adds a food item with a unique code, name, and price to the menu. The item is sa
 On a fresh installation, the menu starts with sample items such as `1` (Chicken Rice), `3A` (Nasi Lemak),
 and `3B` (Nasi Lemak + Chicken).
 
-Format: `add-menu-item c/CODE n/NAME p/PRICE`
+**Format:** `add-menu-item c/CODE n/NAME p/PRICE`
+
+**Parameters and constraints:**
 
 * Provide all three prefixes exactly once. They may appear in any order, separated by spaces or tabs.
 * `CODE` must contain one or more letters (`A`–`Z`, `a`–`z`) or digits (`0`–`9`), without spaces or punctuation.
@@ -207,7 +278,9 @@ Format: `add-menu-item c/CODE n/NAME p/PRICE`
   `4`, `4.5`, and `4.50` are accepted. Enter `0.50` for fifty cents, without a currency symbol.
 * Missing fields, repeated prefixes, invalid values, and control characters such as newlines are rejected.
 
-Examples:
+**Examples:**
+
+Assuming codes `12A` and `12B` are unused:
 
 * `add-menu-item c/12A n/Dessert p/3.50`
 * `add-menu-item p/1.20 n/Coffee c/12B`
@@ -215,22 +288,24 @@ Examples:
 The first example shows `New menu item added: Dessert` after saving succeeds. The customer list stays as it is;
 `list` displays customers, not the menu. Menu items are stored separately; `clear` deletes them along with all customers and milestone rewards.
 
-Common errors:
+**Common errors and recovery:**
 
 | Input | Result and recovery |
 |---|---|
 | Reusing `c/12A` after adding that code | `A menu item with this code already exists.` Choose a different code. |
 | `add-menu-item c/13 n/Dish` | The command format is shown. Supply the missing `p/PRICE`. |
-| `add-menu-item c/13 n/Dish p/4.501` | The price constraint is shown. Use at most two decimal places. |
-| `add-menu-item c/13 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
+| `add-menu-item c/13 n/Dish p/4.501` | `Price must be between 0.01 and 21474836.47 dollars, with at most two decimal places.` Use at most two decimal places. |
+| `add-menu-item c/13 n/Dish p/0` | `Price must be between 0.01 and 21474836.47 dollars, with at most two decimal places.` Use a positive price of at least `0.01`. |
 
-These validation failures leave the existing menu unchanged and do not save either data file.
+These validation failures leave the existing menu unchanged and do not trigger an automatic save.
 
 ### Deleting a menu item: `delete-menu-item`
 
 Deletes the menu item with the specified code and saves the updated menu.
 
-Format: `delete-menu-item c/CODE`
+**Format:** `delete-menu-item c/CODE`
+
+**Parameters and constraints:**
 
 * Provide `c/` exactly once, with a nonblank alphanumeric code. Extra arguments are rejected.
 * Codes are case-sensitive. Deleting `CR01` leaves an item with code `cr01` unchanged.
@@ -238,50 +313,70 @@ Format: `delete-menu-item c/CODE`
 * Successful deletion shows, for example, `Deleted menu item: CR01 (Chicken Rice)`.
 * Customer records, existing order histories, and milestone rewards are unchanged. The deleted code can be reused.
 
-Example: `delete-menu-item c/CR01`
+**Example:** `delete-menu-item c/CR01` deletes the item with code `CR01`, if it exists.
+
+**Common errors and recovery:**
+
+| Input or situation | Result and recovery |
+|---|---|
+| `delete-menu-item CR01` | The command format is shown. Use `delete-menu-item c/CR01`. |
+| `delete-menu-item c/CR-01` | `Item codes must be alphanumeric.` Enter an alphanumeric code without punctuation. |
+| The code does not exist | `No menu item with this code exists.` Check the item's exact code, including letter case. |
 
 ### Editing a menu item: `edit-menu-item`
 
 Updates an existing menu item using its current code. The item is saved for future sessions.
 
-Format: `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`
+**Format:** `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`
+
+**Parameters and constraints:**
 
 * `CURRENT_CODE` identifies the existing menu item. It must contain one or more letters (`A`–`Z`, `a`–`z`) or
   digits (`0`–`9`), without spaces or punctuation.
-* `c/NEW_CODE` changes the item's code. The new code must be alphanumeric and must not already exist in the menu.
+* Codes are case-sensitive. `c/NEW_CODE` changes the item's code; it must be alphanumeric and must not
+  belong to another menu item. Keeping the current code is accepted.
 * `n/NAME` changes the item's name. The name must not be blank.
 * `p/PRICE` changes the item's price. Prices use the same dollar format as `add-menu-item`.
 * At least one of `c/NEW_CODE`, `n/NAME`, or `p/PRICE` must be provided. They may appear in any order.
 * Fields that are not provided retain their existing values.
+* Supply each optional prefix at most once. Unsupported single-letter prefixes and control characters other
+  than tabs are rejected, as for `add-menu-item`.
+* Existing orders retain their recorded item code, name and points gained. The new details apply to future orders.
 
-Examples:
+**Examples:**
+
+Assuming code `12A` exists and `12C` is unused:
 
 * `edit-menu-item 12A n/Chocolate Cake` changes only the name.
 * `edit-menu-item 12A p/4.00` changes only the price.
-* `edit-menu-item 12A c/12B n/Chocolate Cake p/4.00` changes the code, name, and price.
+* `edit-menu-item 12A c/12C n/Chocolate Cake p/4.00` changes the code, name, and price.
 
-Common errors:
+**Common errors and recovery:**
 
 | Input | Result and recovery |
 |---|---|
-| `edit-menu-item UNKNOWN n/Dish` | `A menu item with this code does not exist.` Enter the current code of an existing item. |
-| `edit-menu-item 12A c/3A` | `A menu item with the new code already exists.` Choose a code that is not already in the menu. |
+| `edit-menu-item UNKNOWN n/Dish` when code `UNKNOWN` does not exist | `A menu item with this code does not exist.` Enter the current code of an existing item. |
+| `edit-menu-item 12A c/3A` when `3A` belongs to another item | `A menu item with the new code already exists.` Choose a code that is not already in the menu. |
 | `edit-menu-item 12A` | The command format is shown. Supply at least one field to update. |
-| `edit-menu-item 12A p/4.001` | The price constraint is shown. Use at most two decimal places. |
+| `edit-menu-item 12A p/4.001` | `Price must be between 0.01 and 21474836.47 dollars, with at most two decimal places.` Use at most two decimal places. |
 
 Validation failures leave the existing menu item unchanged.
 
 ### Listing milestone rewards: `list-milestones`
 
-Lists all milestone rewards with the index used by `edit-milestone` and `delete-milestone`.
+Lists all milestone rewards with the indexes used by `edit-milestone`, `delete-milestone`, `redeem` and `cancel-redeem`.
 
-Format: `list-milestones`
+**Format:** `list-milestones`
 
-Milestones are ordered by required score from lowest to highest. Milestones with the same required score may appear
-in either order. Each entry shows its index, reward description, and required score. If the catalog is empty, the
-command displays `No milestones found.`
+**Parameters and constraints:**
 
-Example output:
+* No parameters are required. Extra arguments are ignored.
+* Milestones are ordered by required score from lowest to highest. Ties are ordered by their internal codes,
+  so do not assume creation order for milestones with equal scores.
+  Each entry shows its index, reward description and required score.
+* Adding, editing or deleting milestones can change their indexes. Run `list-milestones` again before using an index.
+
+**Example:** `list-milestones` produces the following output when the catalog contains these two rewards:
 
 ```text
 2 milestone(s) listed!
@@ -289,19 +384,28 @@ Example output:
 2. $10 voucher (Required score: 1000)
 ```
 
+**Common error and recovery:** `No milestones found.` means the catalog is empty. Add a reward with
+`add-milestone r/Free drink s/500`, then run `list-milestones` again.
+
 ### Adding a milestone reward: `add-milestone`
 
 Adds a milestone reward with a reward description and required score to the milestone catalog.
 
-Format: `add-milestone r/REWARD s/REQUIRED_SCORE`
+**Format:** `add-milestone r/REWARD s/REQUIRED_SCORE`
+
+**Parameters and constraints:**
 
 * Provide both prefixes exactly once. They may appear in any order, separated by spaces or tabs.
 * `REWARD` must not be blank. Spaces, punctuation, and non-English characters are accepted.
-* `REQUIRED_SCORE` must be a positive whole number from `1` to `2147483647`. Do not include a leading `+` sign.
+* `REQUIRED_SCORE` must be a positive whole number from `1` to `999999999`, inclusive.
+  Do not include a sign, decimal point or thousands separator.
 * Single-letter prefixes such as `r/` and `s/` are interpreted as arguments when preceded by a space or tab;
-  avoid these tokens inside reward descriptions. Unsupported prefixes and control characters are rejected.
+  avoid these tokens inside reward descriptions. Unsupported single-letter prefixes and control characters
+  other than tabs are rejected.
+* A new milestone gets an automatically generated identity. The same reward description and required score can
+  be added more than once; each addition is a separate milestone with its own redemption status.
 
-Examples:
+**Examples:**
 
 * `add-milestone r/Free drink s/500`
 * `add-milestone s/1000 r/$10 voucher`
@@ -310,44 +414,80 @@ A successful command displays the reward and required score, for example
 `New milestone added: Free drink (Required score: 500)`. The app generates and stores an internal code to track
 redemptions; you do not need to enter or use it.
 
+**Common errors and recovery:**
+
+| Input | Result and recovery |
+|---|---|
+| `add-milestone r/Free drink` | The command format is shown. Supply `s/REQUIRED_SCORE`. |
+| `add-milestone r/Free drink s/+500` | `Required score must be a positive whole number no greater than 999999999.` Use `s/500`. |
+| `add-milestone r/Free drink s/1000000000` | `Required score must be a positive whole number no greater than 999999999.` Enter a whole number from `1` to `999999999`. |
+| `add-milestone r/ s/500` | `Reward descriptions must not be blank.` Supply a reward description. |
+| `add-milestone c/FREE500 r/Free drink s/500` | The command format is shown. Remove `c/`; codes are generated automatically. |
+
 ### Editing a milestone reward: `edit-milestone`
 
 Edits the reward description or required score of an existing milestone.
 
-Format: `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`
+**Format:** `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`
+
+**Parameters and constraints:**
 
 * `INDEX` is the positive index number shown in the current milestone list.
 * Provide at least one of `r/REWARD` or `s/REQUIRED_SCORE`. Existing values for omitted fields are preserved.
+* Supply each prefix at most once, in either order. Reward descriptions and scores follow the same constraints
+  as `add-milestone`: a nonblank description and a whole-number score from `1` to `999999999`.
 * Changing a required score can move the milestone to a different index.
 * Entering values that are already stored is accepted and leaves the milestone unchanged.
+* Editing a milestone **does not delete members' existing redemptions**. The milestone keeps its identity,
+  so a member who has redeemed it still has it marked as redeemed, even after its description or required score
+  changes. Editing does not allow that member to redeem it again.
+* Previously stored redemption records retain the description and required score recorded when redeemed.
+  The catalog and timeline show the edited details. Member scores are unchanged.
 
-Examples:
+**Examples:**
+
+Assuming the current milestone list contains at least two milestones:
 
 * `edit-milestone 1 r/Free drink and snack`
 * `edit-milestone 2 s/1200 r/$15 voucher`
+
+**Common errors and recovery:**
+
+| Input or situation | Result and recovery |
+|---|---|
+| `edit-milestone 1` | `At least one field to edit must be provided.` Supply `r/REWARD` or `s/REQUIRED_SCORE`. |
+| `edit-milestone 1 c/NEWCODE` | The command format is shown. Only the reward description and required score can be edited. |
+| `edit-milestone 1 s/0` | `Required score must be a positive whole number no greater than 999999999.` Use a whole number from `1` to `999999999`. |
+| The index is beyond the current milestone list | `The milestone index provided is invalid.` Run `list-milestones` and use a current index. |
 
 ### Deleting a milestone reward: `delete-milestone`
 
 Deletes a milestone from the catalog.
 
-Format: `delete-milestone INDEX`
+**Format:** `delete-milestone INDEX`
+
+**Parameters and constraints:**
 
 * `INDEX` is the positive index number shown in the current milestone list.
-* Use the latest displayed list because adding or editing a milestone can change the sorted order.
-* Deleting a milestone does not change any member's score. Reward-claim records are managed separately.
+* Supply only the index, without a prefix or additional arguments. Use the latest displayed list because
+  adding, editing or deleting a milestone can change the indexes.
+* Deleting a milestone removes it from the catalog and members' milestone timelines, including its displayed
+  redemption status. It does not change any member's score.
+* **Stored redemption records are retained.** The current implementation does not delete the matching records
+  from members' redemption histories. Once the milestone is deleted, `cancel-redeem` cannot target it because
+  that command requires an entry in the current catalog.
+* Adding the same description and required score later creates a new milestone. Previous redemptions of the
+  deleted milestone do not mark the new milestone as redeemed.
 
-Example: `delete-milestone 1`
+**Example:** Run `list-milestones`, then `delete-milestone 1` to delete the first listed milestone.
 
-Common milestone-command errors:
+**Common errors and recovery:**
 
 | Input | Result and recovery |
 |---|---|
-| `add-milestone r/Free drink` | The command format is shown. Supply `s/REQUIRED_SCORE`. |
-| `add-milestone r/Free drink s/+500` | The required-score constraint is shown. Remove the `+` sign. |
-| `add-milestone c/FREE500 r/Free drink s/500` | The command format is shown because codes are generated automatically. |
-| `edit-milestone 1` | At least one editable field must be provided. |
-| `edit-milestone 1 c/NEWCODE` | The command format is shown because milestone codes cannot be edited. |
-| `delete-milestone 999` | The milestone-index error is shown. Use an index in the displayed milestone list. |
+| `delete-milestone 0` | The command format is shown. Use a positive index from `list-milestones`. |
+| `delete-milestone 1 r/Free drink` | The command format is shown. Supply only the index: `delete-milestone 1`. |
+| `delete-milestone 999` when fewer than 999 milestones exist | `The milestone index provided is invalid.` Run `list-milestones` and use a current index. |
 
 Failed milestone commands leave the milestone catalog unchanged. Successful commands are saved in
 `data/milestones.json`; `clear` removes all customers, menu items, and milestone rewards.
