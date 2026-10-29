@@ -379,10 +379,10 @@ saved `scoreGained` also stays the same if the menu price changes.
 
 Common errors:
 
-| Input | Result and recovery                                                                       |
-|---|-------------------------------------------------------------------------------------------|
+| Input | Result and recovery                                                                      |
+|---|------------------------------------------------------------------------------------------|
 | `add-order 1 o/UNKNOWN q/1` | `The item code is not in the menu.` Add the menu item first or use an existing item code. |
-| `add-order 1 o/1 q/0` | The command format is shown. Use a positive whole-number quantity.                        |
+| `add-order 1 o/1 q/0` | `Quantity must be a postive number` Use a positive whole-number quantity.                 |
 
 ### Deleting an order: `delete-order`
 
@@ -425,10 +425,12 @@ Examples:
 
 Common errors:
 
-| Input                         | Result and recovery |
-|-------------------------------|---|
-| `update-score 1 s/-999999999` | `Score cannot be less than zero.` Use a smaller decrease. |
-| `update-score 1 s/1999999999  | `Score cannot exceed 999999999.` Use a smaller increase. |
+| Input                          | Result and recovery                                                   |
+|--------------------------------|-----------------------------------------------------------------------|
+| `update-score 1 s/-999999999`  | `Score cannot be less than zero.` Use a smaller decrease.             |
+| `update-score 1 s/999999999`   | `Score cannot exceed 999999999.` Use a smaller increase.              |
+| `update-score 1 s/1999999999`  | `Score change must be a signed whole number.` Use a smaller increase. |
+| `update-score 1 s/-1999999999` | `Score change must be a signed whole number.` Use a smaller decrease. |
 
 ### Redeeming a milestone: `redeem`
 
@@ -610,7 +612,7 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 
 Action | Format, Examples
 --------|------------------
-**Add member** | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/22224444 t/friend t/colleague`
+**Add member** | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/98765544 t/friend t/colleague`
 **Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
 **Add milestone** | `add-milestone r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone r/10% OFF s/250`
 **Add order** | `add-order INDEX o/ITEM_CODE q/QUANTITY`<br> e.g., `add-order 1 o/12A q/3`
