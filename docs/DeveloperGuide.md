@@ -815,7 +815,7 @@ testers are expected to do more *exploratory* testing.
 ### Launch and shutdown
 
 1. Copy the JAR file into a new, writable folder. Start the app from that folder using
-   `java -jar addressbook.jar`. Double-clicking the JAR file may not work on all operating systems.
+   `java -jar ratatouille.jar`. Double-clicking the JAR file may not work on all operating systems.
    Expected: The GUI opens with the sample members, menu items, and milestone rewards because the
    corresponding data files do not yet exist.
 
@@ -826,7 +826,7 @@ testers are expected to do more *exploratory* testing.
    Expected: The help window opens with a link to the User Guide.
 
 1. Type `exit` and press Enter.
-   Expected: The app closes after displaying the exit acknowledgement.
+   Expected: The app closes.
 
 1. Repeat the launch test with the JAR in a write-protected folder, then enter `list`.<br>
    Expected: The command reports a file-permission error because the app cannot save its data. Use a writable
