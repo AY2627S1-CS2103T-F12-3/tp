@@ -993,21 +993,23 @@ testers are expected to do more *exploratory* testing.
 
 ### Launch and shutdown
 
-1. Initial launch
+1. Copy the JAR file into a new, writable folder. Start the app from that folder using
+   `java -jar ratatouille.jar`. Double-clicking the JAR file may not work on all operating systems.
+   Expected: The GUI opens with the sample members, menu items, and milestone rewards because the
+   corresponding data files do not yet exist.
 
-   1. Download the JAR file and copy it into an empty folder.
+1. Resize and move the window, then close the app. Start it again from the same folder.
+   Expected: The most recent window size and position are restored.
 
-   1. Double-click the JAR file.<br>
-      Expected: The GUI opens with a set of sample contacts. The window size may not be optimal.
+1. Type `help` and press Enter.
+   Expected: The help window opens with a link to the User Guide.
 
-1. Saving window preferences
+1. Type `exit` and press Enter.
+   Expected: The app closes.
 
-   1. Resize the window to an optimal size. Move the window to a different location. Close the window.
-
-   1. Relaunch the app by double-clicking the JAR file.<br>
-       Expected: The most recent window size and location are retained.
-
-1. _{ more test cases …​ }_
+1. Repeat the launch test with the JAR in a write-protected folder, then enter `list`.<br>
+   Expected: The command reports a file-permission error because the app cannot save its data. Use a writable
+   folder for normal operation.
 
 ### Adding and editing phone numbers
 
@@ -1065,77 +1067,74 @@ testers are expected to do more *exploratory* testing.
 
 ### Deleting a person
 
-1. Deleting a person while all persons are being shown
+1. Prerequisites: Use `list` to display multiple members.
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+1. Test case: `delete-member 1`<br>
+   Expected: The first displayed member is removed. The success message includes the deleted member's details.
 
-   1. Test case: `delete-member 1`<br>
-      Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
+1. Test case: `find Alex`, followed by `delete-member 1`.<br>
+   Expected: The matching member is removed from the filtered list and from the saved member data.
 
-   1. Test case: `delete-member 0`<br>
-      Expected: No person is deleted. The status message shows error details.
+1. Test cases: `delete-member 0`, `delete-member`, `delete-member x`, and `delete-member 999`.<br>
+   Expected: An input or invalid-index error is shown. No member or related data is deleted.
 
-   1. Other incorrect delete commands to try: `delete-member`, `delete-member x`, `...` (where x is larger than the list size)<br>
-      Expected: Similar to previous.
-
-1. _{ more test cases …​ }_
+1. Close and relaunch the app, then run `find` using the deleted member's name.<br>
+   Expected: The deleted member is still absent. Their order history and redeemed-reward history are no longer
+   available through the member list.
 
 ### Recording an order
 
-1. Recording an order for a person in the displayed list
+1. Prerequisites: Use `list` to display at least one member. The sample menu includes `1` (Chicken Rice),
+   `3A` (Nasi Lemak), and `3B` (Nasi Lemak + Chicken).
 
-   1. Prerequisites: Use `list` to show at least one person. The sample menu contains `1` (Chicken Rice),
-      `3A` (Nasi Lemak), and `3B` (Nasi Lemak + Chicken).
+1. Test case: `add-order 1 o/1 q/2`<br>
+   Expected: An order for two Chicken Rice items is added to the first displayed member. Their score increases
+   by 90 points, because Chicken Rice costs $4.50 and earns 10 points per dollar.
 
-   1. Test case: `add-order 1 o/1 q/2`<br>
-      Expected: The status message confirms the order was added to the first person's order history. Their score
-      increases by 90 points. The full person list is shown.
+1. Test case: `add-order 1 o/3B q/1`<br>
+   Expected: The order is added and increases the member's score by 65 points. The member's profile shows the
+   saved item name, quantity, and score gained.
 
-   1. Close and reopen the app, then enter `add-order 1 o/3B q/1`.<br>
-      Expected: The status message shows both the earlier Chicken Rice order and the new Nasi Lemak + Chicken order
-      in the first person's order history. The new order adds 65 points to their score.
+1. Close and relaunch the app, then inspect the same member.
+   Expected: Both orders and the updated score remain.
 
-   1. Test case: `add-order 1 o/Chicken-Rice q/2`<br>
-      Expected: The item-code constraint is shown, and no order is added.
+1. Test cases: `add-order 1 o/Chicken-Rice q/2`, `add-order 1 o/UNKNOWN q/2`, and `add-order 1 o/1 q/0`.<br>
+   Expected: The relevant input, menu-code, or quantity error is shown. No order or score is changed.
 
-   1. Test case: `add-order 1 o/UNKNOWN q/2`<br>
-      Expected: The unknown-menu-code error is shown, and no order is added.
-
-   1. Test case: `add-order 1 o/1 q/0`<br>
-      Expected: The quantity constraint is shown, and no order is added.
+1. Change or delete a menu item that has already been ordered, then inspect the member's order history.
+   Expected: The existing order retains the item details and score that were saved when the order was recorded.
 
 ### Deleting an order
 
-1. Deleting an order from a person in the displayed list
+1. Prerequisites: Use `list` to display a member with at least two orders. If needed, enter
+   `add-order 1 o/1 q/2` and `add-order 1 o/3B q/1` first.
 
-   1. Prerequisites: Use `list` to show at least one person with an order history. If needed, enter
-      `add-order 1 o/1 q/2` and `add-order 1 o/3B q/1` first; both codes are in the sample menu.
+1. Test case: `delete-order 1 o/1`<br>
+   Expected: The newest displayed order is deleted from the first member's history. The member's score decreases
+   by that order's saved score, and the older order remains. Order indexes are shown newest-first.
 
-   1. Test case: `delete-order 1 o/2`<br>
-      Expected: The status message confirms that the second order was deleted. The first order remains, and the full
-      person list is shown. The person's score decreases by the deleted order's saved `scoreGained`.
+1. Close and relaunch the app.
+   Expected: The deleted order remains absent and the score remains reduced.
 
-   1. Close and reopen the app after the successful deletion.<br>
-      Expected: The deleted order remains absent from the person's order history.
+1. Test cases: `delete-order 1 o/999` and `delete-order 999 o/1`.<br>
+   Expected: The relevant order-index or member-index error is shown. No data is changed.
 
-   1. Test case: `delete-order 1 o/999`<br>
-      Expected: The order-index error is shown, and no order is deleted.
+1. Test case: In a fresh test folder, enter `add-member n/OrderCheck p/88888888`, `find OrderCheck`,
+   `add-order 1 o/1 q/1`, `update-score 1 s/-45`, then `delete-order 1 o/1`.<br>
+   Expected: The command is rejected with `Deleting this order would make the score negative.`
 
-   1. Test case: `delete-order 999 o/1`<br>
-      Expected: The person-index error is shown, and no order is deleted.
-
-   1. Other incorrect delete-order commands to try: `delete-order`, `delete-order 1`,
-      `delete-order 1 o/0`, `delete-order 1 o/x`.<br>
-      Expected: The command-format error is shown, and no order is deleted.
+1. Other incorrect commands to try: `delete-order`, `delete-order 1`, `delete-order 1 o/0`,
+   and `delete-order 1 o/x`.<br>
+   Expected: The command-format error is shown and no data is changed.
 
 ### Adding a menu item
 
-Use a disposable app home folder for these tests. Start with no `data/menu.json`; the sample menu loads.
+Use a disposable, writable app home folder. If `data/menu.json` is absent, the sample menu loads.
 
 1. Test case: `add-menu-item c/12A n/Dessert p/3.50`<br>
-   Expected: `New menu item added: Dessert`. `data/menu.json` contains the item with `priceInCents` of `350`.
+   Expected: The menu item is added at $3.50. `data/menu.json` stores the price as `350` cents.
 1. Close and reopen the app, then enter `add-menu-item c/12A n/Different Dish p/5.00`.<br>
-   Expected: `A menu item with this code already exists.` The original item's name and price remain unchanged.
+   Expected: The duplicate-code error is shown. The original item's name and price remain unchanged.
 1. Test case: `add-menu-item p/0.01 c/12a n/Coffee`<br>
    Expected: The item is added at one cent. The lowercase code is distinct from `12A`.
 1. Test case: `add-menu-item c/13 n/Dish`<br>
@@ -1147,64 +1146,94 @@ Use a disposable app home folder for these tests. Start with no `data/menu.json`
    Expected: A duplicate-prefix error is shown and the menu remains unchanged.
 1. Test case: `add-menu-item c/13 n/Dish x/extra p/4.50`<br>
    Expected: The command-format error is shown and the menu remains unchanged.
+1. Test case: `add-order 1 o/12A q/1`.<br>
+   Expected: The new item can be ordered immediately. After restarting, both the menu item and the recorded order
+   remain saved.
 
 ### Deleting a menu item
 
 1. In a disposable app home folder, add `add-menu-item c/DEL01 n/Test Dish p/4.50` and
    `add-menu-item c/del01 n/Other Dish p/5.00`.
 1. Run `delete-menu-item c/DEL01`.<br>
-   Expected: `Deleted menu item: DEL01 (Test Dish)`. The `del01` item remains in `data/menu.json`.
+   Expected: The `DEL01` item is deleted. The case-distinct `del01` item remains in `data/menu.json`.
 1. Close and reopen the app, then run `delete-menu-item c/DEL01` again.<br>
-   Expected: `No menu item with this code exists.` The remaining menu is unchanged.
+   Expected: The item-not-found error is shown. The remaining menu is unchanged.
 1. Run `delete-menu-item c/del01`.<br>
    Expected: The remaining test item is deleted. The sample menu items remain unchanged.
 1. Try `delete-menu-item`, `delete-menu-item c/`, and `delete-menu-item c/DEL01 c/DEL02`.<br>
    Expected: An input error is shown, and no data is changed or saved.
+1. Record an order using a menu item, then delete that menu item and inspect the member's history.<br>
+   Expected: New orders using the deleted code are rejected, but the existing order remains in the history with
+   its saved item details and score.
 
 ### Managing milestone rewards
 
-Use a disposable app home folder for these tests. Start with no `data/milestones.json`. The milestone list is sorted
-by required score; equal-score order is arbitrary.
+Use a new disposable app home folder, with no `data/memberlist.json`. Before starting the app, create
+`data/milestones.json` containing `{"milestones": []}` so that the catalog begins empty. The milestone list is
+sorted by required score; equal-score order is arbitrary.
 
-1. Test case: `list-milestones` before adding a milestone<br>
+1. Test case: `list-milestones` before adding a milestone.<br>
    Expected: `No milestones found.`
-1. Test case: `add-milestone r/Free drink s/500`<br>
-   Expected: `New milestone added: Free drink (Required score: 500)` and `data/milestones.json` contains the
-   milestone with a generated internal code.
-1. Test case: `add-milestone s/1000 r/$10 voucher`<br>
+1. Test case: `add-milestone r/Free drink s/100`.<br>
+   Expected: The milestone is added and `data/milestones.json` contains it with a generated internal code.
+1. Test case: `add-milestone s/200 r/$10 voucher`.<br>
    Expected: The milestone is added even though the prefixes are in a different order.
-1. Test case: `list-milestones`<br>
-   Expected: Both milestones are shown with numbered indexes and no codes. The drink appears first because its
-   required score is lower.
-1. Test case: `add-milestone r/Free drink s/500` again<br>
-   Expected: A second milestone is added with a different internal code.
+1. Test case: `list-milestones`.<br>
+   Expected: Both milestones are shown with numbered indexes and no internal codes. Free drink is listed first
+   because it requires fewer points.
+1. Test case: `redeem 1 m/1`.<br>
+   Expected: The first sample member, who has 100 points, redeems Free drink successfully. The reward appears in
+   the member's profile and the member's score does not change.
+1. Repeat `redeem 1 m/1`.<br>
+   Expected: The command reports that the milestone has already been redeemed.
+1. Test case: `redeem 1 m/2`.<br>
+   Expected: The command reports insufficient score because the member has fewer than 200 points.
+1. Test case: `cancel-redeem 1 m/1` after the successful redemption.<br>
+   Expected: The redemption is removed from the member's profile without changing the member's score.
+1. Test `cancel-redeem 1 m/1` again.<br>
+   Expected: The command reports that the milestone was not redeemed.
 1. Test cases: `add-milestone r/Reward s/+500`, `add-milestone r/Reward s/0`, and
    `add-milestone r/Reward s/2147483648`.<br>
    Expected: The required-score constraint is shown and no milestone is added.
-1. Test case: `edit-milestone 1 r/Free drink and snack s/1500`<br>
-   Expected: The milestone retains its generated code, both editable fields change, and it moves after the voucher in
-   the sorted list.
-1. Test case: `edit-milestone 1 c/NEWCODE`<br>
+1. Test case: `edit-milestone 1 r/Free drink and snack s/1500`.<br>
+   Expected: The first milestone retains its generated code, both editable fields change, and it moves after the
+   $10 voucher in the sorted list.
+1. Test case: `edit-milestone 1 c/NEWCODE`.<br>
    Expected: The command-format error is shown because internal codes cannot be edited.
-1. Test case: `delete-milestone 1`<br>
+1. Test case: `delete-milestone 1`.<br>
    Expected: The milestone currently shown at index 1 is deleted without changing member scores.
-1. Test cases: `edit-milestone 999 r/Reward` and `delete-milestone 999`.<br>
-   Expected: The milestone-index error is shown and the catalog remains unchanged.
+1. Test cases: `redeem 1 m/999`, `edit-milestone 999 r/Reward`, and `delete-milestone 999`.<br>
+   Expected: The relevant milestone-index error is shown and the catalog remains unchanged.
 1. Close and reopen the app.<br>
-   Expected: Added and edited milestones remain, and deleted milestones remain absent.
+   Expected: Added and edited milestones remain, deleted milestones remain absent, and redemption changes remain
+   persisted.
 
 ### Saving data
 
-1. Missing or invalid menu files, using a disposable app home folder
+1. Use a new writable folder and start the app without any data files.<br>
+   Expected: Sample members, menu items, and milestones load.
 
-   1. With the app closed, move `data/menu.json` outside the `data` folder. Start the app.<br>
-      Expected: The sample menu loads. Enter `list`; a new `data/menu.json` with the sample items is saved.
-   1. Close the app and replace `data/menu.json` with malformed JSON or `{"foodItems":[null]}`. Restart.<br>
-      Expected: A loading warning is logged and the menu starts empty. The invalid file is unchanged until a
-      command executes successfully. Running `list` replaces it with valid empty-menu JSON.
+1. Add a member, add a menu item, and add a milestone. Close and relaunch the app.<br>
+   Expected: All three changes remain. The data is stored in `data/memberlist.json`, `data/menu.json`, and
+   `data/milestones.json` respectively.
 
-1. Dealing with missing/corrupted data files
+1. With the app closed, move `data/menu.json` outside the `data` folder and restart the app.<br>
+   Expected: The sample menu loads. After any successful command, the current menu is saved to a new
+   `data/menu.json`.
 
-   1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
+1. Replace `data/menu.json` with malformed JSON or `{"foodItems":[null]}`, then restart the app.<br>
+   Expected: A loading warning is logged and the app starts with an empty menu. The invalid file is not replaced
+   during startup. After a successful command, the current empty menu can be saved over it.
 
-1. _{ more test cases …​ }_
+1. Replace `data/milestones.json` with malformed JSON, then restart the app.<br>
+   Expected: A loading warning is logged and the app starts with an empty milestone catalog. The invalid file is
+   not replaced during startup.
+
+1. Replace `data/memberlist.json` with malformed or otherwise invalid member data, then restart the app.<br>
+   Expected: Startup stops with a member-data recovery message to prevent the invalid file from being overwritten.
+
+1. Resize and move the app window, close it, and relaunch it.<br>
+   Expected: The window preferences remain in `preferences.json` and are restored.
+
+1. Start the app from a write-protected folder and execute a data-changing command.<br>
+   Expected: A file-permission error is shown. Use a writable folder for normal operation.
