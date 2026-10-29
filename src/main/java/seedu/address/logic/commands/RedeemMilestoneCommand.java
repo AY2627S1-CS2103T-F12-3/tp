@@ -2,7 +2,6 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
 
@@ -65,7 +64,6 @@ public class RedeemMilestoneCommand extends Command {
         Person updatedPerson = createUpdatedPerson(personToUpdate, milestoneToRedeem);
 
         model.setPerson(personToUpdate, updatedPerson);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(updatedPerson);
 
         return new CommandResult(MESSAGE_SUCCESS);

@@ -3,7 +3,6 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MILESTONE;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
 
@@ -62,7 +61,6 @@ public class CancelRedeemCommand extends Command {
 
         Person updatedPerson = createUpdatedPerson(personToUpdate, milestoneToCancel);
         model.setPerson(personToUpdate, updatedPerson);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.selectPerson(updatedPerson);
 
         return new CommandResult(MESSAGE_SUCCESS);
