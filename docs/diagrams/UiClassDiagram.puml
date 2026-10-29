@@ -47,7 +47,7 @@ MainWindow *-down-> "1" PersonListPanel
 MainWindow *-down-> "1" ProfilePanel
 MainWindow *-down-> "1" MenuPanel
 MainWindow *-down-> "1" StatusBarFooter
-MainWindow --> "0..1" HelpWindow
+MainWindow --> "1" HelpWindow
 
 PersonListPanel -down-> "*" PersonCard
 ProfilePanel *-down-> "1" PersonDetailsPanel

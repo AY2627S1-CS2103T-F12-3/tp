@@ -9,7 +9,14 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+Ratatouille is built on [AddressBook-Level3 (AB3)](https://github.com/se-edu/addressbook-level3) by the [SE-EDU initiative](https://se-education.org). We adapted its codebase, application architecture, and developer documentation for Ratatouille.
+
+The project uses the following third-party libraries and tools:
+
+* [JavaFX](https://openjfx.io/) for the graphical user interface.
+* [Jackson](https://github.com/FasterXML/jackson) for reading and writing JSON data.
+* [JUnit 5](https://junit.org/junit5/) for automated testing.
+* [PlantUML](https://plantuml.com/) for generating UML diagrams.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -36,31 +43,29 @@ The following provides a quick overview of the main components and their interac
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes [`Main`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
-* At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
-* At shut down, it shuts down the other components and invokes cleanup methods where necessary.
+**`Main`** (consisting of classes [`Main`](https://github.com/AY2627S1-CS2103T-F12-3/tp/blob/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/AY2627S1-CS2103T-F12-3/tp/blob/master/src/main/java/seedu/address/MainApp.java)) manages the application's lifecycle:
 
-The bulk of the app's work is done by the following four components:
+* At startup, it loads stored data and user preferences, initializes the components, and connects them.
+* At shutdown, it saves user preferences, including GUI settings.
 
-* [**`UI`**](#ui-component): The UI of the App.
-* [**`Logic`**](#logic-component): The command executor.
-* [**`Model`**](#model-component): Holds the data of the App in memory.
-* [**`Storage`**](#storage-component): Reads data from, and writes data to, the hard disk.
+The application's functionality is organized into four components:
 
-[**`Commons`**](#common-classes) represents a collection of classes used by multiple other components.
+* [**`UI`**](#ui-component): Displays application data and accepts user commands.
+* [**`Logic`**](#logic-component): Parses and executes commands, and coordinates saving application data.
+* [**`Model`**](#model-component): Holds member records, menu items, the milestone catalog, and user preferences in memory.
+* [**`Storage`**](#storage-component): Reads and writes application data and user preferences in JSON files.
+
+[**`Commons`**](#common-classes) provides shared utilities and supporting classes.
 
 **How the architecture components interact with each other**
 
-The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete-menu-item c/CR01`. For simplicity, only menu persistence is shown.
+The sequence diagram below illustrates a successful execution of `delete-menu-item c/CR01`, assuming that the menu contains an item with code `CR01` and saving succeeds. Interactions within each component are abstracted away. For clarity, only menu persistence is shown; saving member data and the milestone catalog is omitted.
 
-<img src="images/ArchitectureSequenceDiagram.png" width="574" />
+<img src="images/ArchitectureSequenceDiagram.png" alt="Architecture sequence diagram" width="740" style="max-width: 100%; height: auto;" />
 
-Each of the four main components (also shown in the diagram above),
+Each of the four main components exposes an API through an interface: `Ui`, `Logic`, `Model`, or `Storage`. The corresponding implementation classes are `UiManager`, `LogicManager`, `ModelManager`, and `StorageManager`.
 
-* defines its *API* in an `interface` with the same name as the Component.
-* provides its functionality through a concrete `{Component Name}Manager` class that implements the corresponding API interface.
-
-For example, the `Logic` component defines its API in `Logic.java` and implements it in `LogicManager.java`. Other components interact with a component through its interface rather than its concrete class, preventing them from coupling to that component's implementation, as illustrated in the following partial class diagram.
+The partial class diagram below illustrates this arrangement. `LogicManager` implements `Logic` and holds references to the `Model` and `Storage` interfaces, reducing its dependence on their concrete implementations.
 
 <img src="images/ComponentManagers.png" width="300" />
 
@@ -68,106 +73,70 @@ The sections below give more details of each component.
 
 ### UI component
 
-The **API** of this component is specified in [`Ui.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/Ui.java)
+The **API** of this component is specified in [`Ui.java`](https://github.com/AY2627S1-CS2103T-F12-3/tp/blob/master/src/main/java/seedu/address/ui/Ui.java).
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
-The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `PersonListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
+The UI uses JavaFX. `UiManager` creates and displays `MainWindow`, which contains the command box, result display, member list, member profile, menu panel, and status bar. `MainWindow` also manages a separate help window.
 
-The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
+`ProfilePanel` groups the selected member's details, milestone progress, and recent orders through `PersonDetailsPanel`, `MilestoneTimeline`, and `RecentOrdersPanel`.
 
-The `UI` component,
+FXML-backed UI parts extend the abstract `UiPart` class, with layout files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-F12-3/tp/blob/master/src/main/resources/view/MainWindow.fxml) defines the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-F12-3/tp/blob/master/src/main/java/seedu/address/ui/MainWindow.java). `PersonDetailsPanel` and `MilestoneTimeline` are constructed in Java and extend `VBox` and `ScrollPane`, respectively.
 
-* executes user commands using the `Logic` component.
-* listens for changes to `Model` data so that the UI can be updated with the modified data.
-* keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component because it displays `Person` objects from the model.
+The `UI` component:
+
+* passes user commands to `Logic` and displays command feedback.
+* obtains observable member and menu lists through `Logic`, allowing their list views to update when the lists change.
+* refreshes the member profile after command execution, including when a command fails.
+* uses model types to display member details, menu items, milestones, and recent orders.
 
 ### Logic component
 
-**API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
+**API** : [`Logic.java`](https://github.com/AY2627S1-CS2103T-F12-3/tp/blob/master/src/main/java/seedu/address/logic/Logic.java)
 
-Here's a (partial) class diagram of the `Logic` component:
+`LogicManager` coordinates command parsing, execution, and persistence. In the partial class diagram below, `XYZCommand` represents a concrete command, and Parser Classes groups the parsing classes; `LogicManager` holds one `AddressBookParser` instance.
 
 <img src="images/LogicClassDiagram.png" width="550"/>
 
-The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete-member 1")` API call as an example.
+The sequence diagram below illustrates parsing and execution for a successful `delete-member 1` command.
 
 ![Interactions Inside the Logic Component for the `delete-member 1` Command](images/DeleteSequenceDiagram.png)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-</div>
+`personToDelete` is the `Person` retrieved at the displayed index. The diagram omits this lookup, clearing the selection when the deleted member is selected, and the persistence steps below; its parser destroy marker does not represent an explicit operation in the code.
 
 How the `Logic` component works:
 
-1. When `Logic` is called upon to execute a command, the command is passed to an `AddressBookParser` object, which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
-1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a person).<br>
-   Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
-1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
+1. **Parse:** `AddressBookParser` identifies the command word and delegates argument parsing to a matching parser, or directly creates commands such as `help`, `exit`, and `list`.
+1. **Execute:** `LogicManager` calls `Command.execute(model)`, which reads or updates `Model` and returns a `CommandResult`.
+1. **Save:** Unless the result requests help or exit, `LogicManager` saves member data, the menu, and the milestone catalog through `Storage`, even if the command did not change them.
+1. **Return:** After any required saves succeed, the result is returned to the UI. Parsing failures raise `ParseException`; execution and storage I/O failures are reported through `CommandException`. A save failure does not roll back model changes or earlier successful file writes.
 
-Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
+The following partial diagram summarizes the parsing classes. Individual parsers use only the helpers they need.
 
-<img src="images/ParserClasses.png" width="600"/>
+<img src="images/ParserClasses.png" alt="Parser class diagram" width="673" style="max-width: 100%; height: auto;" />
 
-How the parsing works:
-* When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
-* All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
+Concrete command parsers implement `Parser<T extends Command>` and construct their corresponding commands. For prefix-based arguments, `ArgumentTokenizer` uses `Prefix` constants from `CliSyntax` to produce an `ArgumentMultimap`. `ParserUtil` provides shared conversions and validation, such as parsing displayed indices.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
+**API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-F12-3/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
-<img src="images/ModelClassDiagram.png" width="450" />
+<img src="images/ModelClassDiagram.png" alt="Model class diagram" width="802" style="max-width: 100%; height: auto;" />
 
 
-The `Model` component,
+`ModelManager` implements `Model` and holds the application's data in memory, independently of the UI, Logic, and Storage components. The partial diagram above is supplemented by the menu, milestone, and member-history structures described below.
 
-* stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* identifies each person by their saved phone entry using `Person.isSamePerson`. Different people can share a name.
-  `Phone` rejects only blank entries, trims surrounding whitespace and normalizes recognized Singapore formats
-  to eight digits starting with 6, 8 or 9. It accepts spaces, hyphens, full-width ASCII characters and the country
-  prefixes `+65`, `65`, `(+65)` and `(65)`. A bare `65` is removed only from ten digits whose last eight match
-  the expected Singapore format. Other entries retain their spelling and use exact, case-sensitive equality.
-* uses the same `Phone` constructor to normalize parsed commands and JSON data. `Phone.isStorablePhone` accepts
-  nonblank legacy entries; `Phone.isValidPhone` additionally requires a Unicode decimal digit for new phone
-  values in `ParserUtil.parsePhone`. Blank and digitless input have separate error messages. Storage and lookup
-  use the storable rule so users can retrieve and repair previously saved digitless notes without losing members.
-  `add-member` and `edit-member` append the shared `Messages.formatPhoneWarning` after successful changes for nonstandard
-  entries containing digits. Editing other fields on a legacy digitless entry also remains possible.
-  No country-specific validity or reachability check is performed for foreign numbers. Annotated or multiple
-  numbers do not establish exact member identity.
-* provides `Model.findPersonsWithSimilarPhone` as a separate advisory query over the full member list.
-  `Phone.hasPossibleNumberInCommon` extracts complete digit segments separated by text or delimiters, ignores
-  explicit extension values and compares segments of at least six digits. Unicode decimal digits are mapped to
-  ASCII for comparison, and a recognized Singapore `65` prefix is removed. Complete sequences whose total digit
-  count is a multiple of eight are checked as separate eight-digit Singapore numbers. The check never uses
-  arbitrary substring matching, infers other country codes, or joins numbers across text, slashes or plus signs.
-  Adjacent digits separated only by formatting characters form one segment, so not every multi-number spelling can
-  be identified.
-  Exact matches are handled by the existing blocking identity check; potential matches are formatted by
-  `Messages.formatPossiblePhoneDuplicates` after a successful add or phone edit. Editing excludes the original
-  member from this query, and edits without a phone field do not trigger another overlap warning.
-  The advisory query itself does not change phone equality, stored text, scores, histories, filters or selection.
-* searches phone entries through the same normalization rules. `find p/PHONE_ENTRY` constructs a phone-only
-  predicate so spaces and annotations are retained; ordinary queries keep name-keyword OR matching and exact
-  phone matching. A whole recognized Singapore query is normalized before keyword splitting.
-* is initialized by `MainApp` only if existing member data can be loaded. A read failure, including a collision
-  between normalized legacy numbers, stops startup and preserves the file rather than exposing an empty list
-  that a later command could save over it.
-* stores each person's name, phone, tags, score, and order history. Editing a person's details preserves
-  their existing score and order history.
-* stores each person's redeemed milestone rewards in a `RedeemedMilestoneRewardHistory`. The history is immutable:
-  adding or deleting a reward returns a new history, and membership checks compare milestone codes.
-* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
-* stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
-* stores a separate `Menu` in `ModelManager`, alongside `AddressBook` and `UserPrefs`. `Model#getMenu()` exposes a
-  `ReadOnlyMenu` with an unmodifiable observable item list; `hasFoodItem` and `addFoodItem` provide menu operations.
-* stores a separate `MilestoneCatalog` in `ModelManager`. `Model#getMilestoneCatalog()` exposes a
-  `ReadOnlyMilestoneCatalog`, while the existing milestone operations continue to act on the catalog owned by the
-  model.
-* does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
+* **Members:** `AddressBook` contains a `UniquePersonList`. Each `Person` holds a name, phone entry, tags, score, order history, and redeemed milestone reward history. Both histories are immutable; updates create replacement histories.
+* **Menu and milestones:** Separate `Menu` and `MilestoneCatalog` objects store food items and reward definitions, exposed through `ReadOnlyMenu` and `ReadOnlyMilestoneCatalog` with unmodifiable observable lists. The menu and catalog are shared across members, while order and redeemed reward histories belong to individual members.
+* **Display state:** A `FilteredList<Person>` provides an unmodifiable observable view of members matching the current filter. The selected member is stored separately as a snapshot; replacing a member does not automatically update that selection. Commands that display the updated member explicitly call `selectPerson(updatedPerson)`.
+* **Preferences:** `UserPrefs` stores GUI settings and is exposed through `ReadOnlyUserPrefs`.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
+**Member identity and phone matching**
+
+`Person.isSamePerson` identifies members by equal saved phone entries, allowing different members to share a name. `UniquePersonList` uses this identity check to reject duplicate members when adding or replacing entries. `Phone` normalizes recognized Singapore formats to eight digits; other nonblank entries retain their spelling apart from surrounding whitespace and use exact, case-sensitive equality. New phone entries supplied through commands must contain a decimal digit, while legacy digitless entries remain readable for lookup and correction.
+
+`findPersonByPhone` searches the full member list for an exact phone match. `findPersonsWithSimilarPhone` separately finds different entries that may contain a common number using `Phone.hasPossibleNumberInCommon`. These potential matches are advisory: they do not establish duplicate identity or change the filter or selection.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The diagram below shows an alternative tag design, not the current implementation. It centralizes tags in `AddressBook`; currently, each `Person` holds its own set of tags.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
 
@@ -176,285 +145,94 @@ The `Model` component,
 
 ### Storage component
 
-**API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
+**API** : [`Storage.java`](https://github.com/AY2627S1-CS2103T-F12-3/tp/blob/master/src/main/java/seedu/address/storage/Storage.java)
 
-<img src="images/StorageClassDiagram.png" width="550" />
+<img src="images/StorageClassDiagram.png" alt="Storage class diagram" width="1422" style="max-width: 100%; height: auto;" />
 
-The `Storage` component,
-* saves customer records, menu items, milestone rewards, and user preferences in separate JSON files and reads them
-  back.
-* is implemented by `StorageManager`, which delegates file access to `JsonAddressBookStorage`, `JsonMenuStorage`,
-  `JsonMilestoneCatalogStorage`, and `JsonUserPrefsStorage` (one class per data file).
+`StorageManager` implements `Storage` and delegates JSON file access to four classes:
 
-`JsonAdaptedPerson` stores name, phone, tags, score, order history and redeemed milestone reward history. Each stored order includes its item code,
-the item name captured when the order was recorded, quantity, recorded time, and `scoreGained`. While redeemed milestone reward history stores milestone,
-which consist of its code, reward description and the score needed to redeem the reward.
-Unknown JSON properties are ignored when loading and omitted when saving. Older order records require both `itemCode` and
-`itemName` before loading; missing `scoreGained` defaults to zero, while negative values are rejected.
-A missing score defaults to zero.
-* depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
+* `JsonAddressBookStorage`: Member records, including scores, order histories, and redeemed reward histories.
+* `JsonMenuStorage`: Menu items.
+* `JsonMilestoneCatalogStorage`: Milestone reward definitions.
+* `JsonUserPrefsStorage`: User preferences.
+
+The domain storage classes use JSON adapters to convert between stored data and model objects, validating fields during loading. Orders retain their recorded item name and points earned, while redeemed rewards retain milestone details. Missing member scores and order `scoreGained` values default to zero; unknown JSON properties are ignored and are not preserved on saving.
+
+Missing files return `Optional.empty()`, while read or validation failures are reported through `DataLoadingException`. Writes use `JsonUtil` and `FileUtil` to atomically replace each destination file after writing a temporary file; failures are reported through `IOException`. This protects individual files from partial writes, but saving multiple files is not a transaction.
 
 ### Common classes
 
-Classes used by multiple components are in the `seedu.address.commons` package.
+The `seedu.address.commons` package provides shared support classes: `LogsCenter` configures logging, `GuiSettings` represents window settings, and `Index` converts between one-based displayed indices and zero-based indices. Utility classes include `JsonUtil` for JSON conversion, `FileUtil` for file access, and validation helpers such as `AppUtil` and `CollectionUtil`. Shared exceptions include `DataLoadingException` and `IllegalValueException`.
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Implementation**
 
-This section describes some noteworthy details on how certain features are implemented.
-
-### Adding a menu item
-
-The `add-menu-item c/CODE n/NAME p/PRICE` command adds a `FoodItem` to the menu owned by `ModelManager`.
-The menu is separate from customer records and order histories. `add-order` accepts a menu code and checks for an
-exact case-sensitive match in the menu before adding the order. The command copies the matched item's current name
-into the new order, alongside its code, quantity, and recorded time. `RecentOrdersPanel` displays the saved name and
-points gained, so later menu edits do not change past orders. The command calculates `scoreGained` as
-`floor(priceInCents × quantity / 10)` ($1 earns 10 points), saves it with the order, and adds it to the member's
-score. The calculation and addition use `long` intermediates before validating the score's nine-digit limit.
-`delete-order` selects an order by its history index and subtracts its saved `scoreGained`; it rejects a deletion
-that would make the member's score negative. The saved value means a menu price change cannot alter past earnings.
-
-#### Command flow
-
-1. `AddressBookParser` routes the command to `AddMenuItemCommandParser`.
-1. The parser checks the required prefixes, rejects duplicates and unexpected preamble text, and validates the code,
-   name, and price. Tabs are normalized to spaces for `ArgumentTokenizer`. Unsupported single-letter prefixes and
-   control characters other than tabs are rejected before tokenization.
-1. The dollar price is converted to integer cents with `BigDecimal#movePointRight(2)` and `intValueExact()`.
-   Prices must be positive, have at most two decimal places, and fit in an `int`; no rounding is performed.
-1. `AddMenuItemCommand#execute(Model)` checks `Model#hasFoodItem` before calling `Model#addFoodItem`.
-   `FoodItem#isSameFoodItem` compares case-sensitive codes, while `equals` compares all three fields.
-   Reusing a code throws `CommandException`, leaving the menu unchanged.
-1. After execution succeeds, `LogicManager` saves the address book, menu, and milestone catalog in its existing save
-   block. It returns the command's success feedback only after all three saves succeed. `ParseException` and command
-   execution failures stop before saving; `IOException` during saving is reported as `CommandException`.
-
-#### Data and persistence
-
-`FoodItem` is immutable and holds `code`, `name`, and `priceInCents`. `Menu` uses `UniqueFoodItemList` to enforce
-unique case-sensitive codes and preserve insertion order. The three-argument `ModelManager` constructor copies a
-loaded `ReadOnlyMenu`; the existing two-argument constructor initializes an empty menu for other callers.
-
-| Class | Responsibility |
-|---|---|
-| `JsonAdaptedFoodItem` | Converts one item and validates its fields. JSON codes and names must be strings; cents must be an integer in the Java `int` range, then pass the positive-price constraint. |
-| `JsonSerializableMenu` | Converts the `foodItems` list, rejecting missing lists, null items, invalid items, and duplicate codes. |
-| `JsonMenuStorage` | Reads/writes menu JSON at a configured path. Missing files return `Optional.empty()`; read or validation errors become `DataLoadingException`. |
-| `StorageManager` | Delegates `getMenuFilePath`, `readMenu`, and `saveMenu` to `JsonMenuStorage`. |
-
-`MainApp` configures `data/menu.json` relative to the launch directory. Its `initMenu` method loads the saved menu,
-uses `SampleDataUtil.getSampleMenu()` if the file is missing, or logs a warning and supplies an empty menu if loading
-fails. Sample menu codes match the sample members' order histories. Loading alone leaves an invalid file untouched;
-the next successfully executed command other than `help` or `exit` can overwrite it,
-matching the existing address-book fallback policy.
-
-All three domain data files are saved after every successfully executed command, including read-only commands
-such as `list`, except `help` and `exit`. `LogicManager` returns results requesting help or exit before saving,
-so storage failures cannot prevent either action. A save error does not roll back changes already made in memory.
-The address-book file is written first, followed by
-the menu and milestone catalog, so an earlier file may already be saved if a later write fails; the three writes
-are not a transaction. A later successful command other than `help` or `exit` attempts all three saves again
-through the same flow. Exiting does not retry domain-data saves, so unsaved in-memory changes are lost on exit.
-
-Each JSON save serializes its contents before writing a unique temporary file in the destination directory.
-Only after writing completes does `FileUtil` atomically replace the destination. A failed write or unsupported
-atomic replacement leaves the existing destination intact; a failed first save does not leave an empty JSON file.
-Missing parent directories are created as needed. Temporary files are removed after saving or failure where
-possible; cleanup errors are logged without hiding the save result. There is no non-atomic fallback, so a file
-system that cannot atomically replace the destination reports a save error. This protects individual files
-against partial writes, but does not provide a transaction across files or guarantee recovery after power loss.
-
-#### Testing
-
-`AddMenuItemCommandTest` isolates command behavior with model stubs. `AddMenuItemCommandParserTest` covers prefix
-validation, price boundaries, exact cent conversion, control characters, long inputs, and deterministic generated
-inputs. `AddressBookParserTest` checks routing. `ModelManagerTest` checks menu copying and its read-only view.
-The JSON adapter, serializable menu, and menu storage test classes cover invalid data and round trips.
-`MainAppTest` checks startup fallback and saving/reloading across model initialization; `LogicManagerTest` covers
-automatic saving and menu-save errors.
-
-### Milestone catalog and management commands
-
-Milestone rewards are stored in a `MilestoneCatalog` rather than in `AddressBook`. This keeps global loyalty-program
-configuration separate from customer records: an address book owns people, while one milestone catalog defines the
-rewards available to every customer. `ModelManager` owns both data sources and keeps the existing milestone APIs
-stable by delegating them to its catalog.
-
-| Class | Responsibility |
-|---|---|
-| `MilestoneCatalog` and `ReadOnlyMilestoneCatalog` | Own the sorted, unique milestone list and expose a read-only view to clients. |
-| `JsonAdaptedMilestone` | Converts one milestone and validates its code, reward description, and required score. |
-| `JsonSerializableMilestoneCatalog` | Converts the `milestones` list, rejecting a missing list, null entries, invalid milestones, and duplicate case-insensitive codes. |
-| `JsonMilestoneCatalogStorage` | Reads and writes milestone JSON at a configured path. Missing files return `Optional.empty()`; read or validation errors become `DataLoadingException`. |
-| `StorageManager` | Delegates `getMilestoneCatalogFilePath`, `readMilestoneCatalog`, and `saveMilestoneCatalog` to `JsonMilestoneCatalogStorage`. |
-
-`MainApp` configures `data/milestones.json` relative to the launch directory. A valid file is loaded into
-`ModelManager`; a missing or invalid file produces an empty catalog, with invalid file contents left untouched until
-the next successfully executed command other than `help` or `exit` saves the model.
-Legacy `milestones` properties in `memberlist.json` are
-ignored, so the address-book file remains responsible only for customer data.
-
-The `list-milestones`, `add-milestone`, `edit-milestone`, and `delete-milestone` commands expose catalog access and
-mutation through the CLI. `ListMilestonesCommand` formats `Model#getMilestoneList()` as a numbered list, making the
-indexes used by edit and delete discoverable. `AddressBookParser` routes each mutating command to its dedicated
-parser. The milestone parsers share strict tokenization that normalizes tabs, rejects unsupported single-letter
-prefixes, and rejects control characters other than tabs.
-
-`AddMilestoneCommandParser` requires a reward description and required score in any order. `Milestone` generates a
-UUID for its internal code when the parser creates it. The parser passes the milestone to `AddMilestoneCommand`, which
-creates a replacement milestone if its code already exists. The UUID is stored with the milestone and redemption
-snapshots but omitted from user-facing output.
-`EditMilestoneCommandParser` requires a displayed index and at least one editable field; its
-`EditMilestoneDescriptor` is defensively copied by `EditMilestoneCommand`. Codes are excluded from the descriptor
-because they are stable identities. `DeleteMilestoneCommandParser` accepts only a displayed index. Required scores
-are parsed as unsigned decimal digits in the positive Java `int` range, so inputs such as `+500`, `0`, and values
-above `2147483647` are rejected.
+This section explains selected implementation details, focusing on data identity, historical records, score updates, and persistence.
 
-Edit and delete commands resolve their one-based index against `Model#getMilestoneList()` during execution, then pass
-the selected `Milestone` to the model. The catalog uses its case-insensitive code internally and maintains ascending
-required-score order with code as the tie-breaker. Editing a required score can therefore change the milestone's
-displayed index. None of these commands reads or modifies a person's score or reward-claim records.
+### Menu item management
 
-The milestone model tests cover validation, sorting, uniqueness, mutation, and read-only views. Command and parser
-tests cover numbered listing, empty catalogs, generated code persistence, successful mutations, defensive descriptor copying,
-reordered edits, index boundaries, arbitrary prefix order, duplicate and unsupported prefixes, control characters,
-and required-score boundaries.
-`AddressBookParserTest` checks command routing. The JSON adapter, serializable catalog, storage, `MainApp`, and
-`LogicManager` tests cover invalid data, round trips, startup fallback, and automatic saving.
+The class diagram in [Model component](#model-component) shows how the shared menu relates to member records and their histories.
 
-### Deleting a menu item
+The menu is shared by all members and stored separately from their order histories. Each immutable `FoodItem` contains a code, name, and price in integer cents. `Menu` uses `UniqueFoodItemList` to enforce unique, case-sensitive codes and preserve insertion order. Prices are converted exactly from decimal input to integer cents to avoid rounding errors; they must be positive, have at most two decimal places, and fit in a Java `int`.
 
-`AddressBookParser` routes `delete-menu-item c/CODE` to `DeleteMenuItemCommandParser`. The parser requires one
-`c/` prefix, rejects preamble text, repeated prefixes, invalid codes, extra arguments, and control characters other
-than tabs. It preserves the code's case and constructs `DeleteMenuItemCommand`.
+`AddressBookParser` delegates menu commands to their dedicated parsers, which validate arguments before constructing commands. For `add-menu-item c/CODE n/NAME p/PRICE`, `AddMenuItemCommand` checks for an existing code before adding the item through the model. A duplicate code causes a `CommandException` without changing the menu.
 
-The command finds the exact code through `Model#getMenu()`. A missing code produces `CommandException` before
-any mutation. For an existing code, the command passes the actual stored `FoodItem` to `Model#deleteFoodItem`,
-which delegates to `Menu#removeFoodItem`. This matters because removal uses full item equality, not only code
-identity. The existing `LogicManager` save block persists successful deletions without command-specific changes.
-Customer records, order histories, and milestones are unaffected.
+For `delete-menu-item c/CODE`, `DeleteMenuItemCommand` resolves the case-sensitive code to the stored `FoodItem` before passing it to `Model#deleteFoodItem`. This is necessary because removal compares the full item, whereas lookup identifies it by code. A missing code is rejected before mutation. Deleting a menu item leaves existing orders unchanged because each order stores its own historical item details.
 
-`DeleteMenuItemCommandTest` checks deletion, case sensitivity, failure without mutation, and unchanged customer
-and milestone data using the real model. Parser tests cover syntax errors and whitespace, and `MainAppTest`
-checks that deletion survives saving and reloading and that the deleted code can be reused.
+Tests cover duplicate and case-sensitive codes, exact price conversion, invalid arguments, and deletion without changes to member or milestone data.
 
-### Redeemed milestone reward history
+### Order recording and score updates
 
-`RedeemedMilestoneRewardHistory` owns the redeemed milestone rewards belonging to one person. It returns defensive
-copies when exposing the list and treats add/delete operations as immutable transformations:
+`AddOrderCommand` resolves the supplied menu code using an exact, case-sensitive match. The new `Order` stores the item's current name and code, quantity, recorded time, and earned points (`scoreGained`). Saving these values with the order preserves its historical details when the menu is later edited or an item is deleted.
 
-| Operation | Responsibility |
-|---|---|
-| `addRedeemedMilestoneReward(Milestone)` | Returns a new history containing the milestone, rejecting duplicate codes. |
-| `contains(Milestone)` | Checks whether a milestone with the same code has been redeemed. |
-| `deleteRedeemedMilestoneReward(Milestone)` | Returns a new history without the milestone with the same code. |
+Earned points are calculated as `floor(priceInCents × quantity / 10)`, equivalent to 10 points per dollar. The calculation and addition to the member's score use `long` intermediates. The command rejects an order if its earned points or the resulting member score exceeds `999999999`, then replaces the member with a copy containing the updated score and order history.
 
-`RedeemMilestoneCommand` validates the person and current milestone indexes, checks score eligibility and duplicate
-redemption, then replaces the person with a copy containing the new history. `CancelRedeemCommand` validates the
-person and current milestone indexes, checks that the selected milestone is present in the person's history, then
-replaces the person with a copy containing the history returned by `deleteRedeemedMilestoneReward(Milestone)`.
+`DeleteOrderCommand` selects the member from the filtered member list and converts the displayed newest-first order index to the oldest-first index used by `OrderHistory`. It subtracts the selected order's saved `scoreGained`, rejecting the deletion if the resulting score would be negative. The order removal and score change are applied together by replacing the member.
 
-Both commands identify the milestone through the current `MilestoneCatalog` index. Consequently, cancelling a
-   historical redemption requires the current catalog to contain a milestone with the same code. Deleting the milestone
-   makes that historical redemption unavailable to `cancel-redeem` by design; changing other
-milestone details while preserving its code does not change its identity.
+**Example:** An order for two items priced at $4.80 each earns 96 points. Changing the menu price to $5.00 does not change that order's saved earnings. Deleting the old order subtracts 96 points, provided the member's current score is at least 96.
 
-The command parsers use the shared `m/` prefix and `ParserUtil.parseIndex`, so person and milestone arguments must be
-positive integers. `AddressBookParser` routes `redeem` and `cancel-redeem` to their respective parsers.
+Tests cover score reversal, rejection of deletions that would produce negative scores, and selection of the correct member from a filtered list.
 
-The related tests cover command success and validation, parser syntax and duplicate prefixes, full parser routing,
-immutable history updates, duplicate redemption, absent milestones, and `toString` output.
+### Milestone catalog management
 
-### \[Proposed\] Undo/redo feature
+See the class diagram in [Model component](#model-component) for the catalog structure and its relationship to members' redemption histories.
 
-#### Proposed Implementation
+`MilestoneCatalog` stores the rewards available to all members, separately from the member records in `AddressBook`. `ModelManager` delegates catalog operations to it and exposes an unmodifiable observable list through `ReadOnlyMilestoneCatalog`.
 
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+Each milestone has an internal UUID code that is persisted but omitted from user-facing output. Codes are compared case-insensitively and remain unchanged when a milestone is edited, so identity does not depend on its reward description, required score, or displayed index. The catalog sorts milestones by ascending required score, using code as the tie-breaker.
 
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+`list-milestones` displays the numbered catalog. Add commands require a reward description and a positive required score in the Java `int` range. Edit commands require a displayed index and at least one editable field; delete commands require a displayed index. Edit and delete resolve their index against the current catalog during execution. Editing a required score can therefore change a milestone's displayed index. Catalog changes do not modify members' scores or existing redemption histories.
 
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+Tests cover stable codes, sorting after edits, unique identities, index boundaries, and validation of required scores and command arguments.
 
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
+### Milestone redemption and cancellation
 
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+Each member owns a `RedeemedMilestoneRewardHistory` containing snapshots of redeemed milestones. The history exposes defensive list copies and returns a new history when a reward is added or removed. Duplicate detection and removal use milestone codes rather than descriptions or required scores.
 
-![UndoRedoState0](images/UndoRedoState0.png)
+`RedeemMilestoneCommand` resolves the member from the filtered member list and the milestone from the current catalog. It checks score eligibility and rejects duplicate redemption before replacing the member with a copy containing the updated history. Redemption checks the score against the milestone requirement without deducting points.
 
-Step 2. The user executes `delete-member 5` command to delete the 5th person in the address book. The `delete-member` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete-member 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+`CancelRedeemCommand` resolves the same two indexes, checks that the milestone code exists in the member's history, and replaces the member with a copy containing the history without that reward. Cancellation also leaves the member's score unchanged. Both commands select the updated member and reset the member filter to show all members.
 
-![UndoRedoState1](images/UndoRedoState1.png)
+**Example:** A member redeems a reward requiring 100 points. Editing that catalog entry's description or required score preserves its code, so the existing redemption is still recognised and can be cancelled using the entry's current index. The history retains the details recorded at redemption. Deleting the catalog entry prevents cancellation through `cancel-redeem`, because the command requires a current catalog entry with the same code.
 
-Step 3. The user executes `add-member n/David …​` to add a new person. The `add-member` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Tests cover score eligibility, duplicate redemption, cancellation of absent rewards, invalid indexes, and immutable history updates.
 
-![UndoRedoState2](images/UndoRedoState2.png)
+### Data persistence and save failures
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
+The class diagram in [Storage component](#storage-component) shows the JSON storage classes and adapters used for member, menu, and milestone data.
 
-</div>
+Menu and milestone data follow the same storage structure: JSON adapters validate individual entries, serializable containers validate each collection and its unique codes, and dedicated JSON storage classes read and write the files through `StorageManager`.
 
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
+`MainApp` loads `data/menu.json` and `data/milestones.json` relative to the launch directory. Missing files produce the sample menu or sample milestone catalog respectively. Invalid data causes a warning and an empty menu or catalog. Loading does not overwrite an invalid file, but a later successful command that triggers saving can replace it with the current model contents.
 
-![UndoRedoState3](images/UndoRedoState3.png)
+After each successful command except `help` and `exit`, `LogicManager` saves the address book, menu, and milestone catalog in that order, including after read-only commands such as `list`. Parsing or command execution failures stop before saving. Success feedback is returned only after all three saves complete; an `IOException` is reported as a `CommandException`.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
+Save failures do not roll back in-memory changes or earlier file writes. A later successful command that triggers saving attempts all three files again. Exiting does not retry domain-data saves, so changes that remain unsaved are lost on exit.
 
-</div>
+Each JSON save writes to a temporary file before atomically replacing its destination, protecting that file against partial writes. Unsupported atomic replacement is reported as a save error. The three saves do not form a transaction, so a failure can leave files representing different stages of the model's updates.
 
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-
-</div>
-
-Similarly, how an undo operation goes through the `Model` component is shown below:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
-
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
-
-</div>
-
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
-
-![UndoRedoState4](images/UndoRedoState4.png)
-
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add-member n/David …​` command. This is the behavior that most modern desktop applications follow.
-
-![UndoRedoState5](images/UndoRedoState5.png)
-
-The following activity diagram summarizes what happens when a user executes a new command:
-
-<img src="images/CommitActivityDiagram.png" width="250" />
-
-#### Design considerations:
-
-**Aspect: How undo & redo execute:**
-
-* **Alternative 1 (current choice):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
-
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete-member`, just save the person being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
-
-_{more aspects and alternatives to be added}_
-
-### \[Proposed\] Data archiving
-
-_{Explain here how the data archiving feature will be implemented}_
-
+Tests cover invalid persisted data, round trips, startup fallback, saving and reloading, and save-error reporting.
 
 --------------------------------------------------------------------------------------------------------------------
 
