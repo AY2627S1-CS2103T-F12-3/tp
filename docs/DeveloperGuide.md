@@ -473,333 +473,512 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* Small food stall owner in hawker centres
-* Prefers using CLI over GUI
-* Record rewards program for customers
+* A small hawker stall owner who serves many customers and wants to sign up returning customers for a loyalty program.
+* Comfortable with CLI and needs to record transactions and retrieve member information quickly during service.
 
 **Value proposition**:
-* Fast access to member's contact, order history and membership status
-* CLI optimised for faster retrieval and updates of customer information than GUI
 
+* Keep member, menu, order, and reward information in one desktop application.
+* Enter and retrieve information quickly using typed commands and visible records during service.
+* Save data locally between sessions.
 
 ### User stories
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​             | I want to …​                                            | So that I can…​                                                                                  |
-|----------|---------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| `* * *`  | Food stall owner    | Create a new member                                     | I can enroll a returning customer in the rewards program                                          |
-| `* * *`  | Food stall owner    | Store member information persistently                   | I do not lose customer records when the application closes or crashes                            |
-| `* * *`  | Food stall owner    | View all members                                        | I can review and manage my membership records                                                    |
-| `* * *`  | Food stall owner    | Update a member’s membership points                     | I can keep the member’s progress in the rewards program accurate                                 |
-| `* * *`  | Food stall owner    | View a member’s details                                 | I can check the member’s membership points, purchase history, and reward eligibility             |
-| `* * *`  | Food stall owner    | Delete a member                                         | I can remove duplicate, invalid, or obsolete members                                             |
-| `* * *`  | Food stall owner    | Search a member by name or phone number                 | I can quickly retrieve the correct member while serving the customer                             |
-| `* * *`  | Food stall owner    | Record an order for a member                            | I can update the member’s membership points and maintain an accurate purchase history            |
-| `* * *`  | Food stall owner    | Delete an order from a member's order history           | I can correct an order that was recorded by mistake                                               |
-| `* *`    | Food stall owner    | Create a milestone reward                               | I can encourage customers to return and earn rewards                                             |
-| `* *`    | Food stall owner    | Edit a milestone reward                                 | I can change its membership points requirement or prize                                           |
-| `* *`    | Food stall owner    | Delete a milestone reward                               | Customers are not offered rewards that are no longer available                                   |
-| `* *`    | Food stall owner    | View all milestone rewards                              | I can review the rewards currently available to members                                          |
-| `* *`    | Food stall owner    | Mark a milestone reward as claimed by a member          | I can prevent the same reward from being issued to that member twice                             |
-| `* *`    | Food stall owner    | Cancel a member's redeemed milestone reward             | I can correct a redemption recorded by mistake                                                   |
-| `* *`    | A new user          | Clear all sample data                                   | I can begin using the application with my actual business data                                   |
-| `* *`    | A new user          | View a list of available commands and their usage       | I can learn how to use the application quickly                                                   |
-| `* *`    | Food stall owner    | Configure the number of membership points awarded per dollar spent | I can adjust the rewards program to suit my business                                    |
-| `* *`    | Food stall owner    | Edit a menu item’s details and price                    | I can ensure orders and revenue calculations use accurate information                            |
-| `* *`    | Food stall owner    | Add a menu item                                         | I can record orders containing that item and its price                                           |
-| `* *`    | Food stall owner    | View all menu items                                     | I can check the items and prices currently recorded in the application                           |
-| `* *`    | Food stall owner    | Delete a menu item                                      | Unavailable or discontinued items cannot be added to new orders                                  |
-| `*`      | An experienced user | Create aliases for frequently used commands             | Allow for faster typing to handle more customers                                                 |
-| `*`      | An experienced user | Undo my most recent reversible command                  | I can recover quickly from an input mistake                                                      |
-| `*`      | Food stall owner    | Sort menu items by purchase frequency or total revenue  | I can identify popular and high-earning menu items to make informed business decisions           |
-| `*`      | Food stall owner    | Add a pre-order for a customer                          | I can record an order for later collection                                                       |
-| `*`      | Food stall owner    | View all pre-orders                                     | I can keep track of the orders that I need to prepare                                            |
-| `*`      | Food stall owner    | Edit the pre-order                                      | I can correct the mistakes or change the details of the pre-order                                |
-| `*`      | Food stall owner    | Delete the pre-order                                    | I can delete the pre-order if the customer no longer wants or I cannot provide what he/she wants |
-| `*`      | Food stall owner    | Mark the pre-order as completed                         | I can distinguish the completed orders from pending ones                                         |
+| Priority | As …​             | I want to …​                                                         | So that…​                                                                              |
+|----------|---------------------|----------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `* * *`  | a food stall owner   | Sign up a returning customer as a member                             | I can track their orders and rewards in the loyalty program                            |
+| `* * *`  | a food stall owner   | Edit a member's name, phone number, or tags                          | I can correct their details and keep their record up to date                           |
+| `* * *`  | a food stall owner   | View all members                                                     | I can review and manage my membership records                                          |
+| `* * *`  | a food stall owner   | View a member’s details                                              | I can check the member’s contact details and purchase history                          |
+| `* * *`  | a food stall owner   | Delete a member                                                      | I can remove duplicate, invalid, or obsolete members                                   |
+| `* * *`  | a food stall owner   | Search a member by name or phone number                              | I can quickly retrieve the correct record while serving the member                     |
+| `* * *`  | a food stall owner   | Record an order for a member                                         | I can maintain an accurate purchase history                                            |
+| `* * *`  | a food stall owner   | Delete an order from a member's order history                        | I can remove an order that was recorded by mistake                                     |
+| `* * *`  | a food stall owner   | View a member's membership score                                     | I can check their current progress in the rewards program                              |
+| `* * *`  | a food stall owner   | Update a member's membership score manually                          | I can correct their score when an adjustment is needed                                 |
+| `* * *`  | a food stall owner   | Store member and order information persistently                      | I do not lose member and order records when the application closes or crashes          |
+| `* *`    | a food stall owner   | Have orders automatically update a member's membership score        | I can keep their score consistent when I add or delete orders without calculating adjustments myself |
+| `* *`    | a food stall owner   | Create a milestone reward                                            | I can give members an incentive to return                                               |
+| `* *`    | a food stall owner   | Edit a milestone reward                                              | I can change its membership score requirement or prize                                 |
+| `* *`    | a food stall owner   | Delete a milestone reward                                            | I can stop offering rewards that are no longer available                               |
+| `* *`    | a food stall owner   | View all milestone rewards                                           | I can review the rewards currently available to members                                |
+| `* *`    | a food stall owner   | View a member's progress and redemption status for milestone rewards | I can tell which rewards they can claim and which they have already claimed            |
+| `* *`    | a food stall owner   | Mark an eligible member's milestone reward as redeemed               | I can record that the reward was issued and prevent a duplicate redemption             |
+| `* *`    | a food stall owner   | Unmark a member's milestone reward as redeemed                       | I can correct a redemption recorded by mistake                                         |
+| `* *`    | a food stall owner   | Store milestone reward data persistently                             | I do not lose reward records when the application closes or crashes                    |
+| `* *`    | a new user          | Clear all stored members, menu items, and milestone rewards          | I can replace the sample data with my actual business data                            |
+| `* *`    | a new user          | Access the user guide from the application                           | I can look up available commands and their usage                                       |
+| `* *`    | a food stall owner   | Exit the application using a typed command                           | I can finish my session without switching to the mouse                                 |
+| `* *`    | a food stall owner   | Add a menu item                                                      | I can use that item in orders and award the appropriate membership score                |
+| `* *`    | a food stall owner   | Edit a menu item’s details and price                                 | I can use up-to-date item details and prices when recording orders                     |
+| `* *`    | a food stall owner   | View all menu items                                                  | I can check the items and prices currently recorded in the application                 |
+| `* *`    | a food stall owner   | Delete a menu item                                                   | I can prevent unavailable or discontinued items from being added to new orders         |
+| `* *`    | a food stall owner   | Store menu item data persistently                                    | I do not lose menu item records when the application closes or crashes                 |
+| `*`      | an experienced user | Create aliases for frequently used commands                          | I can type commands faster and serve more customers                                    |
+| `*`      | an experienced user | Undo my most recent reversible command                               | I can recover quickly from an input mistake                                            |
+| `*`      | a food stall owner   | Sort menu items by purchase frequency or total revenue               | I can identify popular and high-earning menu items to make informed business decisions |
+| `*`      | a food stall owner   | Find members who have not ordered recently                           | I can identify members who may need an incentive to return                             |
+| `*`      | a food stall owner   | Export member and order records to a file                            | I can review my business data outside the application                                  |
+| `*`      | a food stall owner   | Configure how much orders increase membership score per dollar spent | I can adjust the rewards program to suit my business                                   |
 
 ### Use cases
 
-(For all use cases below, the **System** is the `App` and the **Actor** is the `user`, unless specified otherwise)
-
-**Use case: Search for a member**
-
-**MSS**
-
-1.  User requests to search for members using name keywords or a complete phone entry.
-2.  App shows a numbered list of matching members.
-
-    Use case ends.
-
-**Extensions**
-
-* 1a. No member matches the given search term.
-
-    * 1a1. App shows an empty list and informs the user that no members were found.
-
-      Use case ends.
-    * 2a3. App shows the selected member's details.
-
-      Use case ends.
-
-**Use case: Add a new member**
+**UC01: Customer orders food**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to add a new member, providing the member's phone number and name.
-2.  App adds the member and shows a confirmation.
-
-    Use case ends.
-
-**Extensions**
-
-* 1a. The name is invalid, or the supplied phone entry is blank or contains no decimal digits.
-
-    * 1a1. App shows an error message.
-
-      Use case ends.
-
-* 1b. The given phone number already exists as a member.
-
-    * 1b1. App shows an error message identifying the existing member.
-
-      Use case ends.
-
-**Use case: Add a menu item**
-
-**MSS**
-
-1. User requests to add a menu item, providing its code, name, and price.
-2. App adds the item, saves the data, and shows a confirmation.
+1. User <u>finds the member (UC06)</u>.
+2. User <u>records the member's order (UC09)</u>.
+3. Ratatouille shows the updated order history and membership score.
 
    Use case ends.
 
 **Extensions**
 
-* 1a. Required details are missing or invalid, or the code already exists.
+* 1a. No matching member is found and the returning customer agrees to sign up.
+    * 1a1. User <u>signs up the returning customer (UC07)</u>.
 
-    * 1a1. App shows an error and leaves the menu unchanged.
-
-      Use case resumes at step 1.
-
-* 2a. Saving fails after the item has been added in memory.
-
-    * 2a1. App shows a save error. The item remains in memory.
-    * 2a2. User resolves the file-access problem and requests another command, such as `list`,
-      other than `help` or `exit`.
-    * 2a3. App executes that command and attempts to save all three data files again.
-
-      Use case ends if saving succeeds; otherwise, extension 2a repeats.
-
-**Use case: Log an order for a member**
-
-**MSS**
-
-1.  User requests to log an order for a member, specifying the member's index in the displayed list, menu item code, and quantity.
-2.  App records the current menu item name and calculated points earned, adds the order to that member's order
-    history, increases the member's score, and shows a confirmation.
+      Use case resumes at step 2.
+* 1b. No matching member is found and the returning customer declines to sign up.
 
     Use case ends.
 
-**Extensions**
-
-* 1a. The index is invalid or does not refer to a member in the displayed list.
-
-    * 1a1. App shows an error message and does not add an order.
+* 3a. The member also wants to claim an eligible reward.
+    * 3a1. User <u>redeems a milestone reward (UC18)</u>.
 
       Use case ends.
 
-* 1b. The item code is blank or contains characters other than letters and digits.
-
-    * 1b1. App shows an error message and does not add an order.
-
-      Use case ends.
-
-* 1c. The item code is not in the menu.
-
-    * 1c1. App shows an error message and does not add an order.
-
-      Use case ends.
-
-* 1d. The quantity is not a positive whole number.
-
-    * 1d1. App shows an error message and does not add an order.
-
-      Use case ends.
-
-* 1e. The earned points would increase the member's score beyond `999999999`.
-
-    * 1e1. App shows an error message and does not add an order or change the score.
-
-      Use case ends.
-
-**Use case: Delete an order from a member's order history**
+**UC02: Stall owner corrects a recorded order**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to delete an order, specifying the member's index in the displayed list and the order's index in
-    that member's order history.
-2.  App deletes the order, subtracts its saved points earned from the member's score, and shows a confirmation.
+1. User <u>finds the member (UC06)</u>.
+2. User <u>deletes the mistaken order (UC10)</u>.
+3. Ratatouille shows the corrected order history and membership score.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 1a. The member index is invalid or does not refer to a member in the displayed list.
-
-    * 1a1. App shows an error message and does not delete an order.
-
-      Use case ends.
-
-* 1b. The order index is invalid or does not refer to an order in that member's order history.
-
-    * 1b1. App shows an error message and does not delete an order.
+* 3a. User needs to record the correct order.
+    * 3a1. User <u>records a replacement order (UC09)</u>.
 
       Use case ends.
 
-* 1c. Subtracting the order's saved points would make the member's score negative.
-
-    * 1c1. App shows an error message and does not delete the order or change the score.
-
-      Use case ends.
-
-**Use case: Update membership points for a member**
+**UC03: Stall owner updates a member's record**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to search for a member by phone number.
-2.  App shows the member's details, including their current membership points.
-3.  User requests to update the member's membership points, specifying the points change.
-4.  App applies the change and shows the member's previous and new membership points.
+1. User <u>finds the member (UC06)</u>.
+2. User <u>edits the member's details (UC08)</u>.
+3. Ratatouille shows the updated member record.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 1a. No member matches the given phone number.
-
-    * 1a1. App shows an error message.
+* 2a. User needs to correct the membership score instead of the member's details.
+    * 2a1. User <u>adjusts the membership score (UC11)</u>.
+    * 2a2. Ratatouille shows the updated score.
 
       Use case ends.
 
-* 3a. The given membership points change is invalid in format or exceeds the allowed range.
-
-    * 3a1. App shows an error message.
-
-      Use case resumes at step 3.
-
-* 3b. Applying the membership points change would bring the member's membership points below zero.
-
-    * 3b1. App shows an error message and does not apply the change.
-
-      Use case resumes at step 3.
-
-**Use case: Redeem a milestone reward for a member**
+**UC04: Stall owner corrects a reward claim**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1. User requests to redeem a milestone reward, specifying the member's index and current milestone index.
-2. App verifies that the member has sufficient membership points and has not redeemed the milestone before.
-3. App adds the milestone to the member's redeemed milestone reward history and shows a confirmation.
+1. User <u>finds the member (UC06)</u>.
+2. User <u>cancels the mistaken redemption (UC19)</u>.
+3. Ratatouille shows the corrected redemption status.
 
-    Use case ends.
+   Use case ends.
 
-**Extensions**
-
-* 1a. The member or milestone index is invalid.
-
-    * 1a1. App shows an error message and does not change the member.
-
-      Use case ends.
-
-* 2a. The member has insufficient membership points or has already redeemed the milestone.
-
-    * 2a1. App shows an error message and does not change the member.
-
-      Use case ends.
-
-**Use case: Cancel a redeemed milestone reward for a member**
+**UC05: Stall owner prepares the app for real use**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1. User requests to cancel a redeemed milestone reward, specifying the member's index and current milestone index.
-2. App verifies that the current milestone has the same code as a milestone in the member's redemption history.
-3. App removes that milestone from the member's redeemed milestone reward history and shows a confirmation.
+1. User requests to clear the sample data.
+2. Ratatouille clears all stored members, menu items, and milestone rewards and confirms the action.
+3. User <u>adds a menu item (UC12)</u>.
+4. User <u>adds a milestone reward (UC15)</u>.
 
-    Use case ends.
+   Use case ends.
 
-**Extensions**
-
-* 1a. The member or current milestone index is invalid.
-
-    * 1a1. App shows an error message and does not change the member.
-
-      Use case ends.
-
-* 2a. The selected milestone was not redeemed by the member.
-
-    * 2a1. App shows `Unable to unredeem because it was not redeemed.` and does not change the member.
-
-      Use case ends.
-
-* 2b. The milestone was deleted from the catalog after redemption.
-
-    * 2b1. The historical redemption cannot be selected by `cancel-redeem`, because the command uses the current
-      milestone catalog index by design.
-
-      Use case ends.
-
-**Use case: Delete a member**
+**UC06: Find a member**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
 
 **MSS**
 
-1.  User requests to search for a member by phone number.
-2.  App shows the member's details.
-3.  User requests to delete the member.
-4.  App deletes the member and shows a confirmation.
+1. User requests a search using one or more name keywords or a valid phone number.
+2. Ratatouille shows the matching members.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 1a. No member matches the given phone number.
+* 1a. No member matches the search.
+    * 1a1. Ratatouille shows an empty result and reports that no members were found.
 
-    * 1a1. App shows an error message.
+      Use case ends.
+* 1b. Exactly one member matches.
+    * 1b1. Ratatouille shows that member and their details.
+
+      Use case ends.
+* 1c. User provides no search term.
+    * 1c1. Ratatouille reports the required search format.
+
+      Use case ends.
+
+**UC07: Sign up a returning customer as a member**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User provides the returning customer's name and phone number, and optionally tags.
+2. Ratatouille adds the member, shows their details, and confirms the addition.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Required details are missing or a provided value has an invalid format.
+    * 1a1. Ratatouille reports the problem without adding a member.
+
+      Use case ends.
+* 1b. A member with the same phone number already exists.
+    * 1b1. Ratatouille reports the duplicate and does not add the member.
+
+      Use case ends.
+
+**UC08: Edit a member's details**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and supplies a new name, phone number, or tags.
+2. Ratatouille updates the supplied details, keeps the member's score, orders, and redeemed rewards, and confirms
+   the change.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The member identifier does not refer to a member in the current list.
+    * 1a1. Ratatouille reports the invalid identifier without changing a member.
+
+      Use case ends.
+* 1b. User supplies no changes or a supplied value has an invalid format.
+    * 1b1. Ratatouille reports the problem without changing a member.
+
+      Use case ends.
+* 1c. The new name belongs to another member.
+    * 1c1. Ratatouille reports the duplicate without changing either member.
+
+      Use case ends.
+
+**UC09: Record an order for a member**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list, an existing menu item, and the quantity ordered.
+2. Ratatouille records the order, increases the member's membership score using the item's current price and
+   quantity, and confirms the result.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The member identifier does not refer to a member in the current list.
+    * 1a1. Ratatouille reports the invalid identifier without recording an order.
+
+      Use case ends.
+* 1b. The item identifier is invalid or does not refer to an existing menu item.
+    * 1b1. Ratatouille reports the problem without recording an order.
+
+      Use case ends.
+* 1c. The quantity is missing or is not a positive whole number.
+    * 1c1. Ratatouille reports the invalid quantity without recording an order.
+
+      Use case ends.
+* 1d. The resulting membership score would exceed its allowed maximum.
+    * 1d1. Ratatouille reports the score limit without recording the order or changing the member's score.
+
+      Use case ends.
+
+**UC10: Delete an order from a member's history**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and an order from that member's order history.
+2. Ratatouille removes the order, subtracts the score earned by that order from the member's membership score,
+   and confirms the deletion.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The member identifier does not refer to a member in the current list.
+    * 1a1. Ratatouille reports the invalid identifier without deleting an order.
+
+      Use case ends.
+* 1b. The order identifier does not refer to an order in that member's history.
+    * 1b1. Ratatouille reports the invalid identifier without deleting an order.
+
+      Use case ends.
+* 1c. Subtracting the order's earned score would make the member's membership score negative.
+    * 1c1. Ratatouille reports the problem and leaves the order and score unchanged.
+
+      Use case ends.
+
+**UC11: Adjust a member's membership score manually**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and specifies a signed score change.
+2. Ratatouille applies the change and shows the previous and new membership scores.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The member identifier does not refer to a member in the current list.
+    * 1a1. Ratatouille reports the invalid identifier without changing a score.
+
+      Use case ends.
+* 1b. The score change is missing or has an invalid format.
+    * 1b1. Ratatouille reports the problem without changing the score.
+
+      Use case ends.
+* 1c. The result would be negative or exceed the allowed maximum.
+    * 1c1. Ratatouille reports the score limit without changing the score.
+
+      Use case ends.
+
+**UC12: Add a menu item**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User supplies a code, name, and price for a new menu item.
+2. Ratatouille adds the item to the menu and confirms the addition.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. A required detail is missing or invalid.
+    * 1a1. Ratatouille reports the problem and leaves the menu unchanged.
+
+      Use case ends.
+* 1b. Another menu item already uses the code.
+    * 1b1. Ratatouille reports the duplicate code and leaves the menu unchanged.
+
+      Use case ends.
+
+**UC13: Edit a menu item**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies an existing menu item by its code and supplies a new code, name, or price.
+2. Ratatouille updates the supplied fields and confirms the change. Existing orders retain the details recorded
+   when those orders were placed.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The given code does not identify a menu item.
+    * 1a1. Ratatouille reports that the item does not exist and leaves the menu unchanged.
+
+      Use case ends.
+* 1b. User supplies no changes or a new value has an invalid format.
+    * 1b1. Ratatouille reports the problem and leaves the menu unchanged.
+
+      Use case ends.
+* 1c. The new code belongs to another menu item.
+    * 1c1. Ratatouille reports the duplicate code and leaves the menu unchanged.
+
+      Use case ends.
+
+**UC14: Delete a menu item**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a menu item by its code and requests deletion.
+2. Ratatouille removes the item and confirms the deletion. Existing member orders remain unchanged.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The supplied code has an invalid format.
+    * 1a1. Ratatouille reports the problem and leaves the menu unchanged.
+
+      Use case ends.
+* 1b. No menu item has the supplied code.
+    * 1b1. Ratatouille reports that the item does not exist and leaves the menu unchanged.
+
+      Use case ends.
+
+**UC15: Add a milestone reward**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User supplies a reward description and required membership score.
+2. Ratatouille adds the milestone to the milestone catalog and confirms the addition.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. A required detail is missing or invalid.
+    * 1a1. Ratatouille reports the problem and leaves the catalog unchanged.
+
+      Use case ends.
+
+**UC16: Edit a milestone reward**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a milestone from the current catalog and supplies a new reward description or required
+   membership score.
+2. Ratatouille updates the supplied details and confirms the change. A changed requirement may alter the
+   milestone's position in the catalog.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The identifier does not refer to a milestone in the current catalog.
+    * 1a1. Ratatouille reports the invalid identifier without changing a milestone.
+
+      Use case ends.
+* 1b. User supplies no changes or a supplied value has an invalid format.
+    * 1b1. Ratatouille reports the problem without changing a milestone.
+
+      Use case ends.
+
+**UC17: Delete a milestone reward**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a milestone from the current catalog and requests deletion.
+2. Ratatouille removes the milestone and confirms the deletion.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The identifier does not refer to a milestone in the current catalog.
+    * 1a1. Ratatouille reports the invalid identifier and leaves the catalog unchanged.
+
+      Use case ends.
+
+**UC18: Redeem a milestone reward for a member**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and a milestone from the current catalog to redeem.
+2. Ratatouille records the redemption and confirms it. The member's membership score stays unchanged.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Either identifier does not refer to a current member or milestone.
+    * 1a1. Ratatouille reports the invalid identifier without recording a redemption.
+
+      Use case ends.
+* 1b. The member's membership score is below the milestone's requirement.
+    * 1b1. Ratatouille reports insufficient score without recording a redemption.
+
+      Use case ends.
+* 1c. The member has already redeemed that milestone.
+    * 1c1. Ratatouille reports the existing redemption without changing the member.
+
+      Use case ends.
+
+**UC19: Cancel a member's milestone redemption**<br>
+**Software system:** Ratatouille<br>
+**Actor:** Food stall owner
+
+**MSS**
+
+1. User identifies a member from the current list and a redeemed milestone still present in the current catalog.
+2. Ratatouille removes that redemption and confirms the cancellation. The member's membership score stays unchanged.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Either identifier does not refer to a current member or milestone.
+    * 1a1. Ratatouille reports the invalid identifier without cancelling a redemption.
+
+      Use case ends.
+* 1b. The member has not redeemed the selected milestone.
+    * 1b1. Ratatouille reports that there is no redemption to cancel and leaves the member unchanged.
 
       Use case ends.
 
 ### Non-Functional Requirements
 
-1.  Should work on Windows, Linux, and macOS computers with Java `25` or above installed.
-2.  Should support up to 1000 members and their associated records without noticeable sluggishness during typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-4.  Should be portable and work without requiring installation. It should be distributed as a single JAR file, or as a single ZIP file if additional files are required.
-5.  Should operate as a single-user application without depending on a remote server or a database management system.
-6.  Should store member, order, and membership data locally in a human-editable text file.
-7.  Should save changes made by successful data-modifying commands automatically. A failed command or save operation should not corrupt previously saved data.
-8.  Common commands, such as finding a member, recording an order, and updating membership points, should complete without noticeable delay under typical usage.
-9.  Invalid commands should provide clear error messages that identify the problem without modifying existing data.
+1. Should run on Windows, Linux, and macOS with only Java `25` installed, using the same executable JAR without a separate installer. The release JAR should not exceed 100 MB.
+2. Should support one person using one local data set without requiring user accounts, concurrent access, or shared data files.
+3. Should work without a network connection, remote server, or database management system.
+4. Should store member, order, menu, and milestone data locally in human-editable text files. 
+5. When launched from the folder containing the JAR, the application should access files only within that folder and its subfolders, and should not change operating-system settings.
+6. With 1000 members, up to 20 orders per member, 100 menu items, and 100 milestone rewards, at least 95% of 30 attempts each to find a member, record an order, or update a membership score should finish within 3 seconds on a computer with a four-core processor, 8 GB of RAM, a local SSD, and Java `25`.
+7. After launch, all documented workflows should be usable with a keyboard alone, without requiring a mouse. The primary way to enter data should be typed commands.
+8. At 1920 × 1080 or higher with 100% or 125% display scaling, command input and results should remain visible and readable without overlapping or being cut off. At 1280 × 720 or higher with 150% display scaling, every documented workflow should remain completable, including access to its input and results by scrolling where necessary.
+9. In the current production versions of desktop Chrome and Firefox on Windows, Linux, and macOS, the online HTML versions of the User Guide and Developer Guide should keep all text, examples, tables, and diagrams readable and reachable by scrolling at the display resolutions and scaling levels in NFR 8.
 
 ### Glossary
 
-* **Customer**: Anyone who buys food from the stall. A customer is not tracked by Ratatouille unless they sign up as a *member*.
-* **Hawker centres**: Open-air food complexes in Singapore housing many small, independently run food stalls.
-* **Member**: A customer enrolled in the stall's *rewards program*, uniquely identified by their saved *phone entry*.
-* **Membership points**: A non-negative whole number representing a member's standing in the rewards program, used to determine eligibility for *milestone rewards*.
-* **Rewards program**: The stall's loyalty scheme, in which members accumulate *membership points* and redeem them for *milestone rewards*.
+* **Member**: A customer who has signed up for the stall's *rewards program* and whose details Ratatouille tracks, including their name and phone number.
+* **Membership score**: A non-negative integer associated with a member. Orders can change this score, and it determines eligibility for *milestone rewards*.
 * **Menu item**: A dish or drink sold by the stall, recorded with a unique case-sensitive code, name, and price.
-* **Milestone reward**: A prize a member becomes eligible for upon reaching a set number of membership points. Each milestone reward can be claimed at most once per member.
-* **Order**: A record of a menu item's code and name, quantity, time recorded, and points earned, stored in a
+* **Milestone catalog**: The collection of milestone rewards offered by the stall.
+* **Milestone reward**: A reward with a required membership score. A member whose score meets that requirement can redeem the reward once.
+* **Order**: A record of a menu item's code and name, quantity, time recorded, and membership score gained, stored in a
   member's order history.
 * **Order history**: All orders recorded for a member. Also referred to as *purchase history*.
-* **Pre-order**: An order recorded in advance for later collection. It is *pending* until marked *completed*.
-* **Reversible command**: A command that changes stored data and can therefore be undone (e.g. `add-order`). Commands that only read or display data (e.g. `find`) or close the app (`exit`) are not reversible.
-* **Sample data**: Placeholder members loaded when Ratatouille is launched for the first time, so new users can try out commands.
-* **Phone entry**: A nonblank contact value identifying a member. Recognized Singapore formats are saved as eight
-  digits starting with 6, 8 or 9. New entries must contain a decimal digit; other digit-containing formats receive
-  a nonblocking warning. Legacy digitless notes can still be loaded and corrected.
-* **Stall owner**: The main user of Ratatouille, who runs a food stall at a hawker centre. Also covers staff operating the app on the owner's behalf.
+* **Redemption**: A record that a member has received a milestone reward. Recording or cancelling a redemption does not change the member's membership score.
+* **Rewards program**: The stall's loyalty scheme in which members earn membership score from orders and can redeem eligible milestone rewards.
+* **Sample data**: Placeholder members, menu items, and milestone rewards available when Ratatouille is launched for the first time, so new users can try out commands.
 
 --------------------------------------------------------------------------------------------------------------------
 
