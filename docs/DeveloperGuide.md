@@ -763,7 +763,7 @@ Use a disposable app home folder for these tests. Start with no `data/menu.json`
 ### Managing milestone rewards
 
 Use a disposable app home folder for these tests. Start with no `data/milestones.json`. The milestone list is sorted
-by required score; equal-score order is arbitrary.
+by required score, using milestone code to break ties.
 
 1. Test case: `list-milestones` before adding a milestone<br>
    Expected: `No milestones found.`
