@@ -69,7 +69,9 @@ skinparam Participant {
 
 skinparam ArrowFontStyle bold
 skinparam MinClassWidth 50
+!ifndef OMIT_PARTICIPANT_PADDING
 skinparam ParticipantPadding 10
+!endif
 skinparam Shadowing false
 skinparam DefaultTextAlignment center
 skinparam packageStyle Rectangle
