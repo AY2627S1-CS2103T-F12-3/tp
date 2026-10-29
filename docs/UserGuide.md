@@ -377,12 +377,12 @@ the code, the menu item's name at the time of the order, the quantity, the recor
 order history shows the saved name and points gained for each order, even if the menu item's name later changes. The
 saved `scoreGained` also stays the same if the menu price changes.
 
-Common errors:
+**Common errors and recovery**
 
-| Input | Result and recovery                                                                      |
-|---|------------------------------------------------------------------------------------------|
+| Input or situation          | Result and recovery                                                                      |
+|-----------------------------|------------------------------------------------------------------------------------------|
 | `add-order 1 o/UNKNOWN q/1` | `The item code is not in the menu.` Add the menu item first or use an existing item code. |
-| `add-order 1 o/1 q/0` | `Quantity must be a postive number` Use a positive whole-number quantity.                 |
+| `add-order 1 o/1 q/0`       | `Quantity must be a postive number` Use a positive whole-number quantity.                 |
 
 ### Deleting an order: `delete-order`
 
@@ -401,11 +401,11 @@ Examples:
 * `delete-order 1 o/2` deletes the 2nd-newest order from the 1st person shown.
 * `find Betsy` followed by `delete-order 1 o/1` deletes Betsy's newest order.
 
-Common errors:
+**Common errors and recovery**
 
-| Input | Result and recovery |
-|---|---|
-| `delete-order 1 o/99` | `The order index provided is invalid.` Use an index from the person's displayed order history. |
+| Input or situation                                   | Result and recovery |
+|------------------------------------------------------|---|
+| `delete-order 1 o/99`                                | `The order index provided is invalid.` Use an index from the person's displayed order history. |
 | Deleting an order that would make the score negative | `Deleting this order would make the score negative.` Update the person's score first if needed. |
 
 ### Updating a person's score: `update-score`
@@ -423,9 +423,9 @@ Examples:
 * `update-score 1 s/10` increases the score of the 1st person shown by 10.
 * `update-score 1 s/-5` decreases the score of the 1st person shown by 5.
 
-Common errors:
+**Common errors and recovery**
 
-| Input                          | Result and recovery                                                   |
+| Input or situation             | Result and recovery                                                   |
 |--------------------------------|-----------------------------------------------------------------------|
 | `update-score 1 s/-999999999`  | `Score cannot be less than zero.` Use a smaller decrease.             |
 | `update-score 1 s/999999999`   | `Score cannot exceed 999999999.` Use a smaller increase.              |
@@ -450,11 +450,11 @@ Format: `redeem INDEX m/MILESTONE_INDEX`
 Examples:
 * `redeem 1 m/2` redeems the 2nd milestone for the 1st person shown.
 
-Common errors:
+**Common errors and recovery**
 
-| Input | Result and recovery |
-|---|---|
-| Redeeming without enough points | `Person does not have sufficient score.` Choose a milestone within the person's score. |
+| Input or situation                 | Result and recovery |
+|------------------------------------|---|
+| Redeeming without enough points    | `Person does not have sufficient score.` Choose a milestone within the person's score. |
 | Redeeming the same milestone twice | `Milestone reward already redeemed.` Choose another milestone. |
 
 ### Cancelling a redeemed milestone: `cancel-redeem`
@@ -478,11 +478,11 @@ Examples:
 Cancellation does not refund or change the person's membership points. It only removes the matching milestone from
 the person's redeemed milestone reward history.
 
-Common errors:
+**Common errors and recovery:**
 
-| Input | Result and recovery                                                                  |
-|---|--------------------------------------------------------------------------------------|
-| `cancel-redeem 1 m/99` | `The milestone index is invalid.` Use the current milestone list to choose an index. |
+| Input or situation                                                  | Result and recovery                                                                  |
+|---------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| `cancel-redeem 1 m/99`                                              | `The milestone index is invalid.` Use the current milestone list to choose an index. |
 | `cancel-redeem 1 m/2` when milestone 2 was not redeemed by person 1 | `Unable to unredeem because it was not redeemed.` No action needed.                  |
 
 ### Locating persons by name or phone number: `find`
@@ -525,10 +525,11 @@ Examples:
 * `list` followed by `delete-member 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete-member 1` deletes the 1st person in the results of the `find` command.
 
-Common errors:
+**Common errors and recovery:**
 
-| Input | Result and recovery |
-|---|---|
+
+| Input or situation                                          | Result and recovery |
+|-------------------------------------------------------------|---|
 | `delete-member 99` when fewer than 99 persons are displayed | `The person index provided is invalid.` Use an index from the current person list. |
 
 ### Clearing all entries: `clear`
