@@ -659,7 +659,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1a1. Ratatouille reports the problem without adding a member.
 
       Use case ends.
-* 1b. A member with the same name already exists.
+* 1b. A member with the same phone number already exists.
     * 1b1. Ratatouille reports the duplicate and does not add the member.
 
       Use case ends.
@@ -959,11 +959,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 1. Should run on Windows, Linux, and macOS with only Java `25` installed, using the same executable JAR without a separate installer. The release JAR should not exceed 100 MB.
 2. Should support one person using one local data set without requiring user accounts, concurrent access, or shared data files.
 3. Should work without a network connection, remote server, or database management system.
-4. Should store member, order, menu, and milestone data locally in human-editable text files. The application should access files only within its home folder (the folder containing the JAR) and its subfolders, and should not change operating-system settings.
-5. With 1000 members, up to 20 orders per member, 100 menu items, and 100 milestone rewards, at least 95% of 30 attempts each to find a member, record an order, or update a membership score should finish within 3 seconds on a computer with a four-core processor, 8 GB of RAM, a local SSD, and Java `25`.
-6. After launch, all documented workflows should be usable with a keyboard alone, without requiring a mouse. The primary way to enter data should be typed commands.
-7. At 1920 × 1080 or higher with 100% or 125% display scaling, command input and results should remain visible and readable without overlapping or being cut off. At 1280 × 720 or higher with 150% display scaling, every documented workflow should remain completable, including access to its input and results by scrolling where necessary.
-8. In the current production versions of desktop Chrome and Firefox on Windows, Linux, and macOS, the online HTML versions of the User Guide and Developer Guide should keep all text, examples, tables, and diagrams readable and reachable by scrolling at the display resolutions and scaling levels in NFR 6.
+4. Should store member, order, menu, and milestone data locally in human-editable text files. 
+5. When launched from the correct directory, the application should access files only within its home folder and its subfolders, and should not change operating-system settings.
+6. With 1000 members, up to 20 orders per member, 100 menu items, and 100 milestone rewards, at least 95% of 30 attempts each to find a member, record an order, or update a membership score should finish within 3 seconds on a computer with a four-core processor, 8 GB of RAM, a local SSD, and Java `25`.
+7. After launch, all documented workflows should be usable with a keyboard alone, without requiring a mouse. The primary way to enter data should be typed commands.
+8. At 1920 × 1080 or higher with 100% or 125% display scaling, command input and results should remain visible and readable without overlapping or being cut off. At 1280 × 720 or higher with 150% display scaling, every documented workflow should remain completable, including access to its input and results by scrolling where necessary.
+9. In the current production versions of desktop Chrome and Firefox on Windows, Linux, and macOS, the online HTML versions of the User Guide and Developer Guide should keep all text, examples, tables, and diagrams readable and reachable by scrolling at the display resolutions and scaling levels in NFR 8.
 
 ### Glossary
 
