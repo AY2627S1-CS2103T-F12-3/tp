@@ -3,7 +3,7 @@ layout: page
 title: User Guide
 ---
 
-Ratatouille is a **desktop application for hawker stall owners to manage customer memberships, orders and loyalty rewards**. It is optimized for typed commands through a Command Line Interface (CLI), with a Graphical User Interface (GUI) for viewing member details, order histories, menu items and milestone rewards. You can register members using their phone numbers, record orders, track membership points and manage reward redemptions while serving customers.
+Ratatouille is a **desktop application for hawker stall owners to manage customer memberships, orders and loyalty rewards**. It is optimized for typing commands through a Command Line Interface (CLI), with a Graphical User Interface (GUI) for viewing member details, order histories, menu items and milestone rewards. You can register members using their phone numbers, record orders, track membership points and manage reward redemptions while serving customers.
 
 * Table of Contents
 {:toc}
@@ -29,7 +29,7 @@ Ratatouille is a **desktop application for hawker stall owners to manage custome
 
    * `list` : Lists all members.
 
-   * `add-member n/John Doe p/98765432` : Registers a member named `John Doe` with zero points and empty order and redemption histories.
+   * `add-member n/John Doe p/98765432` : Registers a member named `John Doe` with zero points, an empty order history and an empty redemption history.
 
    * `add-menu-item c/12A n/Dessert p/3.50` : Adds Dessert to the menu at $3.50.
 
@@ -203,9 +203,9 @@ Assuming the phone entries are not already registered:
 | Input or situation | Result and recovery |
 |---|---|
 | `add-member n/John Doe` | The command format is shown. Supply `p/PHONE_NUMBER`. |
-| `add-member n/123 p/98765432` | The name must contain at least one letter. Use a name such as `John Doe`. |
+| `add-member n/123 p/98765432` | `Names should contain at least one letter (A-Z or a-z)`. Use a name such as `John Doe`. |
 | `add-member n/John Doe p/phone` | `Phone numbers must contain at least one digit`. Enter a phone entry containing a digit. |
-| The phone entry is already registered | The existing member is identified and the addition is rejected. Check that record before entering a different phone entry. |
+| The phone entry is already registered | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The addition is rejected. Check that record before entering a different phone entry. |
 | `add-member n/John Doe p/98765432 t/close friend` | `Tag names should be alphanumeric`. Use `t/closeFriend`. |
 
 ### Listing all members: `list`
@@ -254,8 +254,8 @@ Assuming the displayed member list contains at least two members:
 |---|---|
 | `edit-member 1` | `At least one field to edit must be provided.` Supply a name, phone entry or tags. |
 | `edit-member 0 n/John Doe` | The command format is shown. Use a positive index from the displayed member list. |
-| The index is beyond the displayed member list | The person-index error is shown. Run `list` and use the correct displayed index. |
-| The new phone entry belongs to another member | The edit is rejected and the existing member is identified. Check that record and correct the phone entry. |
+| The index is beyond the displayed member list | `The person index provided is invalid.` Run `list` and use the correct displayed index. |
+| The new phone entry belongs to another member | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The edit is rejected. Check that record and correct the phone entry. |
 
 ### Adding a menu item: `add-menu-item`
 
@@ -294,8 +294,8 @@ The first example shows `New menu item added: Dessert` after saving succeeds. Th
 |---|---|
 | Reusing `c/12A` after adding that code | `A menu item with this code already exists.` Choose a different code. |
 | `add-menu-item c/13 n/Dish` | The command format is shown. Supply the missing `p/PRICE`. |
-| `add-menu-item c/13 n/Dish p/4.501` | The price constraint is shown. Use at most two decimal places. |
-| `add-menu-item c/13 n/Dish p/0` | The price constraint is shown. Use a positive price of at least `0.01`. |
+| `add-menu-item c/13 n/Dish p/4.501` | `Price must be between 0.01 and 21474836.47 dollars, with at most two decimal places.` Use at most two decimal places. |
+| `add-menu-item c/13 n/Dish p/0` | `Price must be between 0.01 and 21474836.47 dollars, with at most two decimal places.` Use a positive price of at least `0.01`. |
 
 These validation failures leave the existing menu unchanged and do not trigger an automatic save.
 
@@ -320,7 +320,7 @@ Deletes the menu item with the specified code and saves the updated menu.
 | Input or situation | Result and recovery |
 |---|---|
 | `delete-menu-item CR01` | The command format is shown. Use `delete-menu-item c/CR01`. |
-| `delete-menu-item c/CR-01` | The code constraint is shown. Enter an alphanumeric code without punctuation. |
+| `delete-menu-item c/CR-01` | `Item codes must be alphanumeric.` Enter an alphanumeric code without punctuation. |
 | The code does not exist | `No menu item with this code exists.` Check the item's exact code, including letter case. |
 
 ### Editing a menu item: `edit-menu-item`
@@ -358,7 +358,7 @@ Assuming code `12A` exists and `12C` is unused:
 | `edit-menu-item UNKNOWN n/Dish` when code `UNKNOWN` does not exist | `A menu item with this code does not exist.` Enter the current code of an existing item. |
 | `edit-menu-item 12A c/3A` when `3A` belongs to another item | `A menu item with the new code already exists.` Choose a code that is not already in the menu. |
 | `edit-menu-item 12A` | The command format is shown. Supply at least one field to update. |
-| `edit-menu-item 12A p/4.001` | The price constraint is shown. Use at most two decimal places. |
+| `edit-menu-item 12A p/4.001` | `Price must be between 0.01 and 21474836.47 dollars, with at most two decimal places.` Use at most two decimal places. |
 
 Validation failures leave the existing menu item unchanged.
 
@@ -419,8 +419,8 @@ redemptions; you do not need to enter or use it.
 | Input | Result and recovery |
 |---|---|
 | `add-milestone r/Free drink` | The command format is shown. Supply `s/REQUIRED_SCORE`. |
-| `add-milestone r/Free drink s/+500` | The required-score constraint is shown. Use `s/500`. |
-| `add-milestone r/Free drink s/1000000000` | The required-score constraint is shown. Enter a whole number from `1` to `999999999`. |
+| `add-milestone r/Free drink s/+500` | `Required score must be a positive whole number no greater than 999999999.` Use `s/500`. |
+| `add-milestone r/Free drink s/1000000000` | `Required score must be a positive whole number no greater than 999999999.` Enter a whole number from `1` to `999999999`. |
 | `add-milestone r/ s/500` | `Reward descriptions must not be blank.` Supply a reward description. |
 | `add-milestone c/FREE500 r/Free drink s/500` | The command format is shown. Remove `c/`; codes are generated automatically. |
 
@@ -457,8 +457,8 @@ Assuming the current milestone list contains at least two milestones:
 |---|---|
 | `edit-milestone 1` | `At least one field to edit must be provided.` Supply `r/REWARD` or `s/REQUIRED_SCORE`. |
 | `edit-milestone 1 c/NEWCODE` | The command format is shown. Only the reward description and required score can be edited. |
-| `edit-milestone 1 s/0` | The required-score constraint is shown. Use a whole number from `1` to `999999999`. |
-| The index is beyond the current milestone list | The milestone-index error is shown. Run `list-milestones` and use a current index. |
+| `edit-milestone 1 s/0` | `Required score must be a positive whole number no greater than 999999999.` Use a whole number from `1` to `999999999`. |
+| The index is beyond the current milestone list | `The milestone index provided is invalid.` Run `list-milestones` and use a current index. |
 
 ### Deleting a milestone reward: `delete-milestone`
 
@@ -487,7 +487,7 @@ Deletes a milestone from the catalog.
 |---|---|
 | `delete-milestone 0` | The command format is shown. Use a positive index from `list-milestones`. |
 | `delete-milestone 1 r/Free drink` | The command format is shown. Supply only the index: `delete-milestone 1`. |
-| `delete-milestone 999` when fewer than 999 milestones exist | The milestone-index error is shown. Run `list-milestones` and use a current index. |
+| `delete-milestone 999` when fewer than 999 milestones exist | `The milestone index provided is invalid.` Run `list-milestones` and use a current index. |
 
 Failed milestone commands leave the milestone catalog unchanged. Successful commands are saved in
 `data/milestones.json`; `clear` removes all customers, menu items, and milestone rewards.
