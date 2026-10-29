@@ -28,8 +28,14 @@ Ratatouille is intended for hawker stall owners (e.g. Mrs. Tan) who:
 
 ## Status
 
-Ratatouille is under active development. The current version supports basic customer record management, including adding, editing, deleting, finding, and
-listing customers. Loyalty program and order-management features are planned for future versions.
+Ratatouille is under active development. 
+
+The current version supports basic customer record management, including adding, editing, deleting, finding, and
+listing customers. 
+
+A Food menu system to update and manage the products the stall is selling. 
+
+An Order management and a Milestone reward system are present for owners to manage loyalty program by creating redeemable milestone rewards with sufficient scores earned by patronising the stall.
  
 ## Acknowledgements
 This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org).
