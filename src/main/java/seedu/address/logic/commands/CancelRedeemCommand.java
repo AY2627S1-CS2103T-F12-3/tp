@@ -20,8 +20,8 @@ import seedu.address.model.person.Person;
 public class CancelRedeemCommand extends Command {
 
     public static final String COMMAND_WORD = "cancel-redeem";
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Cancel a redeemed milestone reward. "
-            + "Parameters: PERSON_INDEX " + PREFIX_MILESTONE + "MILESTONE_INDEX\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Cancel a redeemed milestone reward for a member. "
+            + "Parameters: MEMBER_INDEX " + PREFIX_MILESTONE + "MILESTONE_INDEX\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_MILESTONE + "2";
     public static final String MESSAGE_SUCCESS = "Milestone reward cancellation successful.";
     public static final String MESSAGE_NOT_REDEEMED =

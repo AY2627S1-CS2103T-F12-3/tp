@@ -3,7 +3,7 @@ layout: page
 title: User Guide
 ---
 
-Ratatouille is a **desktop application for hawker stall owners to manage customer memberships, orders and loyalty rewards**. It is optimized for typing commands through a Command Line Interface (CLI), with a Graphical User Interface (GUI) for viewing member details, order histories, menu items and milestone rewards. You can register members using their phone numbers, record orders, track membership points and manage reward redemptions while serving customers.
+Ratatouille is a **desktop application for hawker stall owners to manage member registrations, orders and loyalty rewards**. It is optimized for typing commands through a Command Line Interface (CLI), with a Graphical User Interface (GUI) for viewing member details, order histories, menu items and milestone rewards. You can register members using their phone numbers, record orders, track membership points and manage reward redemptions while serving members.
 
 * Table of Contents
 {:toc}
@@ -47,7 +47,7 @@ Ratatouille is a **desktop application for hawker stall owners to manage custome
 
    * `update-score 1 s/10` : Increases the score of the 1st member shown by 10. The command is rejected if the result exceeds `999999999`.
 
-   * `clear` : Deletes all customers, menu items, and milestone rewards.
+   * `clear` : Deletes all members, menu items, and milestone rewards.
 
    * `exit` : Exits the app.
 
@@ -87,7 +87,8 @@ Ratatouille is a **desktop application for hawker stall owners to manage custome
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
-### Viewing help: `help`
+### Viewing help:
+Command word: `help`
 
 Opens the help window, which shows the User Guide address and a button to copy it.
 The address is `https://ay2627s1-cs2103t-f12-3.github.io/tp/UserGuide.html`.
@@ -105,7 +106,8 @@ The command displays the guide address; use **Copy URL** and paste it into your 
 ![help message](images/helpMessage.png)
 
 
-### Adding a member: `add-member`
+### Adding a member:
+Command word: `add-member`
 
 Registers a member and selects their profile. The full member list is shown after a successful addition.
 
@@ -131,9 +133,9 @@ Registers a member and selects their profile. The full member list is shown afte
   as entered apart from surrounding whitespace. They show the same **nonblocking warning** after a successful
   add or edit. The app does not verify whether any number is assigned or reachable. Hover over a phone label to read the full
   entry if it is shortened in the member list or profile.
-* Each saved phone entry identifies one person. People can share a name if their phone entries differ.
-  If the entry is already registered, the command rejects it and identifies the existing person, even if that
-  person is hidden by a search. Recognized Singapore formats are compared after normalization.
+* Each saved phone entry identifies one member. Members can share a name if their phone entries differ.
+  If the entry is already registered, the command rejects it and identifies the existing member, even if that
+  member is hidden by a search. Recognized Singapore formats are compared after normalization.
 * For all other entries, only an exact, case-sensitive text match (apart from surrounding whitespace) blocks a
   duplicate. A separate **possible duplicate warning** checks complete number segments of at least six digits
   against all existing members, including members hidden by a search. Spaces, parentheses, dots and common
@@ -188,7 +190,7 @@ Duplicate-check examples:
 | `92345678` and `81234567` in separate members | `92345678 (HP) / 81234567 (Office)` | Saved; possible duplicate warning identifies both members |
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
+A member can have any number of tags, including zero.
 </div>
 
 **Examples:**
@@ -205,10 +207,11 @@ Assuming the phone entries are not already registered:
 | `add-member n/John Doe` | The command format is shown. Supply `p/PHONE_NUMBER`. |
 | `add-member n/123 p/98765432` | `Names should contain at least one letter (A-Z or a-z)`. Use a name such as `John Doe`. |
 | `add-member n/John Doe p/phone` | `Phone numbers must contain at least one digit`. Enter a phone entry containing a digit. |
-| The phone entry is already registered | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The addition is rejected. Check that record before entering a different phone entry. |
+| The phone entry is already registered | `This phone number already belongs to a member in the address book: ` followed by the existing member's name, phone entry and tags. The addition is rejected. Check that record before entering a different phone entry. |
 | `add-member n/John Doe p/98765432 t/close friend` | `Tag names should be alphanumeric`. Use `t/closeFriend`. |
 
-### Listing all members: `list`
+### Listing all members:
+Command word: `list`
 
 Shows all members, clears any search filter, and deselects the current member.
 
@@ -216,12 +219,13 @@ Shows all members, clears any search filter, and deselects the current member.
 
 **Parameters and constraints:** None. Extra arguments are ignored.
 
-**Example:** After `find Betsy`, run `list` to show all members again. The feedback is `Listed all persons.`
+**Example:** After `find Betsy`, run `list` to show all members again. The feedback is `Listed all members.`
 
 **Common error and recovery:** `list` displays members. To see milestone rewards and their indexes,
 use `list-milestones`.
 
-### Editing a member: `edit-member`
+### Editing a member:
+Command word: `edit-member`
 
 Edits an existing member's name, phone entry or tags.
 
@@ -235,9 +239,9 @@ Edits an existing member's name, phone entry or tags.
 * Existing values will be updated to the input values.
 * Names and tags follow the same constraints as `add-member`. Supply `n/` and `p/` at most once each.
 * Phone numbers follow the same format and uniqueness rules as `add-member`. Changing a phone number to one already
-  registered to another person is rejected; keeping the person's current number is allowed.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
+  registered to another member is rejected; keeping the member's current number is allowed.
+* When editing tags, all of the member's existing tags are removed; adding tags is not cumulative.
+* To remove all of a member's tags, enter `t/` without a tag after it.
 * Omitted fields, the member's score, order history and redemption history are preserved.
   After a successful edit, the full member list is shown and the edited member is selected.
 
@@ -254,10 +258,11 @@ Assuming the displayed member list contains at least two members:
 |---|---|
 | `edit-member 1` | `At least one field to edit must be provided.` Supply a name, phone entry or tags. |
 | `edit-member 0 n/John Doe` | The command format is shown. Use a positive index from the displayed member list. |
-| The index is beyond the displayed member list | `The person index provided is invalid.` Run `list` and use the correct displayed index. |
-| The new phone entry belongs to another member | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The edit is rejected. Check that record and correct the phone entry. |
+| The index is beyond the displayed member list | `The member index provided is invalid.` Run `list` and use the correct displayed index. |
+| The new phone entry belongs to another member | `This phone number already belongs to a member in the address book: ` followed by the existing member's name, phone entry and tags. The edit is rejected. Check that record and correct the phone entry. |
 
-### Adding a menu item: `add-menu-item`
+### Adding a menu item:
+Command word: `add-menu-item`
 
 Adds a food item with a unique code, name, and price to the menu. The item is saved for future sessions.
 On a fresh installation, the menu starts with sample items such as `1` (Chicken Rice), `3A` (Nasi Lemak),
@@ -272,6 +277,9 @@ and `3B` (Nasi Lemak + Chicken).
 * Codes are case-sensitive: `3A` and `3a` identify different items. A code already in the menu cannot be reused,
   even if the new name or price differs. Different codes may have the same item name.
 * `NAME` must not be blank. Spaces, punctuation, and non-English characters are accepted.
+  **Exception:** A prefix-like pattern consisting of a space, one letter and `/`, such as ` x/` or ` p/`,
+  cannot be entered literally because the app interprets it as a command field. Unsupported patterns are rejected,
+  while supported prefixes are parsed as separate fields.
 * Single-letter prefixes such as `c/`, `n/`, and `p/` are interpreted as arguments when preceded by a space or tab;
   avoid these tokens inside names. Unsupported single-letter prefixes such as `x/` are rejected.
 * `PRICE` is in dollars, from `0.01` to `21474836.47`, inclusive. Use digits with up to two decimal places;
@@ -285,8 +293,8 @@ Assuming codes `12A` and `12B` are unused:
 * `add-menu-item c/12A n/Dessert p/3.50`
 * `add-menu-item p/1.20 n/Coffee c/12B`
 
-The first example shows `New menu item added: Dessert` after saving succeeds. The customer list stays as it is;
-`list` displays customers, not the menu. Menu items are stored separately; `clear` deletes them along with all customers and milestone rewards.
+The first example shows `New menu item added: Dessert` after saving succeeds. The member list stays as it is;
+`list` displays members, not the menu. Menu items are stored separately; `clear` deletes them along with all members and milestone rewards.
 
 **Common errors and recovery:**
 
@@ -299,7 +307,8 @@ The first example shows `New menu item added: Dessert` after saving succeeds. Th
 
 These validation failures leave the existing menu unchanged and do not trigger an automatic save.
 
-### Deleting a menu item: `delete-menu-item`
+### Deleting a menu item:
+Command word: `delete-menu-item`
 
 Deletes the menu item with the specified code and saves the updated menu.
 
@@ -311,7 +320,7 @@ Deletes the menu item with the specified code and saves the updated menu.
 * Codes are case-sensitive. Deleting `CR01` leaves an item with code `cr01` unchanged.
 * If the code does not exist, the app shows `No menu item with this code exists.` and leaves the menu unchanged.
 * Successful deletion shows, for example, `Deleted menu item: CR01 (Chicken Rice)`.
-* Customer records, existing order histories, and milestone rewards are unchanged. The deleted code can be reused.
+* Member records, existing order histories, and milestone rewards are unchanged. The deleted code can be reused.
 
 **Example:** `delete-menu-item c/CR01` deletes the item with code `CR01`, if it exists.
 
@@ -323,7 +332,8 @@ Deletes the menu item with the specified code and saves the updated menu.
 | `delete-menu-item c/CR-01` | `Item codes must be alphanumeric.` Enter an alphanumeric code without punctuation. |
 | The code does not exist | `No menu item with this code exists.` Check the item's exact code, including letter case. |
 
-### Editing a menu item: `edit-menu-item`
+### Editing a menu item:
+Command word: `edit-menu-item`
 
 Updates an existing menu item using its current code. The item is saved for future sessions.
 
@@ -362,7 +372,8 @@ Assuming code `12A` exists and `12C` is unused:
 
 Validation failures leave the existing menu item unchanged.
 
-### Listing milestone rewards: `list-milestones`
+### Listing milestone rewards:
+Command word: `list-milestones`
 
 Lists all milestone rewards with the indexes used by `edit-milestone`, `delete-milestone`, `redeem` and `cancel-redeem`.
 
@@ -387,7 +398,8 @@ Lists all milestone rewards with the indexes used by `edit-milestone`, `delete-m
 **Common error and recovery:** `No milestones found.` means the catalog is empty. Add a reward with
 `add-milestone r/Free drink s/500`, then run `list-milestones` again.
 
-### Adding a milestone reward: `add-milestone`
+### Adding a milestone reward:
+Command word: `add-milestone`
 
 Adds a milestone reward with a reward description and required score to the milestone catalog.
 
@@ -397,6 +409,9 @@ Adds a milestone reward with a reward description and required score to the mile
 
 * Provide both prefixes exactly once. They may appear in any order, separated by spaces or tabs.
 * `REWARD` must not be blank. Spaces, punctuation, and non-English characters are accepted.
+  **Exception:** A prefix-like pattern consisting of a space, one letter and `/`, such as ` c/` or ` s/`,
+  cannot be entered literally because the app interprets it as a command field. Unsupported patterns are rejected,
+  while supported prefixes are parsed as separate fields.
 * `REQUIRED_SCORE` must be a positive whole number from `1` to `999999999`, inclusive.
   Do not include a sign, decimal point or thousands separator.
 * Single-letter prefixes such as `r/` and `s/` are interpreted as arguments when preceded by a space or tab;
@@ -424,7 +439,8 @@ redemptions; you do not need to enter or use it.
 | `add-milestone r/ s/500` | `Reward descriptions must not be blank.` Supply a reward description. |
 | `add-milestone c/FREE500 r/Free drink s/500` | The command format is shown. Remove `c/`; codes are generated automatically. |
 
-### Editing a milestone reward: `edit-milestone`
+### Editing a milestone reward:
+Command word: `edit-milestone`
 
 Edits the reward description or required score of an existing milestone.
 
@@ -460,7 +476,8 @@ Assuming the current milestone list contains at least two milestones:
 | `edit-milestone 1 s/0` | `Required score must be a positive whole number no greater than 999999999.` Use a whole number from `1` to `999999999`. |
 | The index is beyond the current milestone list | `The milestone index provided is invalid.` Run `list-milestones` and use a current index. |
 
-### Deleting a milestone reward: `delete-milestone`
+### Deleting a milestone reward:
+Command word: `delete-milestone`
 
 Deletes a milestone from the catalog.
 
@@ -490,144 +507,153 @@ Deletes a milestone from the catalog.
 | `delete-milestone 999` when fewer than 999 milestones exist | `The milestone index provided is invalid.` Run `list-milestones` and use a current index. |
 
 Failed milestone commands leave the milestone catalog unchanged. Successful commands are saved in
-`data/milestones.json`; `clear` removes all customers, menu items, and milestone rewards.
+`data/milestones.json`; `clear` removes all members, menu items, and milestone rewards.
 
-### Recording an order: `add-order`
+### Recording an order:
+Command word: `add-order`
 
-Records an order for a person and adds it to that person's order history.
+Records an order for a member and adds it to that member's order history.
 
 Format: `add-order INDEX o/ITEM_CODE q/QUANTITY`
 
-* `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
+* `INDEX` is the positive index number shown in the current member list. Use `list` or `find` to identify the member.
 * `ITEM_CODE` must be an existing menu item's case-sensitive code. Add the item with `add-menu-item` first.
   Codes contain only letters and digits, without spaces or punctuation.
-* `QUANTITY` must be a positive whole number.
+* `QUANTITY` must be a positive whole number from `1` to `2147483647`, inclusive.
 * Provide `o/` and `q/` once each. They can appear in either order.
 * The order earns 10 points for each $1 spent (`price × quantity`), rounded down to a whole point. These points are
-  added to the person's score. An order that would raise the score above `999999999` is rejected.
-* After a successful order, the current person list is updated and the person is selected.
+  added to the member's score. An order that would raise the score above `999999999` is rejected.
+* After a successful order, the current member list is updated and the member is selected.
 
 Examples:
-* With the sample menu, `add-order 1 o/1 q/2` records two Chicken Rice for the 1st person shown and adds 90 points
+* With the sample menu, `add-order 1 o/1 q/2` records two Chicken Rice for the 1st member shown and adds 90 points
   to their score ($4.50 × 2 × 10).
-* With the sample menu, `add-order 2 q/1 o/3B` records one Nasi Lemak + Chicken for the 2nd person shown.
+* With the sample menu, `add-order 2 q/1 o/3B` records one Nasi Lemak + Chicken for the 2nd member shown.
 
-An unknown code shows `The item code is not in the menu.` and leaves the person's history unchanged. Each order saves
+An unknown code shows `The item code is not in the menu.` and leaves the member's history unchanged. Each order saves
 the code, the menu item's name at the time of the order, the quantity, the recorded time, and `scoreGained`. The
 order history shows the saved name and points gained for each order, even if the menu item's name later changes. The
 saved `scoreGained` also stays the same if the menu price changes.
 
 **Common errors and recovery**
 
-| Input or situation          | Result and recovery                                                                      |
-|-----------------------------|------------------------------------------------------------------------------------------|
-| `add-order 1 o/UNKNOWN q/1` | `The item code is not in the menu.` Add the menu item first or use an existing item code. |
-| `add-order 1 o/1 q/0`       | `Quantity must be a postive number` Use a positive whole-number quantity.                 |
+| Input or situation                | Result and recovery                                                                       |
+|-----------------------------------|-------------------------------------------------------------------------------------------|
+| `add-order 1 o/UNKNOWN q/1`       | `The item code is not in the menu.` Add the menu item first or use an existing item code. |
+| `add-order 1 o/1 q/0`             | `Quantity must be a positive whole number` Use a positive whole-number quantity.          |
+| `add-order 1 o/1 q/2147483648` | `Quantity must be a positive whole number` Use a quantity no greater than `2147483647`.  |
 
-### Deleting an order: `delete-order`
+### Deleting an order:
+Command word: `delete-order`
 
-Deletes an order from a person's order history.
+Deletes an order from a member's order history.
 
 Format: `delete-order INDEX o/ORDER_INDEX`
 
-* `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
-* `ORDER_INDEX` is the positive index number of the order as displayed in that person's order history, counted from the newest order.
+* `INDEX` is the positive index number shown in the current member list. Use `list` or `find` to identify the member.
+* `ORDER_INDEX` is the positive index number of the order as displayed in that member's order history, counted from the newest order.
 * Provide `o/` exactly once.
-* Deleting an order subtracts its saved `scoreGained` from the person's score. If this would make the score negative,
-  the deletion is rejected; update the person's score first if needed.
-* After a successful deletion, the current person list is updated and the person remains selected.
+* Deleting an order subtracts its saved `scoreGained` from the member's score. If this would make the score negative,
+  the deletion is rejected; update the member's score first if needed.
+* After a successful deletion, the current member list is updated and the member remains selected.
 
 Examples:
-* `delete-order 1 o/2` deletes the 2nd-newest order from the 1st person shown.
+* `delete-order 1 o/2` deletes the 2nd-newest order from the 1st member shown.
 * `find Betsy` followed by `delete-order 1 o/1` deletes Betsy's newest order.
 
 **Common errors and recovery**
 
 | Input or situation                                   | Result and recovery |
 |------------------------------------------------------|---|
-| `delete-order 1 o/99`                                | `The order index provided is invalid.` Use an index from the person's displayed order history. |
-| Deleting an order that would make the score negative | `Deleting this order would make the score negative.` Update the person's score first if needed. |
+| `delete-order 1 o/99`                                | `The order index provided is invalid.` Use an index from the member's displayed order history. |
+| Deleting an order that would make the score negative | `Deleting this order would make the score negative.` Update the member's score first if needed. |
 
-### Updating a person's score: `update-score`
+### Updating a member's score:
+Command word: `update-score`
 
-Updates a person's membership score by the specified amount.
+Updates a member's membership score by the specified amount.
 
 Format: `update-score INDEX s/SCORE_CHANGE`
 
-* `INDEX` is the positive index number shown in the current person list. Use `list` or `find` to identify the person.
-* `SCORE_CHANGE` must be a signed whole number. Positive values increase the score, while negative values decrease it.
+* `INDEX` is the positive index number shown in the current member list. Use `list` or `find` to identify the member.
+* `SCORE_CHANGE` must contain an optional `+` or `-` sign followed by one to nine digits. Positive values increase
+  the score, while negative values decrease it. Leading zeroes count towards the nine-digit limit.
 * The resulting score must be between 0 and 999999999, inclusive.
 * After a successful update, the previous and new scores are shown.
 
 Examples:
-* `update-score 1 s/10` increases the score of the 1st person shown by 10.
-* `update-score 1 s/-5` decreases the score of the 1st person shown by 5.
+* `update-score 1 s/10` increases the score of the 1st member shown by 10.
+* `update-score 1 s/-5` decreases the score of the 1st member shown by 5.
 
 **Common errors and recovery**
 
-| Input or situation             | Result and recovery                                                   |
-|--------------------------------|-----------------------------------------------------------------------|
-| `update-score 1 s/-999999999`  | `Score cannot be less than zero.` Use a smaller decrease.             |
-| `update-score 1 s/999999999`   | `Score cannot exceed 999999999.` Use a smaller increase.              |
-| `update-score 1 s/1999999999`  | `Score change must be a signed whole number.` Use a smaller increase. |
-| `update-score 1 s/-1999999999` | `Score change must be a signed whole number.` Use a smaller decrease. |
+| Input or situation                                        | Result and recovery                                                   |
+|-----------------------------------------------------------|-----------------------------------------------------------------------|
+| `update-score 1 s/-999999999` when score is not 999999999 | `Score cannot be less than zero.` Use a smaller decrease.             |
+| `update-score 1 s/999999999`  when score is not 0         | `Score cannot exceed 999999999.` Use a smaller increase.              |
+| `update-score 1 s/1999999999`                             | `Score change must be a signed whole number.` Use no more than nine digits. |
+| `update-score 1 s/-1999999999`                            | `Score change must be a signed whole number.` Use no more than nine digits. |
 
-### Redeeming a milestone: `redeem`
+### Redeeming a milestone:
+Command word: `redeem`
 
-Redeems an available milestone reward for a person who has sufficient membership points.
+Redeems an available milestone reward for a member who has sufficient membership points.
 
-Format: `redeem INDEX m/MILESTONE_INDEX`
+Format: `redeem MEMBER_INDEX m/MILESTONE_INDEX`
 
-* `INDEX` is the positive index number shown in the current person list.
+* `MEMBER_INDEX` is the positive index number shown in the current member list.
 * `MILESTONE_INDEX` is the positive index number shown in the current milestone list.
-* The person must have enough membership points for the selected milestone.
-* A person cannot redeem the same milestone more than once.
+* The member must have enough membership points for the selected milestone.
+* A member cannot redeem the same milestone more than once.
 * Redemption uses the current milestone catalog. Therefore, the selected index refers to the milestone currently
   displayed at that position. If milestones are added, deleted, or reordered, the same index may refer to a different
   milestone. This is intentional because the command identifies milestones by their current displayed index.
-* Regardless of success or failure, the current person list displayed is not modified.
+* On successful redeem, points of member is not spent.
+* Regardless of success or failure, the current member list displayed is not modified.
 
 Examples:
-* `redeem 1 m/2` redeems the 2nd milestone for the 1st person shown.
+* `redeem 1 m/2` redeems the 2nd milestone for the 1st member shown.
 
 **Common errors and recovery**
 
 | Input or situation                 | Result and recovery |
 |------------------------------------|---|
-| Redeeming without enough points    | `Person does not have sufficient score.` Choose a milestone within the person's score. |
+| Redeeming without enough points    | `Member does not have sufficient score.` Choose a milestone within the member's score. |
 | Redeeming the same milestone twice | `Milestone reward already redeemed.` Choose another milestone. |
 
-### Cancelling a redeemed milestone: `cancel-redeem`
+### Cancelling a redeemed milestone:
+Command word: `cancel-redeem`
 
-Cancels a milestone reward that has already been redeemed by a person.
+Cancels a milestone reward that has already been redeemed by a member.
 
-Format: `cancel-redeem INDEX m/MILESTONE_INDEX`
+Format: `cancel-redeem MEMBER_INDEX m/MILESTONE_INDEX`
 
-* `INDEX` is the positive index number shown in the current person list.
+* `MEMBER_INDEX` is the positive index number shown in the current member list.
 * `MILESTONE_INDEX` is the positive index number shown in the current milestone list.
-* The selected milestone must already be present in that person's redeemed milestone history.
+* The selected milestone must already be present in that member's redeemed milestone history.
 * Cancellation uses the current milestone catalog. Therefore, the milestone's current catalog entry must still exist
   and have the same internal code as the redeemed milestone. If the milestone was deleted, it cannot
   be cancelled through this command. This is intentional because the command identifies milestones by their current
   displayed index.
-* Regardless of success or failure, the current person list displayed is not modified.
+* Regardless of success or failure, the current member list displayed is not modified.
 
 Examples:
-* `cancel-redeem 1 m/2` cancels the 2nd currently displayed milestone for the 1st person shown.
+* `cancel-redeem 1 m/2` cancels the 2nd currently displayed milestone for the 1st member shown.
 
-Cancellation does not refund or change the person's membership points. It only removes the matching milestone from
-the person's redeemed milestone reward history.
+Cancellation does not refund or change the member's membership points. It only removes the matching milestone from
+the member's redeemed milestone reward history.
 
 **Common errors and recovery:**
 
 | Input or situation                                                  | Result and recovery                                                                  |
 |---------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| `cancel-redeem 1 m/99`                                              | `The milestone index is invalid.` Use the current milestone list to choose an index. |
-| `cancel-redeem 1 m/2` when milestone 2 was not redeemed by person 1 | `Unable to unredeem because it was not redeemed.` No action needed.                  |
+| `cancel-redeem 1 m/99`                                              | `The milestone index provided is invalid.` Use the current milestone list to choose an index. |
+| `cancel-redeem 1 m/2` when milestone 2 was not redeemed by member 1 | `Unable to unredeem because it was not redeemed.` No action needed.                  |
 
-### Locating persons by name or phone number: `find`
+### Locating members by name or phone number:
+Command word: `find`
 
-Finds persons by name keywords or an exact phone entry.
+Finds members by name keywords or an exact phone entry.
 
 Formats: `find KEYWORD [MORE_KEYWORDS]…​` or `find p/PHONE_NUMBER`
 
@@ -651,35 +677,38 @@ Examples:
 * `find p/（86）12345678` finds that exact entry, not `+8612345678`.
 * `find alex david` returns `Alex Yeoh` and `David Li`.
 
-### Deleting a member: `delete-member`
+### Deleting a member:
+Command word: `delete-member`
 
-Deletes the specified person from the address book.
+Deletes the specified member from the address book.
 
 Format: `delete-member INDEX`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* Deletes the member at the specified `INDEX`.
+* The index refers to the index number shown in the displayed member list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete-member 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete-member 1` deletes the 1st person in the results of the `find` command.
+* `list` followed by `delete-member 2` deletes the 2nd member in the address book.
+* `find Betsy` followed by `delete-member 1` deletes the 1st member in the results of the `find` command.
 
 **Common errors and recovery:**
 
 
 | Input or situation                                          | Result and recovery |
 |-------------------------------------------------------------|---|
-| `delete-member 99` when fewer than 99 persons are displayed | `The person index provided is invalid.` Use an index from the current person list. |
+| `delete-member 99` when fewer than 99 members are displayed | `The member index provided is invalid.` Use an index from the current member list. |
 
-### Clearing all entries: `clear`
+### Clearing all entries:
+Command word: `clear`
 
-Clears all customers, menu items, and milestone rewards, and deselects the current customer.
+Clears all members, menu items, and milestone rewards, and deselects the current member.
 This also saves the empty data files, so the cleared data stays empty after restarting the application.
 
 Format: `clear`
 
-### Exiting the program: `exit`
+### Exiting the program:
+Command word: `exit`
 
 Exits the program.
 
@@ -687,7 +716,7 @@ Format: `exit`
 
 ### Saving the data
 
-The app automatically saves customer records, the menu, and the milestone catalog after every command that executes
+The app automatically saves member records, the menu, and the milestone catalog after every command that executes
 successfully, except `help` and `exit`. These two commands remain available even when data cannot be saved.
 You do not need to save manually. All three are loaded again at startup.
 
@@ -702,11 +731,11 @@ different location that does.
 
 ### Editing the data file
 
-Customer records are saved in `data/memberlist.json`, menu items in `data/menu.json`, and milestone rewards in
+Member records are saved in `data/memberlist.json`, menu items in `data/menu.json`, and milestone rewards in
 `data/milestones.json`. These paths are relative to the directory from which you launch the app. With the quick-start
 instructions above, this is the JAR's folder. Advanced users can edit these files while the app is closed.
 
-Customer records contain a name, phone number, tags, score, and order history.
+Member records contain a name, phone number, tags, score, and order history.
 Unknown properties in older data files are ignored and omitted the next time the data is saved.
 Each entry in `orderHistory` uses `itemCode` (for example, `"itemCode": "3A"`), `itemName`, `quantity`,
 `recordedAt`, and `scoreGained` (a non-negative whole number of points). `itemName` is the name recorded with that
@@ -722,15 +751,15 @@ string `rewardDescription`, and a positive integer `requiredScore`. Existing mil
 loading older data. The internal codes are case-insensitive, saved in uppercase, and must be unique.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If an existing customer file cannot be loaded, startup stops to protect it from being overwritten. Back it up,
+If an existing member file cannot be loaded, startup stops to protect it from being overwritten. Back it up,
 then restore a valid copy or correct the invalid fields before restarting. Old nonblank phone entries still load,
 but entries that normalize to the same Singapore number conflict: resolve those duplicate member records in a
 backup copy, preserving their points and histories, before upgrading. The app does not merge records automatically.
-A missing customer file loads sample contacts. A missing menu file loads the sample menu, and a missing milestone
+A missing member file loads sample contacts. A missing menu file loads the sample menu, and a missing milestone
 file loads the sample milestone catalog. Invalid menu or milestone files use empty catalogs. The next successfully
 executed command other than `help` or `exit` attempts to save all three files and can overwrite those invalid
 catalog files, so back up all three files before editing them.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+Furthermore, certain edits can cause the member list to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
 
@@ -747,7 +776,6 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 ## Known issues
 
 1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -755,23 +783,23 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 
 Action | Format, Examples
 --------|------------------
-**Add member** | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/98765544 t/friend t/colleague`
-**Add menu item** | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
-**Add milestone** | `add-milestone r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone r/10% OFF s/250`
-**Add order** | `add-order INDEX o/ITEM_CODE q/QUANTITY`<br> e.g., `add-order 1 o/12A q/3`
-**Delete member** | `delete-member INDEX`<br> e.g., `delete-member 3`
-**Delete menu item** | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
-**Delete milestone** | `delete-milestone INDEX`<br> e.g., `delete-milestone 1`
-**Delete order** | `delete-order INDEX o/ORDER_INDEX`<br> e.g., `delete-order 1 o/2`
-**Edit member** | `edit-member INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit-member 2 n/James Lee`
-**Edit milestone** | `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`<br> e.g., `edit-milestone 1 s/600`
-**Edit menu item** | `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `edit-menu-item 12A c/12B`
-**Redeem milestone** | `redeem INDEX m/MILESTONE_INDEX`<br> e.g., `redeem 1 m/2`
-**Cancel redeemed milestone** | `cancel-redeem INDEX m/MILESTONE_INDEX`<br> e.g., `cancel-redeem 1 m/2`
-**Update score** | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
-**Find** | `find KEYWORD [MORE_KEYWORDS]…​`, `find p/PHONE_NUMBER`<br> e.g., `find James Jake`, `find p/98765432`
-**List** | `list`
-**List milestones** | `list-milestones`
-**Clear all data** | `clear`
-**Help** | `help`
-**Exit** | `exit`
+[**Add member**](#adding-a-member) | `add-member n/NAME p/PHONE_NUMBER [t/TAG]…​` <br> e.g., `add-member n/James Ho p/98765544 t/friend t/colleague`
+[**Add menu item**](#adding-a-menu-item) | `add-menu-item c/CODE n/NAME p/PRICE`<br> e.g., `add-menu-item c/12A n/Dessert p/3.50`
+[**Add milestone**](#adding-a-milestone-reward) | `add-milestone r/REWARD s/REQUIRED_SCORE`<br> e.g., `add-milestone r/10% OFF s/250`
+[**Add order**](#recording-an-order) | `add-order INDEX o/ITEM_CODE q/QUANTITY`<br> e.g., `add-order 1 o/12A q/3`
+[**Delete member**](#deleting-a-member) | `delete-member INDEX`<br> e.g., `delete-member 3`
+[**Delete menu item**](#deleting-a-menu-item) | `delete-menu-item c/CODE`<br> e.g., `delete-menu-item c/CR01`
+[**Delete milestone**](#deleting-a-milestone-reward) | `delete-milestone INDEX`<br> e.g., `delete-milestone 1`
+[**Delete order**](#deleting-an-order) | `delete-order INDEX o/ORDER_INDEX`<br> e.g., `delete-order 1 o/2`
+[**Edit member**](#editing-a-member) | `edit-member INDEX [n/NAME] [p/PHONE_NUMBER] [t/TAG]…​`<br> e.g., `edit-member 2 n/James Lee`
+[**Edit milestone**](#editing-a-milestone-reward) | `edit-milestone INDEX [r/REWARD] [s/REQUIRED_SCORE]`<br> e.g., `edit-milestone 1 s/600`
+[**Edit menu item**](#editing-a-menu-item) | `edit-menu-item CURRENT_CODE [c/NEW_CODE] [n/NAME] [p/PRICE]`<br> e.g., `edit-menu-item 12A c/12B`
+[**Redeem milestone**](#redeeming-a-milestone) | `redeem MEMBER_INDEX m/MILESTONE_INDEX`<br> e.g., `redeem 1 m/2`
+[**Cancel redeemed milestone**](#cancelling-a-redeemed-milestone) | `cancel-redeem MEMBER_INDEX m/MILESTONE_INDEX`<br> e.g., `cancel-redeem 1 m/2`
+[**Update score**](#updating-a-members-score) | `update-score INDEX s/SCORE_CHANGE`<br> e.g., `update-score 1 s/10`
+[**Find**](#locating-members-by-name-or-phone-number) | `find KEYWORD [MORE_KEYWORDS]…​`, `find p/PHONE_NUMBER`<br> e.g., `find James Jake`, `find p/98765432`
+[**List**](#listing-all-members) | `list`
+[**List milestones**](#listing-milestone-rewards) | `list-milestones`
+[**Clear all data**](#clearing-all-entries) | `clear`
+[**Help**](#viewing-help) | `help`
+[**Exit**](#exiting-the-program) | `exit`
