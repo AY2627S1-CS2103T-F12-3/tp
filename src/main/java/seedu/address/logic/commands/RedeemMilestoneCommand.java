@@ -19,11 +19,11 @@ import seedu.address.model.person.Person;
 public class RedeemMilestoneCommand extends Command {
 
     public static final String COMMAND_WORD = "redeem";
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Redeem a milestone for a person. "
-            + "Parameters: PERSON_INDEX m/MILESTONE_INDEX\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Redeem a milestone for a member. "
+            + "Parameters: MEMBER_INDEX m/MILESTONE_INDEX\n"
             + "Example: " + COMMAND_WORD + " 1 m/2";
     public static final String MESSAGE_REDEEMED = "Milestone reward already redeemed.";
-    public static final String MESSAGE_INSUFFICIENT_SCORE = "Person does not have sufficient score.";
+    public static final String MESSAGE_INSUFFICIENT_SCORE = "Member does not have sufficient score.";
     public static final String MESSAGE_SUCCESS = "Milestone reward redeemed successfully.";
     public static final String MESSAGE_INVALID_MILESTONE_DISPLAYED_INDEX =
             "The milestone index provided is invalid.";
