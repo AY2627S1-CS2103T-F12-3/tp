@@ -111,6 +111,19 @@ Registers a member and selects their profile. The full member list is shown afte
 
 **Format:** `add-member n/NAME p/PHONE_NUMBER [t/TAG]…`
 
+**Examples:**
+
+Assuming the phone entries are not already registered:
+
+* `add-member n/John Doe p/98765432`
+* `add-member n/Betsy Crowe t/regular p/81234567 t/vegetarian`
+
+**Phone warning:** Overseas numbers and other entries containing digits are also accepted, but an
+unrecognized Singapore format produces a **nonblocking warning**: the entry has been saved, so check it
+before continuing. A **possible duplicate warning** also means the entry was saved; check the related
+members before creating another record. See [Phone formats and duplicate checks (reference)](#phone-formats-and-duplicate-checks-reference)
+for supported formats and warning details.
+
 **Parameters and constraints:**
 
 * Supply `n/NAME` and `p/PHONE_NUMBER` exactly once each. Tags are optional and `t/TAG` may be repeated.
@@ -120,6 +133,31 @@ Registers a member and selects their profile. The full member list is shown afte
   Duplicate tags are stored only once.
 * New members start with zero points, no orders and no redeemed milestones.
 * Leading and trailing ordinary spaces around field values are removed. Internal spaces in a name are preserved.
+* Use an unused eight-digit Singapore phone number starting with 6, 8 or 9, such as `98765432`.
+  A phone entry must contain at least one digit and cannot be blank.
+* Each saved phone entry identifies one person. An already registered phone entry is rejected;
+  people can share a name if their phone entries differ.
+
+<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
+A person can have any number of tags, including zero.
+</div>
+
+**Common errors and recovery:**
+
+| Input or situation | Result and recovery |
+|---|---|
+| `add-member n/John Doe` | The command format is shown. Supply `p/PHONE_NUMBER`. |
+| `add-member n/123 p/98765432` | `Names should contain at least one letter (A-Z or a-z)`. Use a name such as `John Doe`. |
+| `add-member n/John Doe p/phone` | `Phone numbers must contain at least one digit`. Enter a phone entry containing a digit. |
+| The phone entry is already registered | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The addition is rejected. Check that record before entering a different phone entry. |
+| `add-member n/John Doe p/98765432 t/close friend` | `Tag names should be alphanumeric`. Use `t/closeFriend`. |
+
+#### Phone formats and duplicate checks (reference)
+
+These rules apply to `add-member` and the `p/` field of `edit-member`.
+Use this reference when entering country prefixes, overseas numbers, notes, extensions or multiple numbers,
+or when checking a duplicate warning.
+
 * A phone entry is required. Empty or whitespace-only entries are rejected. New entries supplied to `add-member` or
   the `p/` field of `edit-member` must contain at least one decimal digit (including full-width digits). Inputs such as `Not available`
   and `---` are rejected with `Phone numbers must contain at least one digit`.
@@ -186,27 +224,6 @@ Duplicate-check examples:
 | `92345678 (HP)` | `92345678` | Saved; possible duplicate warning identifies the existing member |
 | `+86 138119828111` | `+86138119828111` | Saved; format warning and possible duplicate warning |
 | `92345678` and `81234567` in separate members | `92345678 (HP) / 81234567 (Office)` | Saved; possible duplicate warning identifies both members |
-
-<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
-</div>
-
-**Examples:**
-
-Assuming the phone entries are not already registered:
-
-* `add-member n/John Doe p/98765432`
-* `add-member n/Betsy Crowe t/regular p/81234567 t/vegetarian`
-
-**Common errors and recovery:**
-
-| Input or situation | Result and recovery |
-|---|---|
-| `add-member n/John Doe` | The command format is shown. Supply `p/PHONE_NUMBER`. |
-| `add-member n/123 p/98765432` | `Names should contain at least one letter (A-Z or a-z)`. Use a name such as `John Doe`. |
-| `add-member n/John Doe p/phone` | `Phone numbers must contain at least one digit`. Enter a phone entry containing a digit. |
-| The phone entry is already registered | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The addition is rejected. Check that record before entering a different phone entry. |
-| `add-member n/John Doe p/98765432 t/close friend` | `Tag names should be alphanumeric`. Use `t/closeFriend`. |
 
 ### Listing all members: `list`
 
@@ -747,7 +764,6 @@ and `data/milestones.json` from the old home folder into the new home folder's `
 ## Known issues
 
 1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
 
 --------------------------------------------------------------------------------------------------------------------
 
