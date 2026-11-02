@@ -759,7 +759,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 ### Non-Functional Requirements
 
 1. Should run on Windows, Linux, and macOS with only Java `25` installed, using the same executable JAR without a separate installer. The release JAR should not exceed 100 MB.
-2. Should support use one local data set without requiring user accounts, concurrent access, or shared data files.
+2. Should support one local data set without requiring user accounts, concurrent access, or shared data files.
 3. Should work without a network connection, remote server, or database management system.
 4. Should store member, order, menu, and milestone data locally in human-editable text files. 
 5. When launched from the folder containing the JAR, the application should access files only within that folder and its subfolders, and should not change operating-system settings.
@@ -809,7 +809,11 @@ testers are expected to do more *exploratory* testing.
 1. Type `exit` and press Enter.
    Expected: The app closes.
 
-1. Repeat the launch test with the JAR in a write-protected folder, then enter `list`.<br>
+1. In a separate test folder, launch the app while the folder is writable, enter `list` to create its `data` files,
+   then close it. Create a disposable file in `data`, then deny the account running Java write access to the `data`
+   folder and its files using the operating system's permissions. Verify that the same account cannot create a new
+   file in `data` or overwrite the disposable file; a folder's read-only checkbox alone may not enforce this.
+   Relaunch the app from that folder and enter `list`.<br>
    Expected: The command reports a file-permission error because the app cannot save its data. Use a writable
    folder for normal operation.
 
@@ -972,7 +976,7 @@ Use a disposable, writable app home folder. If `data/menu.json` is absent, the s
 
 Use a new disposable app home folder, with no `data/memberlist.json`. Before starting the app, create
 `data/milestones.json` containing `{"milestones": []}` so that the catalog begins empty. The milestone list is
-sorted by required score; equal-score order is arbitrary.
+sorted by required score; milestones with equal scores are ordered by their internal codes.
 
 1. Test case: `list-milestones` before adding a milestone.<br>
    Expected: `No milestones found.`
@@ -1037,5 +1041,6 @@ sorted by required score; equal-score order is arbitrary.
 1. Resize and move the app window, close it, and relaunch it.<br>
    Expected: The window preferences remain in `preferences.json` and are restored.
 
-1. Start the app from a write-protected folder and execute a data-changing command.<br>
+1. Use the folder with write access denied as described in [Launch and shutdown](#launch-and-shutdown), then
+   execute a data-changing command.<br>
    Expected: A file-permission error is shown. Use a writable folder for normal operation.
