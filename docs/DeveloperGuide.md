@@ -18,6 +18,12 @@ The project uses the following third-party libraries and tools:
 * [JUnit 5](https://docs.junit.org/5.14.4/) for automated testing.
 * [PlantUML](https://plantuml.com/) for generating UML diagrams.
 
+Notable uses of AI:
+
+* All team members used generative AI tools, including Codex and Claude, in the development of Ratatouille.
+* These tools were used to assist with diagnosing defects, refining application features, improving code quality, and extending and reviewing automated tests.
+* They also assisted in drafting, reviewing, and refining parts of the User Guide, Developer Guide, and code documentation.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Setting up, getting started**
