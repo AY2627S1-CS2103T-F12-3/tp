@@ -4,75 +4,35 @@
 skinparam arrowThickness 1.1
 skinparam arrowColor MODEL_COLOR
 skinparam classBackgroundColor MODEL_COLOR
+left to right direction
 
-Package Model as ModelPackage <<Rectangle>>{
-Class "<<interface>>\nReadOnlyAddressBook" as ReadOnlyAddressBook
-Class "<<interface>>\nReadOnlyUserPrefs" as ReadOnlyUserPrefs
-Class "<<interface>>\nReadOnlyMenu" as ReadOnlyMenu
-Class "<<interface>>\nReadOnlyMilestoneCatalog" as ReadOnlyMilestoneCatalog
-Class "<<interface>>\nModel" as Model
-Class AddressBook
-Class ModelManager
-Class UserPrefs
-Class Menu
-Class FoodItem
-Class UniqueFoodItemList
-Class MilestoneCatalog
-Class Milestone
-Class UniqueMilestoneList
-
-Class UniquePersonList
-Class Person
-Class Name
-Class Phone
-Class Score
-Class Tag
-Class OrderHistory
-Class Order
-Class RedeemedMilestoneRewardHistory
-
-Class I #FFFFFF
+Package Model as ModelPackage <<Rectangle>> {
+    Class "<<interface>>\nModel" as Model
+    Class ModelManager
+    Class AddressBook
+    Class UserPrefs
+    Class Menu
+    Class FoodItem
+    Class MilestoneCatalog
+    Class Milestone
+    Class Person
 }
 
-Class HiddenOutside #FFFFFF
-HiddenOutside ..> Model
-
-AddressBook .up.|> ReadOnlyAddressBook
-
 ModelManager .up.|> Model
-Model .right.> ReadOnlyUserPrefs
-Model .left.> ReadOnlyAddressBook
-Model .right.> ReadOnlyMenu
-Model .right.> ReadOnlyMilestoneCatalog
-ModelManager -left-> "1" AddressBook
-ModelManager -right-> "1" UserPrefs
-ModelManager -down-> "1" Menu
-ModelManager -down-> "1" MilestoneCatalog
-UserPrefs .up.|> ReadOnlyUserPrefs
-Menu .up.|> ReadOnlyMenu
-MilestoneCatalog .up.|> ReadOnlyMilestoneCatalog
 
-AddressBook *--> "1" UniquePersonList
-UniquePersonList --> "~* all" Person
-Person *--> Name
-Person *--> Phone
-Person *--> Score
-Person *--> "*" Tag
-Person *--> OrderHistory
-OrderHistory --> "~* all" Order
-Person *--> RedeemedMilestoneRewardHistory
-RedeemedMilestoneRewardHistory --> "~* redeemed" Milestone
+ModelManager "1" *--> "1" AddressBook : owns
+ModelManager "1" *--> "1" UserPrefs : owns
+ModelManager "1" *--> "1" Menu : owns
+ModelManager "1" *--> "1" MilestoneCatalog : owns
 
-Menu *--> "1" UniqueFoodItemList
-UniqueFoodItemList --> "~* all" FoodItem
+AddressBook "1" *--> "0..*" Person : contains
+Menu "1" *--> "0..*" FoodItem : contains
+MilestoneCatalog "1" *--> "0..*" Milestone : contains
 
-MilestoneCatalog *--> "1" UniqueMilestoneList
-UniqueMilestoneList --> "~* all" Milestone
+note "Includes contact details, score,\ntags, order history, and redeemed\nmilestone rewards." as PersonNote
+Person -[hidden]down- PersonNote
+Person -[dotted]- PersonNote
 
-Person -[hidden]up--> I
-UniquePersonList -[hidden]right-> I
-
-Name -[hidden]right-> Phone
-
-ModelManager --> "~* filtered" Person
+note "Provides access to the model data\nthrough a read-only public API." as ModelNote
+Model -[dotted]- ModelNote
 @enduml
