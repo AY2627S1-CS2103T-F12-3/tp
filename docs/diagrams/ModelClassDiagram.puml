@@ -29,14 +29,10 @@ AddressBook "1" *--> "0..*" Person : contains
 Menu "1" *--> "0..*" FoodItem : contains
 MilestoneCatalog "1" *--> "0..*" Milestone : contains
 
-note right of Person
-  Includes contact details, score,
-  tags, order history, and redeemed
-  milestone rewards.
-end note
+note "Includes contact details, score,\ntags, order history, and redeemed\nmilestone rewards." as PersonNote
+Person -[hidden]down- PersonNote
+Person -[dotted]- PersonNote
 
-note bottom of Model
-  Provides access to the model data
-  through a read-only public API.
-end note
+note "Provides access to the model data\nthrough a read-only public API." as ModelNote
+Model -[dotted]- ModelNote
 @enduml
