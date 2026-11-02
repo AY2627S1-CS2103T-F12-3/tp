@@ -41,8 +41,10 @@ class MilestoneTimelineTest {
         JavaFxTestUtil.runOnFxThread(() -> {
             MilestoneTimeline timeline = new MilestoneTimeline(List.of());
             StackPane content = (StackPane) timeline.getContent();
+            Label emptyMessage = (Label) content.getChildren().get(0);
 
-            assertEquals("No milestones yet", ((Label) content.getChildren().get(0)).getText());
+            // EP: empty milestone catalog
+            assertEquals("No milestones yet", emptyMessage.getText()); // Boundary value: zero milestones
         });
     }
 
@@ -51,9 +53,21 @@ class MilestoneTimelineTest {
         JavaFxTestUtil.runOnFxThread(() -> {
             Pane content = (Pane) new MilestoneTimeline(MILESTONES).getContent();
 
+            // EP: milestones present with no selected person
             assertEquals(List.of("Points needed: 100", "Points needed: 200", "Points needed: 300"),
                     getStatusTexts(content));
             assertFalse(containsStyleClass(content, "milestone-score-pointer"));
+        });
+    }
+
+    @Test
+    void constructor_oneMilestone_showsSingleMarkerAndRequiredPoints() {
+        JavaFxTestUtil.runOnFxThread(() -> {
+            Pane content = (Pane) new MilestoneTimeline(List.of(FIRST)).getContent();
+
+            // EP: smallest nonempty milestone catalog
+            assertEquals("1", getMarker(content, 1).getText()); // Boundary value: one milestone
+            assertEquals(List.of("Points needed: 100"), getStatusTexts(content));
         });
     }
 
@@ -66,6 +80,7 @@ class MilestoneTimelineTest {
                     .withRedeemedMilestoneRewardHistory(history).build();
             Pane content = (Pane) new MilestoneTimeline(person, MILESTONES).getContent();
 
+            // EP: redeemed, eligible but unredeemed, and below required score
             assertEquals(List.of("Redeemed", "Unredeemed", "50 more points needed"), getStatusTexts(content));
         });
     }
@@ -75,6 +90,7 @@ class MilestoneTimelineTest {
         JavaFxTestUtil.runOnFxThread(() -> {
             Pane content = createTimelineForScore(50);
 
+            // EP: score below the first threshold
             assertTrue(getScoreY(content) < getMarkerCenterY(content, 1));
         });
     }
@@ -86,6 +102,7 @@ class MilestoneTimelineTest {
             double firstY = getMarkerCenterY(content, 1);
             double secondY = getMarkerCenterY(content, 2);
 
+            // EP: score strictly between adjacent thresholds
             assertEquals((firstY + secondY) / 2, getScoreY(content), 0.001);
         });
     }
@@ -97,7 +114,8 @@ class MilestoneTimelineTest {
             Label marker = getMarker(content, 2);
             Polygon arrow = (Polygon) getNodeWithStyleClass(content, "milestone-score-arrow");
 
-            assertEquals(getMarkerCenterY(content, 2), getScoreY(content), 0.001);
+            // EP: score equals an intermediate threshold
+            assertEquals(getMarkerCenterY(content, 2), getScoreY(content), 0.001); // Boundary value: 200
             assertTrue(arrow.getPoints().get(2) < marker.getLayoutX());
         });
     }
@@ -107,7 +125,59 @@ class MilestoneTimelineTest {
         JavaFxTestUtil.runOnFxThread(() -> {
             Pane content = createTimelineForScore(400);
 
+            // EP: score above the final threshold
             assertTrue(getScoreY(content) > getMarkerCenterY(content, 3));
+        });
+    }
+
+    @Test
+    void scoreAroundFirstAndLastMilestones_placesIndicatorAcrossThresholds() {
+        JavaFxTestUtil.runOnFxThread(() -> {
+            Pane belowFirst = createTimelineForScore(99);
+            Pane atFirst = createTimelineForScore(100);
+            Pane aboveFirst = createTimelineForScore(101);
+            Pane belowLast = createTimelineForScore(299);
+            Pane atLast = createTimelineForScore(300);
+            Pane aboveLast = createTimelineForScore(301);
+
+            // EP: score below, at, or above the first threshold
+            assertTrue(getScoreY(belowFirst) < getMarkerCenterY(belowFirst, 1)); // Boundary value: 99
+            assertEquals(getMarkerCenterY(atFirst, 1), getScoreY(atFirst), 0.001); // Boundary value: 100
+            assertTrue(getScoreY(aboveFirst) > getMarkerCenterY(aboveFirst, 1)); // Boundary value: 101
+
+            // EP: score below, at, or above the final threshold
+            assertTrue(getScoreY(belowLast) < getMarkerCenterY(belowLast, 3)); // Boundary value: 299
+            assertEquals(getMarkerCenterY(atLast, 3), getScoreY(atLast), 0.001); // Boundary value: 300
+            assertTrue(getScoreY(aboveLast) > getMarkerCenterY(aboveLast, 3)); // Boundary value: 301
+        });
+    }
+
+    @Test
+    void scoreAroundIntermediateMilestone_movesAcrossMarker() {
+        JavaFxTestUtil.runOnFxThread(() -> {
+            Pane below = createTimelineForScore(199);
+            Pane at = createTimelineForScore(200);
+            Pane above = createTimelineForScore(201);
+
+            // EP: score below, at, or above an intermediate threshold
+            assertTrue(getScoreY(below) < getMarkerCenterY(below, 2)); // Boundary value: 199
+            assertEquals(getMarkerCenterY(at, 2), getScoreY(at), 0.001); // Boundary value: 200
+            assertTrue(getScoreY(above) > getMarkerCenterY(above, 2)); // Boundary value: 201
+        });
+    }
+
+    @Test
+    void scoreAroundRequiredPoints_changesStatusAtThreshold() {
+        JavaFxTestUtil.runOnFxThread(() -> {
+            // EP: score below the required points
+            assertEquals("1 more points needed",
+                    getStatusTexts(createTimelineForScore(99)).get(0)); // Boundary value: 99
+
+            // EP: score meets or exceeds the required points without redemption
+            assertEquals("Unredeemed",
+                    getStatusTexts(createTimelineForScore(100)).get(0)); // Boundary value: 100
+            assertEquals("Unredeemed",
+                    getStatusTexts(createTimelineForScore(101)).get(0)); // Boundary value: 101
         });
     }
 
@@ -133,6 +203,7 @@ class MilestoneTimelineTest {
             content.layout();
 
             TextFlow title = (TextFlow) rows.get(0).getChildren().get(0);
+            // EP: long wrapped and unbroken reward text in a narrow viewport
             assertEquals(reward, ((Text) title.getChildren().get(0)).getText());
             assertTrue(getMarkerCenterY(content, 2) > wideSecondY);
             assertTrue(rows.get(0).getLayoutY() + rows.get(0).getHeight() < rows.get(1).getLayoutY());
@@ -141,6 +212,7 @@ class MilestoneTimelineTest {
 
             root.resize(500, 300);
             root.layout();
+            // EP: reward layout returns to its wide-viewport position
             assertEquals(wideSecondY, getMarkerCenterY(content, 2), 1);
         });
     }
@@ -158,6 +230,7 @@ class MilestoneTimelineTest {
             root.layout();
             Pane content = (Pane) timeline.getContent();
 
+            // EP: score between thresholds when a long reward expands row spacing
             assertTrue(getMarkerCenterY(content, 2) - getMarkerCenterY(content, 1) > 87.2);
             assertEquals((getMarkerCenterY(content, 1) + getMarkerCenterY(content, 2)) / 2,
                     getScoreY(content), 0.001);
