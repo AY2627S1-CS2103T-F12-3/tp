@@ -23,7 +23,7 @@ public class DeleteOrderCommand extends Command {
     public static final String COMMAND_WORD = "delete-order";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Deletes the order identified by its order index "
-            + "from the person identified by the index number used in the displayed person list.\n"
+            + "from the member identified by the index number used in the displayed member list.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + PREFIX_ORDER + "ORDER_INDEX (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_ORDER + "2";

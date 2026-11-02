@@ -23,8 +23,8 @@ import seedu.address.model.person.Score;
 public class AddOrderCommand extends Command {
     public static final String COMMAND_WORD = "add-order";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Add an order to the person identified "
-            + "by the index number used in the displayed person list. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Add an order to the member identified "
+            + "by the index number used in the displayed member list. "
             + "New order will be added to the OrderHistory.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + PREFIX_ORDER + "ITEM_CODE "

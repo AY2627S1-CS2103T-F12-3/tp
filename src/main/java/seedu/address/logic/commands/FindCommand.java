@@ -14,7 +14,7 @@ public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds persons by name keywords (case-insensitive) "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds members by name keywords (case-insensitive) "
             + "or by an exact phone entry and displays them as a list with index numbers.\n"
             + "Parameters: KEYWORD [MORE_KEYWORDS]... or p/PHONE_NUMBER\n"
             + "Example: " + COMMAND_WORD + " alice"

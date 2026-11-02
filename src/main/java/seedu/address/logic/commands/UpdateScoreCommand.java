@@ -19,7 +19,7 @@ public class UpdateScoreCommand extends Command {
 
     public static final String COMMAND_WORD = "update-score";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Updates a person's score by the specified amount. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Updates a member's score by the specified amount. "
             + "Parameters: INDEX (must be a positive integer) s/SCORE_CHANGE\n"
             + "Example: " + COMMAND_WORD + " 1 s/10";
 
