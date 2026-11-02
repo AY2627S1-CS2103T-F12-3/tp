@@ -22,10 +22,12 @@ Class RecentOrdersPanel
 Class MenuPanel
 Class StatusBarFooter
 Class CommandBox
-note bottom of UiPart
+note as UiPartNote
   FXML-backed UI parts extend UiPart.
   Inheritance arrows are omitted for clarity.
 end note
+UiPart .. UiPartNote
+UiPartNote .[hidden]. UiPart
 }
 
 package Model <<Rectangle>> {
