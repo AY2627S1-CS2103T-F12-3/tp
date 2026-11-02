@@ -108,7 +108,7 @@ The sequence diagram below illustrates parsing and execution for a successful `d
 
 ![Interactions Inside the Logic Component for the `delete-member 1` Command](images/DeleteSequenceDiagram.png)
 
-`personToDelete` is the `Person` retrieved at the displayed index. The diagram omits this lookup, clearing the selection when the deleted member is selected, and the persistence steps below; its parser destroy marker does not represent an explicit operation in the code.
+`personToDelete` is the `Person` retrieved at the displayed index. The diagram omits this lookup, clearing the selection when the deleted member is selected, and the persistence steps below.
 
 How the `Logic` component works:
 
