@@ -146,13 +146,13 @@ A person can have any number of tags, including zero.
 
 **Common errors and recovery:**
 
-| Input or situation | Result and recovery |
-|---|---|
-| `add-member n/John Doe` | The command format is shown. Supply `p/PHONE_NUMBER`. |
-| `add-member n/123 p/98765432` | `Names should contain at least one letter (A-Z or a-z)`. Use a name such as `John Doe`. |
-| `add-member n/John Doe p/phone` | `Phone numbers must contain at least one digit`. Enter a phone entry containing a digit. |
-| The phone entry is already registered | `This phone number already belongs to a person in the address book: ` followed by the existing member's name, phone entry and tags. The addition is rejected. Check that record before entering a different phone entry. |
-| `add-member n/John Doe p/98765432 t/close friend` | `Tag names should be alphanumeric`. Use `t/closeFriend`. |
+| Input or situation | Result and recovery                                                                                                                                                                                                      |
+|---|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `add-member n/John Doe` | The command format is shown. Supply `p/PHONE_NUMBER`.                                                                                                                                                                    |
+| `add-member n/123 p/98765432` | `Names should contain at least one letter (A-Z or a-z)`. Use a name such as `John Doe`.                                                                                                                                  |
+| `add-member n/John Doe p/phone` | `Phone numbers must contain at least one digit`. Enter a phone entry containing a digit.                                                                                                                                 |
+| The phone entry is already registered | `This phone number already belongs to a member in the address book: ` followed by the existing member's name, phone entry and tags. The addition is rejected. Check that record before entering a different phone entry. |
+| `add-member n/John Doe p/98765432 t/close friend` | `Tag names should be alphanumeric`. Use `t/closeFriend`.                                                                                                                                                                 |
 
 #### Phone formats and duplicate checks (reference)
 
