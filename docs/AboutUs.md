@@ -17,7 +17,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[portfolio](team/imnotannie.md)]
 
 * Role: Developer
-* Responsibilities: UI
+* Responsibilities: Milestone management and data integrity
 
 ### Ashin Mohamed Sunil
 
@@ -26,7 +26,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](http://github.com/ashinms)] [[portfolio](team/ashinms.md)]
 
 * Role: Developer
-* Responsibilities: Data
+* Responsibilities: Member scores, menu UI and menu item updates
 
 ### Aidan Tay Ming Feng
 
@@ -36,7 +36,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[portfolio](team/aidantay.md)]
 
 * Role: Developer
-* Responsibilities: Command Logic
+* Responsibilities: Profile UI and order-score integration
 
 ### Oh Qi Xiang
 
@@ -46,7 +46,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[portfolio](team/qxxd666.md)]
 
 * Role: Developer
-* Responsibilities: Testing/Code quality
+* Responsibilities: Menu management and menu storage
 
 ### Qi Ming
 
@@ -56,4 +56,4 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[portfolio](team/qqnoodle.md)]
 
 * Role: Developer
-* Responsibilities: UI
+* Responsibilities: Order history and reward redemption
